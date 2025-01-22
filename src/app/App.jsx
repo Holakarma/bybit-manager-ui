@@ -1,11 +1,11 @@
 import { Providers } from './providers';
-import { MainPage } from 'pages/main';
 import './styles/App.scss';
+import { Router } from './router';
 
 function App() {
 	return (
 		<Providers>
-			<MainPage />
+			<Router />
 		</Providers>
 	);
 }
