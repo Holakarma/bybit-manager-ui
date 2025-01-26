@@ -10,6 +10,8 @@ const Layout = () => {
 			direction="row"
 			minHeight="100vh"
 			alignItems="сenter"
+			justifyContent="center"
+			overflow="hidden"
 		>
 			<Box
 				component="aside"
@@ -17,14 +19,18 @@ const Layout = () => {
 			>
 				<Navigation />
 			</Box>
-			<Box
-				flexGrow={1}
+			<Stack
 				p={4}
+				overflow="hidden"
+				sx={{
+					backgroundColor: 'background.default',
+					flexGrow: 1,
+				}}
 			>
 				<Suspense fallback={<FallbackComponent />}>
 					<Outlet />
 				</Suspense>
-			</Box>
+			</Stack>
 		</Stack>
 	);
 };

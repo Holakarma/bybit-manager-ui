@@ -36,7 +36,7 @@ export default [
 					patterns: [
 						{
 							group: [
-								'shared/*/*/**',
+								'shared/*/*/*/**',
 								'entities/*/**',
 								'features/*/**',
 								'widgets/*/**',

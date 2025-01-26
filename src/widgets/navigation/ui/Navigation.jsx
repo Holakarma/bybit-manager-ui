@@ -10,7 +10,6 @@ const Navigation = () => {
 		>
 			<Stack
 				gap={2}
-				pt={4}
 				alignItems="stretch"
 			>
 				<Stack
@@ -19,7 +18,7 @@ const Navigation = () => {
 				>
 					<Box
 						textAlign="center"
-						paddingBlock={3}
+						paddingBlock={4}
 						paddingInline={1}
 					>
 						<Link to={ROUTES.MAIN}>
