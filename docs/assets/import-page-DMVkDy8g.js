@@ -1,1 +1,0 @@
-import{j as r,S as s,T as a,P as e,B as o}from"./index-cLFurZ3u.js";const p=()=>r.jsxs(s,{gap:4,flexGrow:1,children:[r.jsx(a,{variant:"H3",children:"Import"}),r.jsx(e,{sx:{flexGrow:1},children:r.jsx(o,{p:3,children:"Import accounts will be here"})})]});export{p as default};
