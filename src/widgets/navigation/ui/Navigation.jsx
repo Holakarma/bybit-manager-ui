@@ -1,8 +1,11 @@
-import { Box, Button, Paper, Stack, Typography } from '@mui/material';
-import { Link } from 'react-router';
+import { Box, Button, Paper, Stack, Typography, useTheme } from '@mui/material';
+import { Link, useLocation } from 'react-router';
+import { ExchangeIcon } from 'shared/assets/icons/exhange';
 import ROUTES from 'shared/config/routes';
 
 const Navigation = () => {
+	const { pathname } = useLocation();
+	const theme = useTheme();
 	return (
 		<Paper
 			elevation={0}
@@ -11,11 +14,9 @@ const Navigation = () => {
 			<Stack
 				gap={2}
 				alignItems="stretch"
+				paddingInline={2}
 			>
-				<Stack
-					gap={1}
-					paddingInline={2}
-				>
+				<Stack gap={1}>
 					<Box
 						textAlign="center"
 						paddingBlock={4}
@@ -35,6 +36,32 @@ const Navigation = () => {
 							sx={{ width: '100%' }}
 						>
 							Import
+						</Button>
+					</Link>
+				</Stack>
+				<Stack>
+					<Link to={ROUTES.MAIN}>
+						<Button
+							fullWidth
+							variant={
+								pathname === ROUTES.MAIN
+									? 'contained'
+									: 'outlined'
+							}
+							color="secondary"
+							startIcon={<ExchangeIcon />}
+							sx={{ justifyContent: 'start' }}
+						>
+							<Typography
+								variant="body"
+								color={
+									pathname === ROUTES.MAIN
+										? theme.palette.primary.main
+										: ''
+								}
+							>
+								All accounts
+							</Typography>
 						</Button>
 					</Link>
 				</Stack>

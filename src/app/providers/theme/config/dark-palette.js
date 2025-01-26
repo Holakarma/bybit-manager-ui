@@ -9,7 +9,7 @@ const darkPalette = {
 		main: '#333537',
 		light: '#4C4E50',
 		dark: '#25282C',
-		// contrastText: '',
+		contrastText: '#FFFFFF',
 	},
 	background: {
 		default: '#1C1B21',

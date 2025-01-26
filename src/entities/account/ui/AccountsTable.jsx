@@ -1,12 +1,13 @@
 import { IconButton, Stack } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { MarkList } from 'entities/mark';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { EyeIcon } from 'shared/assets/icons/eye';
 import { HiddenEyeIcon } from 'shared/assets/icons/hidden-eye';
 import { obfuscateEmail } from 'shared/lib/obfuscate-email';
+import useSearch from '../lib/filterStore';
 
-const initialColumns = [
+const columns = [
 	{ field: 'id', headerName: 'ID', width: 70 },
 	{ field: 'group', headerName: 'Group', width: 240 },
 	{
@@ -86,7 +87,7 @@ const initialColumns = [
 	},
 ];
 
-const rows = [
+const initialRows = [
 	{
 		id: 1,
 		group: 'Success',
@@ -102,7 +103,7 @@ const rows = [
 	{
 		id: 2,
 		group: 'Success',
-		email: 'second_acc@firstmail.com',
+		email: 'second_acc@gmail.com',
 		imap: 'second_acc@firstmail.com',
 		balance: '$101.5 $50.0',
 		kyc: 'BGD 1',
@@ -114,7 +115,7 @@ const rows = [
 	{
 		id: 3,
 		group: 'Success',
-		email: 'third_acc@firstmail.com',
+		email: 'third_acc@mail.ru',
 		imap: 'thirdd_acc@firstmail.com',
 		balance: '$101.5 $50.0',
 		kyc: 'BGD 1',
@@ -174,16 +175,18 @@ const ColumnVisibilityContext = React.createContext();
 const paginationModel = { page: 0, pageSize: 5 };
 
 const AccountsTable = () => {
+	const searchEmail = useSearch((state) => state.email);
+
+	const rows = useMemo(() => {
+		return initialRows.filter((row) => {
+			return row.email.toLowerCase().includes(searchEmail.toLowerCase());
+		});
+	}, [searchEmail]);
+
 	const [visible, setVisible] = useState(
-		initialColumns.reduce(
-			(acc, col) => ({ ...acc, [col.field]: true }),
-			{},
-		),
+		columns.reduce((acc, col) => ({ ...acc, [col.field]: true }), {}),
 	);
 
-	const columns = initialColumns.map((col) =>
-		visible[col.field] ? col : { ...col, hide: true },
-	);
 	return (
 		<ColumnVisibilityContext.Provider value={[visible, setVisible]}>
 			<DataGrid
@@ -194,7 +197,6 @@ const AccountsTable = () => {
 				checkboxSelection
 				sx={{ border: 0, flexGrow: 1 }}
 				hideFooter
-				// density="compact"
 			/>
 		</ColumnVisibilityContext.Provider>
 	);

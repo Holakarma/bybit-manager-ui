@@ -16,8 +16,13 @@ const componentsStyles = {
 		},
 		styleOverrides: {
 			root: {
+				padding: '8px 16px',
 				textTransform: 'none',
 				borderRadius: 8,
+				fontWeight: 400,
+			},
+			outlined: {
+				color: 'white',
 			},
 		},
 	},

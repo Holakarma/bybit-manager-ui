@@ -8,7 +8,7 @@ const ImportPage = () => {
 		>
 			<Typography variant="H3">Import</Typography>
 			<Paper sx={{ flexGrow: 1 }}>
-				<Box p={3}>Import accounts will be here</Box>
+				<Box p={3}>Import accounts feature will be here soon...</Box>
 			</Paper>
 		</Stack>
 	);
