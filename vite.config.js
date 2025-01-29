@@ -9,7 +9,7 @@ export default defineConfig({
 			...autoAlias,
 		},
 	},
-	base: './',
+	base: '/bybit-manager-ui/',
 	build: {
 		outDir: './docs',
 		emptyOutDir: true, // also necessary

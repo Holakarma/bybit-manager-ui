@@ -1,8 +1,9 @@
-import { Paper, Stack, Typography } from '@mui/material';
-import { AccountsTable } from 'entities/account';
+import { Paper, Stack, Typography, useTheme } from '@mui/material';
+import { Accounts } from 'entities/account';
 import { Filters } from 'widgets/filters';
 
 const MainPage = () => {
+	const theme = useTheme();
 	return (
 		<Stack
 			gap={4}
@@ -11,14 +12,19 @@ const MainPage = () => {
 		>
 			<Typography variant="H3">Accounts</Typography>
 			<Filters />
-			<Paper sx={{ flexGrow: 1 }}>
+			<Paper
+				sx={{
+					flexGrow: 1,
+					backgroundColor: theme.palette.secondary.dark,
+					backgroundImage: 'none',
+				}}
+			>
 				<Stack
-					// p={1}
 					overflow="auto"
 					maxWidth="100%"
 					minHeight="100%"
 				>
-					<AccountsTable />
+					<Accounts />
 				</Stack>
 			</Paper>
 		</Stack>

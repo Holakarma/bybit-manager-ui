@@ -15,6 +15,12 @@ const darkPalette = {
 		default: '#1C1B21',
 		paper: '#17181E',
 	},
+	textPrimary: {
+		default: '#FFFFFF',
+	},
+	textSecondary: {
+		default: '#ADB1B8',
+	},
 	error: {
 		main: '#EF454A',
 		light: '#F14C52',

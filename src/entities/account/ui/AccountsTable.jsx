@@ -1,15 +1,30 @@
-import { IconButton, Stack } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { MarkList } from 'entities/mark';
-import React, { useMemo, useState } from 'react';
-import { EyeIcon } from 'shared/assets/icons/eye';
-import { HiddenEyeIcon } from 'shared/assets/icons/hidden-eye';
+import { useContext, useMemo, useState } from 'react';
 import { obfuscateEmail } from 'shared/lib/obfuscate-email';
-import useSearch from '../lib/filterStore';
+import useSearch from '../model/filterStore';
+import ToggleNameContext from '../model/toggleNameContext';
+import ColumnVisibilityContext from '../model/visibilityContext';
+import HidingCell from './HidingCell';
+import tableSx from './tableStyles';
+import VisibilityChangingHeader from './VisibilityChangingHeader';
 
-const columns = [
-	{ field: 'id', headerName: 'ID', width: 70 },
-	{ field: 'group', headerName: 'Group', width: 240 },
+const columns = (toggleName = false) => [
+	{
+		field: toggleName ? 'name' : 'id',
+		headerName: toggleName ? 'Name' : 'ID',
+		width: 130,
+		editable: toggleName,
+		renderHeader: (params) => <ToggleNameHeader params={params} />,
+		renderCell: (params) => <NameCell params={params} />,
+	},
+	{
+		field: 'group',
+		headerName: 'Group',
+		width: 240,
+		editable: true,
+	},
 	{
 		field: 'email',
 		headerName: 'Email',
@@ -19,6 +34,7 @@ const columns = [
 			<HidingCell
 				params={params}
 				hidingFn={obfuscateEmail}
+				context={ColumnVisibilityContext}
 			>
 				{params.value}
 			</HidingCell>
@@ -33,6 +49,7 @@ const columns = [
 			<HidingCell
 				params={params}
 				hidingFn={obfuscateEmail}
+				context={ColumnVisibilityContext}
 			>
 				{params.value}
 			</HidingCell>
@@ -44,7 +61,12 @@ const columns = [
 		width: 170,
 		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
 		renderCell: (params) => (
-			<HidingCell params={params}>{params.value}</HidingCell>
+			<HidingCell
+				params={params}
+				context={ColumnVisibilityContext}
+			>
+				{params.value}
+			</HidingCell>
 		),
 	},
 	{
@@ -60,7 +82,12 @@ const columns = [
 		width: 175,
 		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
 		renderCell: (params) => (
-			<HidingCell params={params}>{params.value}</HidingCell>
+			<HidingCell
+				params={params}
+				context={ColumnVisibilityContext}
+			>
+				{params.value}
+			</HidingCell>
 		),
 	},
 	{
@@ -68,11 +95,7 @@ const columns = [
 		headerName: 'Marks',
 		width: 290,
 		sortable: false,
-		renderCell: (_params) => (
-			<MarkList marks={['TS', 'LPD', 'DTT', 'LP', 'AH', 'IDO']}>
-				TS
-			</MarkList>
-		),
+		renderCell: (_params) => <MarkList marks={_params.row.marks} />,
 	},
 	{
 		field: 'session',
@@ -87,117 +110,75 @@ const columns = [
 	},
 ];
 
-const initialRows = [
-	{
-		id: 1,
-		group: 'Success',
-		email: 'first_acc@firstmail.com',
-		imap: 'first_acc@firstmail.com',
-		balance: '$101.5 $50.0',
-		kyc: 'BGD 1',
-		loginCountry: 'RU 192.168.0.1',
-		marks: 'TS LPD DTT LP AH IDO',
-		session: '21.01.2025 15:52 (59h09m)',
-		warnings: 'a a',
-	},
-	{
-		id: 2,
-		group: 'Success',
-		email: 'second_acc@gmail.com',
-		imap: 'second_acc@firstmail.com',
-		balance: '$101.5 $50.0',
-		kyc: 'BGD 1',
-		loginCountry: 'RU 192.168.0.1',
-		marks: 'TS LPD DTT LP AH IDO',
-		session: '21.01.2025 15:52 (59h09m)',
-		warnings: 'a a',
-	},
-	{
-		id: 3,
-		group: 'Success',
-		email: 'third_acc@mail.ru',
-		imap: 'thirdd_acc@firstmail.com',
-		balance: '$101.5 $50.0',
-		kyc: 'BGD 1',
-		loginCountry: 'RU 192.168.0.1',
-		marks: 'TS LPD DTT LP AH IDO',
-		session: '21.01.2025 15:52 (59h09m)',
-		warnings: 'a a',
-	},
-];
-
-const HidingCell = ({ params, hidingFn }) => {
-	const { field } = params;
-	const [visible] = React.useContext(ColumnVisibilityContext);
-
-	return visible[field]
-		? params.value
-		: hidingFn
-			? hidingFn(params.value)
-			: '****';
-};
-
-const VisibilityChangingHeader = ({ params }) => {
-	const { field } = params;
-	const [visible, setVisible] = React.useContext(ColumnVisibilityContext);
-
-	const toggleColumn = () => {
-		setVisible((prev) => ({
-			...prev,
-			[field]: !prev[field],
-		}));
+const ToggleNameHeader = ({ params }) => {
+	const [_toggleName, setToggleName] = useContext(ToggleNameContext);
+	const clickHandler = (e) => {
+		e.stopPropagation();
+		setToggleName((prev) => !prev);
 	};
 
-	return (
+	return <Box onClick={clickHandler}>{params.colDef.headerName}</Box>;
+};
+
+const NameCell = ({ params }) => {
+	const [toggleName, _setToggleName] = useContext(ToggleNameContext);
+	return toggleName && params.row.name ? (
+		params.row.name
+	) : (
 		<Stack
-			alignItems="center"
-			direction="row"
-			gap={1}
+			height="100%"
+			justifyContent="center"
 		>
-			{params.colDef.headerName}
-			<IconButton
-				onClick={(e) => {
-					e.stopPropagation();
-					toggleColumn();
-				}}
-			>
-				{visible[field] ? (
-					<EyeIcon size="18px" />
-				) : (
-					<HiddenEyeIcon size="18px" />
-				)}
-			</IconButton>
+			<Typography color="textSecondary">{params.row.id}</Typography>
 		</Stack>
 	);
 };
-const ColumnVisibilityContext = React.createContext();
 
 const paginationModel = { page: 0, pageSize: 5 };
 
-const AccountsTable = () => {
-	const searchEmail = useSearch((state) => state.email);
+// @TODO: HidingCell and VisibilityChangingHeader should be in the shared layer as table components
+// @TODO: I dont like react context API here, mb it is possible to do with Zustant
+
+const AccountsTable = ({ initialRows }) => {
+	const searchEmail = useSearch.use.email();
 
 	const rows = useMemo(() => {
-		return initialRows.filter((row) => {
-			return row.email.toLowerCase().includes(searchEmail.toLowerCase());
-		});
-	}, [searchEmail]);
+		if (initialRows) {
+			return initialRows.filter((row) => {
+				return row.email
+					.toLowerCase()
+					.includes(searchEmail.toLowerCase());
+			});
+		}
+		return null;
+	}, [searchEmail, initialRows]);
 
 	const [visible, setVisible] = useState(
-		columns.reduce((acc, col) => ({ ...acc, [col.field]: true }), {}),
+		columns().reduce((acc, col) => ({ ...acc, [col.field]: true }), {}),
 	);
+
+	const [toggleName, setToggleName] = useState(false);
 
 	return (
 		<ColumnVisibilityContext.Provider value={[visible, setVisible]}>
-			<DataGrid
-				rows={rows}
-				columns={columns}
-				initialState={{ pagination: { paginationModel } }}
-				pageSizeOptions={[5, 10]}
-				checkboxSelection
-				sx={{ border: 0, flexGrow: 1 }}
-				hideFooter
-			/>
+			<ToggleNameContext.Provider value={[toggleName, setToggleName]}>
+				<DataGrid
+					rows={rows}
+					columns={columns(toggleName)}
+					initialState={{ pagination: { paginationModel } }}
+					pageSizeOptions={[5, 10]}
+					checkboxSelection
+					sx={tableSx}
+					hideFooter
+					processRowUpdate={(updatedRow, originalRow) => {
+						if (!updatedRow.name?.trim()) return originalRow;
+						if (!updatedRow.group?.trim()) return originalRow;
+						updatedRow.name = updatedRow.name.trim();
+						updatedRow.group = updatedRow.group.trim();
+						return updatedRow;
+					}}
+				/>
+			</ToggleNameContext.Provider>
 		</ColumnVisibilityContext.Provider>
 	);
 };

@@ -1,8 +1,8 @@
 import { TextField } from '@mui/material';
-import useSearch from '../lib/filterStore';
+import useSearch from '../model/filterStore';
 
 const AcountSearch = () => {
-	const setEmail = useSearch((state) => state.setEmail);
+	const setEmail = useSearch.use.setEmail();
 
 	return (
 		<TextField

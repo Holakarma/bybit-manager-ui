@@ -11,7 +11,13 @@ const MarkList = ({ marks }) => {
 			paddingBlock={2}
 		>
 			{marks.map((mark, i) => (
-				<Tag key={i}>{mark}</Tag>
+				<Tag
+					key={i}
+					status={mark.status}
+					textTransform="uppercase"
+				>
+					{mark.name}
+				</Tag>
 			))}
 		</Stack>
 	);
