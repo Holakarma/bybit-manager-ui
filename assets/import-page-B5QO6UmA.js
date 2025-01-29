@@ -1,1 +1,0 @@
-import{j as r,S as e,T as s,P as a,B as o}from"./index-ED88_vhy.js";const p=()=>r.jsxs(e,{gap:4,flexGrow:1,children:[r.jsx(s,{variant:"H3",children:"Import"}),r.jsx(a,{sx:{flexGrow:1},children:r.jsx(o,{p:3,children:"Import accounts feature will be here soon..."})})]});export{p as default};
