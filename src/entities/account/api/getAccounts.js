@@ -1,10 +1,17 @@
 import { Api, ENDPOINTS } from 'shared/api';
 
-const getAccounts = () => {
+const getAccounts = (group) => {
 	const api = new Api();
 
 	return new Promise((resolve, reject) => {
-		api.Post(ENDPOINTS.accounts)
+		api.Post(
+			ENDPOINTS.accounts,
+			group
+				? {
+						groups: [group],
+					}
+				: undefined,
+		)
 			.then((result) => {
 				resolve(result);
 			})

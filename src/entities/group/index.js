@@ -1,1 +1,1 @@
-export { default as GroupSelect } from './ui/GroupSelect';
+export { default as useGetGroupsQuery } from './hooks/useGetGroupsQuery';

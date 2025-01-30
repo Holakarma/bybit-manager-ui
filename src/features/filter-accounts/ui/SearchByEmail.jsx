@@ -1,8 +1,8 @@
 import { TextField } from '@mui/material';
-import useSearch from '../model/filterStore';
+import { useFilter } from '..';
 
-const AcountSearch = () => {
-	const setEmail = useSearch.use.setEmail();
+const SearchByEmail = () => {
+	const setEmail = useFilter.use.setEmail();
 
 	return (
 		<TextField
@@ -14,4 +14,4 @@ const AcountSearch = () => {
 		/>
 	);
 };
-export default AcountSearch;
+export default SearchByEmail;

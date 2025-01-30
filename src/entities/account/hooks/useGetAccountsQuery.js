@@ -1,10 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import getAccounts from '../api/getAccounts';
 
-const useGetAccountsQuery = () =>
+const useGetAccountsQuery = (group) =>
 	useQuery({
-		queryFn: getAccounts,
+		queryFn: () =>
+			new Promise((resolve, reject) =>
+				getAccounts(group).then(resolve).catch(reject),
+			),
 		queryKey: ['accounts'],
+		// enabled: Boolean(group),
 		retry: false,
 	});
 

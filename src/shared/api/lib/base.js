@@ -5,9 +5,7 @@ class Api {
 		new Promise((resolve, reject) =>
 			axios
 				.get(url, {
-					headers: {
-						...headers,
-					},
+					headers,
 					params,
 				})
 				.then((response) => {
@@ -21,11 +19,19 @@ class Api {
 	Post = (url, params, headers) =>
 		new Promise((resolve, reject) =>
 			axios
-				.post(url, params, {
-					headers: {
-						...headers,
-					},
+				.post(url, params, headers)
+				.then((response) => {
+					return resolve(response.data);
 				})
+				.catch((error) => {
+					return reject(error);
+				}),
+		);
+
+	Patch = (url, params, headers) =>
+		new Promise((resolve, reject) =>
+			axios
+				.patch(url, params, headers)
 				.then((response) => {
 					return resolve(response.data);
 				})

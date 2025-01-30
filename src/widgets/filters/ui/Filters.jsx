@@ -1,7 +1,6 @@
 import { Grid2, Stack } from '@mui/material';
-import { AcountSearch } from 'entities/account';
-import { GroupSelect } from 'entities/group';
-import { LoginButton, ActionButton } from 'features/actions';
+import { ActionButton, LoginButton } from 'features/actions';
+import { GroupSelect, SearchByEmail } from 'features/filter-accounts';
 
 const Filters = () => {
 	return (
@@ -15,7 +14,7 @@ const Filters = () => {
 				<GroupSelect />
 			</Grid2>
 			<Grid2 size={3}>
-				<AcountSearch />
+				<SearchByEmail />
 			</Grid2>
 
 			<Grid2 size={1}>

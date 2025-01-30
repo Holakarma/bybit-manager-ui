@@ -1,6 +1,6 @@
-import { useContext } from 'react';
-import ColumnVisibilityContext from '../model/visibilityContext';
 import { IconButton, Stack } from '@mui/material';
+import { ColumnVisibilityContext } from 'entities/account';
+import { useContext } from 'react';
 import { EyeIcon } from 'shared/assets/icons/eye';
 import { HiddenEyeIcon } from 'shared/assets/icons/hidden-eye';
 

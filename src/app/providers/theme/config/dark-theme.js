@@ -1,6 +1,6 @@
 import { createTheme } from '@mui/material';
-import typography, { mapping } from './typography';
 import darkPalette from './dark-palette';
+import typography, { mapping } from './typography';
 
 const componentsStyles = {
 	MuiTypography: {
@@ -32,6 +32,16 @@ const componentsStyles = {
 				'& .MuiDataGrid-container--top  [role="row"]': {
 					background: 'none',
 				},
+			},
+		},
+	},
+	MuiPopper: {
+		styleOverrides: {
+			root: {
+				'& .MuiDataGrid-columnsManagementFooter .MuiFormControlLabel-root.MuiFormControlLabel-labelPlacementEnd':
+					{
+						display: 'none',
+					},
 			},
 		},
 	},

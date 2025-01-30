@@ -1,4 +1,4 @@
-const marks = {
+const MARKS = {
 	can_participate_demo_trading_tournament: 'dtt',
 	can_participate_tokensplash: 'ts',
 	can_participate_airdrophunt: 'ah',
@@ -9,7 +9,7 @@ const marks = {
 const getMarksArray = (account) => {
 	let result = [];
 
-	for (var [key, val] of Object.entries(marks)) {
+	for (var [key, val] of Object.entries(MARKS)) {
 		if (account[key]) {
 			result.push({ name: val, status: 'success' });
 		} else if (account[key] === false) {

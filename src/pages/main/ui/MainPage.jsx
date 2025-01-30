@@ -1,5 +1,5 @@
 import { Paper, Stack, Typography, useTheme } from '@mui/material';
-import { Accounts } from 'entities/account';
+import { Accounts } from 'widgets/accounts-table';
 import { Filters } from 'widgets/filters';
 
 const MainPage = () => {
