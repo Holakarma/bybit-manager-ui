@@ -65,6 +65,9 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 					queryClient.invalidateQueries({
 						queryKey: ['accounts'],
 					});
+					queryClient.invalidateQueries({
+						queryKey: ['groups'],
+					});
 					if (mutation === 'group_name') {
 						addGroup(updatedRow.group_name);
 					}
