@@ -1,4 +1,6 @@
 import { Box, Paper, Stack, Typography } from '@mui/material';
+import { ImportAccountTable } from 'features/import-accounts';
+import { ImportFile } from 'widgets/import-file';
 
 const ImportPage = () => {
 	return (
@@ -6,9 +8,12 @@ const ImportPage = () => {
 			gap={4}
 			flexGrow={1}
 		>
-			<Typography variant="H3">Import</Typography>
+			<Typography variant="H3">Import accounts</Typography>
 			<Paper sx={{ flexGrow: 1 }}>
-				<Box p={3}>Import accounts feature will be here soon...</Box>
+				<Box p={3}>
+					<ImportFile />
+					<ImportAccountTable />
+				</Box>
 			</Paper>
 		</Stack>
 	);

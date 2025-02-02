@@ -4,7 +4,7 @@ const getGroups = () => {
 	const api = new Api();
 
 	return new Promise((resolve, reject) => {
-		api.Get(ENDPOINTS.groups)
+		api.Get({ url: ENDPOINTS.groups })
 			.then((result) => resolve(result))
 			.catch((error) => reject(error));
 	});

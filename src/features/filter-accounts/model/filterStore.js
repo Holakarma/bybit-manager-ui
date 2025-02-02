@@ -3,9 +3,20 @@ import { create } from 'zustand';
 
 const useFilterBase = create((set) => ({
 	email: '',
-	group: '',
+	groups: [],
 	setEmail: (newEmail) => set({ email: newEmail }),
-	setGroup: (newGroup) => set({ group: newGroup }),
+	setGroups: (newGroups) => set({ groups: newGroups }),
+	addGroup: (newGroup) =>
+		set((state) => {
+			if (state.groups.includes(newGroup)) {
+				return state;
+			}
+
+			return {
+				...state,
+				groups: [...state.groups, newGroup],
+			};
+		}),
 }));
 
 const useFilter = createSelectors(useFilterBase);

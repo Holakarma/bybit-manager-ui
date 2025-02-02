@@ -3,26 +3,32 @@ import { useGetGroupsQuery } from 'entities/group';
 import useFilter from '../model/filterStore';
 
 const GroupSelect = ({ ...props }) => {
-	const { data: groups, isLoading, error } = useGetGroupsQuery();
-	const setGroup = useFilter.use.setGroup();
+	const { data: availableGroups, isLoading, error } = useGetGroupsQuery();
+
+	const setGroups = useFilter.use.setGroups();
+	const groups = useFilter.use.groups();
 
 	return (
 		<Autocomplete
 			{...props}
-			onChange={(_e, value) => setGroup(value?.group || '')}
+			multiple
+			onChange={(_e, value) =>
+				setGroups(value.map((group) => group.group))
+			}
 			disablePortal
-			options={groups || []}
+			value={groups.map((group) => ({ group })) || []}
+			options={availableGroups || []}
 			fullWidth
 			size="small"
 			disabled={error}
 			color="error"
 			loading={isLoading}
-			getOptionLabel={(option) => option.group}
+			getOptionLabel={(option) => option.group || 'No group'}
 			noOptionsText="No groups"
 			renderInput={(params) => (
 				<TextField
 					{...params}
-					label={error ? 'Error' : 'Group'}
+					label={error ? 'Error' : 'Groups'}
 					slotProps={{
 						input: {
 							...params.InputProps,

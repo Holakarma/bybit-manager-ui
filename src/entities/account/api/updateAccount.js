@@ -29,12 +29,13 @@ const updateAccount = (account) => {
 	const { id, ...updatingFields } = account;
 
 	return new Promise((resolve, reject) => {
-		api.Patch(
-			ENDPOINTS.update_account + '?database_id=' + id,
-			updatingFields,
-		)
-			.then((result) => resolve(result))
-			.catch((error) => reject(error));
+		api.Patch({
+			url: ENDPOINTS.update_account,
+			query: { database_id: id },
+			params: updatingFields,
+		})
+			.then(resolve)
+			.catch(reject);
 	});
 };
 

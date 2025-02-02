@@ -97,15 +97,15 @@ const typography = {
 		fontWeight: 500,
 	},
 	Caption: {
-		fontSize: '0,685rem',
+		fontSize: '0.685rem',
 		fontWeight: 400,
 	},
 	CaptionB: {
-		fontSize: '0,685rem',
+		fontSize: '0.685rem',
 		fontWeight: 700,
 	},
 	CaptionM: {
-		fontSize: '0,685rem',
+		fontSize: '0.685rem',
 		fontWeight: 500,
 	},
 };

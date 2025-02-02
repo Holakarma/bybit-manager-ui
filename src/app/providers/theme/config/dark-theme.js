@@ -16,6 +16,14 @@ const componentsStyles = {
 		},
 		styleOverrides: {
 			root: {
+				variants: [
+					{
+						props: { variant: 'unstyled' },
+						style: {
+							padding: 0,
+						},
+					},
+				],
 				padding: '8px 16px',
 				textTransform: 'none',
 				borderRadius: 8,
@@ -66,5 +74,9 @@ const darkTheme = createTheme({
 		...componentsStyles,
 	},
 });
+
+// Условное применение disableRipple через тему
+// darkTheme.components.MuiButton.defaultProps.disableRipple = (props) =>
+// props.variant === 'unstyled';
 
 export default darkTheme;
