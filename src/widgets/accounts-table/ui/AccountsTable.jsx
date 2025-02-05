@@ -33,7 +33,18 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 		columns().reduce((acc, col) => ({ ...acc, [col.field]: true }), {}),
 	);
 
-	const [toggleName, setToggleName] = useState(false);
+	const getInitialToggleName = () => {
+		const item = localStorage.getItem('toggleName');
+		if (item) {
+			try {
+				return JSON.parse(item);
+			} catch (e) {
+				console.error('Error while getting toggleName: ', e);
+			}
+		}
+		return false;
+	};
+	const [toggleName, setToggleName] = useState(getInitialToggleName());
 
 	const computeMutation = (newRow, oldRow) => {
 		if (newRow.name !== oldRow.name) {

@@ -12,7 +12,9 @@ const columns = (toggleName = false) => [
 	{
 		field: toggleName ? 'name' : 'id',
 		headerName: toggleName ? 'Name' : 'ID',
-		width: 130,
+		minWidth: 130,
+		display: 'flex',
+		flex: 1,
 		editable: toggleName,
 		renderHeader: (params) => <ToggleNameHeader params={params} />,
 		renderCell: (params) => <NameCell params={params} />,
