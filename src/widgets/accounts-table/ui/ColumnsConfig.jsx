@@ -37,6 +37,7 @@ const columns = (toggleName = false) => [
 	{
 		field: 'email',
 		headerName: 'Email',
+		hideable: false,
 		width: 240,
 		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
 		renderCell: (params) => (

@@ -99,7 +99,6 @@ const Accounts = () => {
 					setOpen(true);
 				}}
 			/>
-			;
 		</>
 	);
 };

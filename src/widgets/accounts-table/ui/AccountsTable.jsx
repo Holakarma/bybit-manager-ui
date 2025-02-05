@@ -81,6 +81,22 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 		});
 	};
 
+	const setColumnVisibilityModel = (newVisibility) => {
+		localStorage.setItem('visibilityModel', JSON.stringify(newVisibility));
+	};
+
+	const getVisibilityModel = () => {
+		const model = localStorage.getItem('visibilityModel');
+		if (model) {
+			try {
+				return JSON.parse(model);
+			} catch (e) {
+				console.error('Error while getting visibilityModel: ', e);
+			}
+		}
+		return null;
+	};
+
 	return (
 		<>
 			<ColumnVisibilityContext.Provider value={[visible, setVisible]}>
@@ -88,7 +104,12 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 					<DataGrid
 						rows={rows}
 						columns={columns(toggleName)}
-						initialState={{ pagination: { paginationModel } }}
+						initialState={{
+							pagination: { paginationModel },
+							columns: {
+								columnVisibilityModel: getVisibilityModel(),
+							},
+						}}
 						pageSizeOptions={[5, 10]}
 						checkboxSelection
 						sx={tableSx}
@@ -96,6 +117,9 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 						disableRowSelectionOnClick
 						processRowUpdate={processRowUpdate}
 						onCellEditStop={(params) => setReason(params.reason)}
+						onColumnVisibilityModelChange={(newModel) =>
+							setColumnVisibilityModel(newModel)
+						}
 					/>
 				</ToggleNameContext.Provider>
 			</ColumnVisibilityContext.Provider>
