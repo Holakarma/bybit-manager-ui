@@ -4,12 +4,12 @@ import TableContainer from '@mui/material/TableContainer';
 import useAccounts from '../model/accountsToImportStore';
 import AccountHeader from './AccountHeader';
 import AccountRow from './AccountRow';
-import EmptyAccountRow from './EmptyAccountRow';
 
 const ImportAccountTable = () => {
 	const accounts = useAccounts.use.accounts();
+	const editAccount = useAccounts.use.editAccount();
 
-	console.log(accounts);
+	// @TODO: add virtualization
 	return (
 		<TableContainer>
 			<Table sx={{ minWidth: 650 }}>
@@ -17,22 +17,13 @@ const ImportAccountTable = () => {
 				<TableBody>
 					{accounts.map((account, i) => (
 						<AccountRow
-							key={i}
+							key={account.id}
 							account={account}
-							sx={{
-								'& td, & th': {
-									border: 0,
-								},
-							}}
+							onEdit={(updatedAccount) =>
+								editAccount(i, updatedAccount)
+							}
 						/>
 					))}
-					<EmptyAccountRow
-						sx={{
-							'& td, & th': {
-								border: 0,
-							},
-						}}
-					/>
 				</TableBody>
 			</Table>
 		</TableContainer>

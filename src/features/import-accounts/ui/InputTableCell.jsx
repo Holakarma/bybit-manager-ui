@@ -1,6 +1,6 @@
 import { OutlinedInput, useTheme } from '@mui/material';
 
-const InputTableCell = ({ ...props }) => {
+const InputTableCell = ({ inputProps, ...props }) => {
 	const theme = useTheme();
 	return (
 		<OutlinedInput
@@ -13,6 +13,7 @@ const InputTableCell = ({ ...props }) => {
 					letterSpacing: theme.typography.Body.letterSpacing,
 					lineHeight: theme.typography.Body.lineHeight,
 				},
+				...inputProps,
 			}}
 			sx={{
 				'&::placeholder': {

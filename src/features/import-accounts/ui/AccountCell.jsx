@@ -9,7 +9,7 @@ const AccountCell = ({ inputProps, ...props }) => {
 			sx={{ padding: '12px 4px 0' }}
 			{...props}
 		>
-			<InputTableCell {...inputProps} />
+			<InputTableCell inputProps={inputProps} />
 		</TableCell>
 	);
 };

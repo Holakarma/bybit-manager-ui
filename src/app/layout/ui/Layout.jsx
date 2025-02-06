@@ -24,8 +24,9 @@ const Layout = () => {
 				overflow="hidden"
 				sx={{
 					backgroundColor: 'background.default',
-					flexGrow: 1,
 				}}
+				flexGrow={1}
+				maxHeight="100vh"
 			>
 				<Suspense fallback={<FallbackComponent />}>
 					<Outlet />

@@ -7,10 +7,9 @@ import {
 	useTheme,
 } from '@mui/material';
 import { useState } from 'react';
-import templateImportAccount from 'shared/assets/templates/template-import-accounts';
 import { isExcelFile } from 'shared/lib/is-excel-file';
 import { VisuallyHiddenInput } from 'shared/ui/visually-hidden-input';
-import * as XLSX from 'xlsx';
+import downloadTemplate from '../lib/downloadTemplate';
 
 const ImportFile = ({ ...props }) => {
 	const { palette } = useTheme();
@@ -56,7 +55,6 @@ const ImportFile = ({ ...props }) => {
 		}
 	};
 
-	console.log(file);
 	const [open, setOpen] = useState(false);
 	const handleClose = (event, reason) => {
 		if (reason === 'clickaway') {
@@ -64,26 +62,6 @@ const ImportFile = ({ ...props }) => {
 		}
 
 		setOpen(false);
-	};
-
-	const downloadTemplate = () => {
-		// Создаем рабочую книгу и лист
-		const worksheet = XLSX.utils.aoa_to_sheet(templateImportAccount);
-
-		// Создаем рабочую книгу
-		const workbook = XLSX.utils.book_new();
-
-		// Генерируем имя листа на основе текущей даты
-		const now = new Date();
-		const formattedDate = `date_${String(now.getDate()).padStart(2, '0')}_${String(now.getMonth() + 1).padStart(2, '0')}_${now.getFullYear()}`;
-		const formattedTime = `time_${String(now.getHours()).padStart(2, '0')}_${String(now.getMinutes()).padStart(2, '0')}_${String(now.getSeconds()).padStart(2, '0')}`;
-		const sheetName = `${formattedDate}.${formattedTime}`;
-
-		// Добавляем лист в рабочую книгу с сгенерированным именем
-		XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-
-		// Экспортируем в Excel
-		XLSX.writeFile(workbook, 'template.xlsx');
 	};
 
 	return (
@@ -140,23 +118,19 @@ const ImportFile = ({ ...props }) => {
 						</Stack>
 					</Stack>
 				</Button>
+
 				<Button
 					variant="unstyled"
-					sx={{ '&:hover': { opacity: 0.8 } }}
 					color={palette.textPrimary.default}
+					sx={{ '&:hover': { opacity: 0.8 } }}
+					onClick={downloadTemplate}
 				>
-					<Button
-						variant="unstyled"
-						sx={{ '&:hover': { opacity: 0.8 } }}
-						onClick={downloadTemplate}
+					<Typography
+						variant="Caption"
+						sx={{ textDecoration: 'underline' }}
 					>
-						<Typography
-							variant="Caption"
-							sx={{ textDecoration: 'underline' }}
-						>
-							Download the template file
-						</Typography>
-					</Button>
+						Download the template file
+					</Typography>
 				</Button>
 			</Stack>
 			<Snackbar

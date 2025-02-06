@@ -7,9 +7,10 @@ const ImportPage = () => {
 		<Stack
 			gap={4}
 			flexGrow={1}
+			maxHeight="100%"
 		>
 			<Typography variant="H3">Import accounts</Typography>
-			<Paper sx={{ flexGrow: 1 }}>
+			<Paper sx={{ flexGrow: 1, overflow: 'auto' }}>
 				<Box p={3}>
 					<ImportFile />
 					<ImportAccountTable />
