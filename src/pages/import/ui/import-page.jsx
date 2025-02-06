@@ -13,7 +13,7 @@ const ImportPage = () => {
 			<Paper sx={{ flexGrow: 1, overflow: 'auto' }}>
 				<Box p={3}>
 					<ImportFile />
-					<ImportAccountTable />
+					<ImportAccountTable sx={{ marginTop: 2 }} />
 				</Box>
 			</Paper>
 		</Stack>

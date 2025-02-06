@@ -23,15 +23,15 @@ const createEmptyObject = () => ({
 
 const useAccountsBase = create((set) => ({
 	accounts: [
-		...Array.from({ length: 20 }, () => ({
-			id: uniqueId(),
-			bybit_email: 'first_acc@firstmail.com',
-			imap_password: '12dsSq3fh&k',
-			imap_address: '',
-			bybit_password: '',
-			bybit_proxy: '',
-			email_proxy: '',
-		})),
+		// ...Array.from({ length: 20 }, () => ({
+		// 	id: uniqueId(),
+		// 	bybit_email: 'first_acc@firstmail.com',
+		// 	imap_password: '12dsSq3fh&k',
+		// 	imap_address: '',
+		// 	bybit_password: '',
+		// 	bybit_proxy: '',
+		// 	email_proxy: '',
+		// })),
 		createEmptyObject(),
 	],
 	setAccounts: (newAccounts) => set({ accounts: newAccounts }),

@@ -2,7 +2,7 @@ import { TableRow } from '@mui/material';
 import { useState } from 'react';
 import AccountCell from './AccountCell';
 
-const AccountRow = ({ account, onEdit }) => {
+const AccountRow = ({ account, onEdit, sx, ...props }) => {
 	const [tempAccount, setTempAccount] = useState(account);
 
 	const handleChange = (e) => {
@@ -19,10 +19,12 @@ const AccountRow = ({ account, onEdit }) => {
 
 	return (
 		<TableRow
+			{...props}
 			sx={{
 				'& td, & th': {
 					border: 0,
 				},
+				...sx,
 			}}
 		>
 			<AccountCell
