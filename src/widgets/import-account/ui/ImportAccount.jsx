@@ -10,8 +10,9 @@ import { useState } from 'react';
 import { isExcelFile } from 'shared/lib/is-excel-file';
 import { VisuallyHiddenInput } from 'shared/ui/visually-hidden-input';
 import downloadTemplate from '../lib/downloadTemplate';
+import UploadAccounts from './UploadAccounts';
 
-const ImportFile = ({ ...props }) => {
+const ImportAccount = ({ ...props }) => {
 	const { palette } = useTheme();
 	const [isDragging, setIsDragging] = useState(false);
 	const [file, setFile] = useState(null);
@@ -75,6 +76,7 @@ const ImportFile = ({ ...props }) => {
 					component="label"
 					variant="unstyled"
 					sx={{ width: '100%' }}
+					disableRipple={Boolean(file)}
 				>
 					<VisuallyHiddenInput
 						accept=".xlsx .xls"
@@ -99,9 +101,12 @@ const ImportFile = ({ ...props }) => {
 					>
 						<Stack alignItems="center">
 							{file ? (
-								<Typography variant="BodyM">
-									{file.name}
-								</Typography>
+								<Stack>
+									<Typography variant="BodyM">
+										{file.name}
+									</Typography>
+									<UploadAccounts file={file} />
+								</Stack>
 							) : (
 								<>
 									<Typography variant="BodyM">
@@ -151,4 +156,4 @@ const ImportFile = ({ ...props }) => {
 	);
 };
 
-export default ImportFile;
+export default ImportAccount;

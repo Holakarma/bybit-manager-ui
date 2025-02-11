@@ -1,6 +1,6 @@
 import { Providers } from './providers';
-import './styles/App.scss';
 import { Router } from './router';
+import './styles/App.scss';
 
 function App() {
 	return (

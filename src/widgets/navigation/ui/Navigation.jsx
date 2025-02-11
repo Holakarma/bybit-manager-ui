@@ -60,7 +60,7 @@ const Navigation = () => {
 										: ''
 								}
 							>
-								All accounts
+								Accounts
 							</Typography>
 						</Button>
 					</Link>

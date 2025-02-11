@@ -1,5 +1,6 @@
 import { createSelectors } from 'shared/zustand';
 import { create } from 'zustand';
+import isAccountEmpty from '../lib/isAccountEmpty';
 
 const accountObj = {
 	bybit_email: '',
@@ -10,10 +11,6 @@ const accountObj = {
 	email_proxy: '',
 };
 
-// eslint-disable-next-line no-unused-vars
-const isAccountEmpty = ({ id, ...account }) =>
-	Object.values(account).every((value) => value === '');
-
 const uniqueId = () => `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
 const createEmptyObject = () => ({
@@ -21,9 +18,15 @@ const createEmptyObject = () => ({
 	id: uniqueId(),
 });
 
+const createAccountObject = (account) => ({
+	...accountObj,
+	...account,
+	id: uniqueId(),
+});
+
 const useAccountsBase = create((set) => ({
 	accounts: [
-		// ...Array.from({ length: 20 }, () => ({
+		// ...Array.from({ length: 100 }, () => ({
 		// 	id: uniqueId(),
 		// 	bybit_email: 'first_acc@firstmail.com',
 		// 	imap_password: '12dsSq3fh&k',
@@ -34,12 +37,20 @@ const useAccountsBase = create((set) => ({
 		// })),
 		createEmptyObject(),
 	],
-	setAccounts: (newAccounts) => set({ accounts: newAccounts }),
+	setAccounts: (newAccounts) =>
+		set({
+			accounts: [
+				...newAccounts.map((newAccount) =>
+					createAccountObject(newAccount),
+				),
+				createEmptyObject(),
+			],
+		}),
 	addAccount: (newAccount) =>
 		set((state) => ({
 			accounts: [
 				...state.accounts.slice(0, -1),
-				newAccount,
+				createAccountObject(newAccount),
 				createEmptyObject(),
 			],
 		})),
