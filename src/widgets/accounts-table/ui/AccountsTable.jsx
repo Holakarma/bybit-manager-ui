@@ -39,7 +39,7 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 			try {
 				return JSON.parse(item);
 			} catch (e) {
-				console.error('Error while getting toggleName: ', e);
+				console.error('Error while getting toggle name: ', e);
 			}
 		}
 		return false;
@@ -59,13 +59,14 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 	const [reason, setReason] = useState(null);
 	const processRowUpdate = (updatedRow, originalRow) => {
 		if (reason !== 'enterKeyDown') return originalRow;
+
 		const mutation = computeMutation(updatedRow, originalRow);
 		if (!mutation) return originalRow;
 
 		const row = {
 			id: originalRow.id,
-			name: updatedRow.name,
-			group_name: updatedRow.group_name,
+			name: updatedRow.name || '',
+			group_name: updatedRow.group_name || '',
 		};
 
 		return new Promise((resolve, _reject) => {
@@ -80,7 +81,7 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 						queryKey: ['groups'],
 					});
 					if (mutation === 'group_name') {
-						addGroup(updatedRow.group_name);
+						addGroup(updatedRow.group_name || '');
 					}
 					resolve(updatedRow);
 				},
@@ -102,7 +103,7 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 			try {
 				return JSON.parse(model);
 			} catch (e) {
-				console.error('Error while getting visibilityModel: ', e);
+				console.error('Error while getting visibility model: ', e);
 			}
 		}
 		return null;

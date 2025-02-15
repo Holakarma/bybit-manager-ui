@@ -14,7 +14,7 @@ const UploadAccounts = ({ file }) => {
 
 	const handleError = (msg) => {
 		enqueueSnackbar(msg, {
-			variant: 'error',
+			variant: 'warning',
 		});
 	};
 

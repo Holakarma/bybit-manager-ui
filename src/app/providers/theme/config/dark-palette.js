@@ -30,6 +30,7 @@ const darkPalette = {
 		main: '#FFB11A',
 		light: '#FCB62B',
 		dark: '#E9A010',
+		contrastText: '#000000de',
 	},
 	info: {
 		main: '#6C8BB8',

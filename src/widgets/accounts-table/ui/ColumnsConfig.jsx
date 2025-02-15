@@ -3,6 +3,7 @@ import { AccountWarnings, ColumnVisibilityContext } from 'entities/account';
 import { MarkList } from 'entities/mark';
 import { formatDate, timeDifference } from 'shared/lib/formatDate';
 import { obfuscateEmail } from 'shared/lib/obfuscate-email';
+import GroupEditCell from './table-parts/GroupEditCell';
 import HidingCell from './table-parts/HidingCell';
 import NameCell from './table-parts/NameCell';
 import ToggleNameHeader from './table-parts/ToggleNameHeader';
@@ -35,6 +36,7 @@ const columns = (toggleName = false) => [
 					</Typography>
 				</Stack>
 			),
+		renderEditCell: (params) => <GroupEditCell params={params} />,
 	},
 	{
 		field: 'email',

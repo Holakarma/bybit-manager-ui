@@ -1,1 +1,1 @@
-export { default as ImportAccount } from './ui/ImportAccount';
+export { default as ImportFile } from './ui/ImportFile';

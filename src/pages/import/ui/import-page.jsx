@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ImportAccountForm, useAccounts } from 'features/import-accounts';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
+import { ERRORS } from 'shared/api';
 
 const style = {
 	position: 'absolute',
@@ -68,6 +69,9 @@ const ImportPage = () => {
 			<Modal
 				open={open}
 				onClose={handleClose}
+				slotProps={{
+					root: { sx: { '& .MuiBox-root ': { border: 'none' } } },
+				}}
 			>
 				<Box sx={style}>
 					<Typography variant="H6">
@@ -77,9 +81,7 @@ const ImportPage = () => {
 					<Typography sx={{ mt: 2 }}>
 						{!error
 							? 'Cannot reach the server. It looks like you forgot to turn on the API server.'
-							: Array.isArray(error.data.detail)
-								? error.data.detail[0].msg
-								: error.data.detail}
+							: ERRORS[error.data.error] || error.data.detail}
 					</Typography>
 				</Box>
 			</Modal>

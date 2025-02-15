@@ -1,11 +1,12 @@
 import { Paper, Stack } from '@mui/material';
-import { ImportAccount } from 'widgets/import-account';
+import { ImportFile } from 'widgets/import-account';
 import useImportAccountsMutation from '../hooks/useImportAccountsMutation';
 import ImportAccountTable from './ImportAccountTable';
 import ImportAccountsButton from './ImportAccountsButton';
 
 const ImportAccountForm = ({ onSuccess, onError }) => {
 	const { mutate: importAccounts, isPending } = useImportAccountsMutation();
+
 	return (
 		<Paper
 			sx={{ flexGrow: 1, overflow: 'auto' }}
@@ -23,7 +24,7 @@ const ImportAccountForm = ({ onSuccess, onError }) => {
 				p={3}
 				height="100%"
 			>
-				<ImportAccount />
+				<ImportFile />
 				<ImportAccountTable
 					sx={{ marginTop: 2, flexGrow: 1, overflow: 'auto' }}
 				/>

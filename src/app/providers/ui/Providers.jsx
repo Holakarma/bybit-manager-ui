@@ -1,10 +1,13 @@
+import Notistack from '../notistack/Notistack';
 import QueryProvider from '../query/ui/QueryClientProvier';
 import Theme from '../theme/ui/Theme';
 
 const Providers = ({ children }) => {
 	return (
 		<Theme>
-			<QueryProvider>{children}</QueryProvider>
+			<Notistack>
+				<QueryProvider>{children}</QueryProvider>
+			</Notistack>
 		</Theme>
 	);
 };

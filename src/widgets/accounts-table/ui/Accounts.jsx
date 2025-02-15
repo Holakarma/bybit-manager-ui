@@ -1,32 +1,14 @@
-import {
-	Alert,
-	CircularProgress,
-	Snackbar,
-	Stack,
-	Typography,
-} from '@mui/material';
+import { CircularProgress, Stack, Typography } from '@mui/material';
 import { transferAccount, useGetAccountsQuery } from 'entities/account';
 import { useFilter } from 'features/filter-accounts';
-import { useMemo, useState } from 'react';
+import { useSnackbar } from 'notistack';
+import { useMemo } from 'react';
 import AccountsTable from './AccountsTable';
 
 const Accounts = () => {
 	const groups = useFilter.use.groups();
 	const { data: accounts, error, isLoading } = useGetAccountsQuery(groups);
-
-	const [snackbar, setSnackbar] = useState({
-		message: 'Some Error occured. Try again',
-		severity: 'error',
-	});
-
-	const [open, setOpen] = useState(false);
-	const handleClose = (_event, reason) => {
-		if (reason === 'clickaway') {
-			return;
-		}
-
-		setOpen(false);
-	};
+	const { enqueueSnackbar } = useSnackbar();
 
 	const rows = useMemo(() => {
 		if (accounts) {
@@ -68,38 +50,19 @@ const Accounts = () => {
 	}
 
 	return (
-		<>
-			<Snackbar
-				open={open}
-				autoHideDuration={4000}
-				onClose={handleClose}
-			>
-				<Alert
-					severity={snackbar.severity}
-					vaАriant="filled"
-					sx={{ wisth: '100%' }}
-				>
-					{snackbar.message}
-				</Alert>
-			</Snackbar>
-			<AccountsTable
-				initialRows={rows}
-				onSuccess={() => {
-					setSnackbar({
-						message: `Row updated!`,
-						severity: 'success',
-					});
-					setOpen(true);
-				}}
-				onError={(e) => {
-					setSnackbar({
-						message: `Some error occured: ${e.message}`,
-						severity: 'error',
-					});
-					setOpen(true);
-				}}
-			/>
-		</>
+		<AccountsTable
+			initialRows={rows}
+			onSuccess={() => {
+				enqueueSnackbar('Row updated', {
+					variant: 'success',
+				});
+			}}
+			onError={(_e) => {
+				enqueueSnackbar(`Some error occured`, {
+					variant: 'error',
+				});
+			}}
+		/>
 	);
 };
 
