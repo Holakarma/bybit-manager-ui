@@ -11,8 +11,15 @@ const readExcelSheets = (file) =>
 			for (var sheetName in workbook.Sheets) {
 				const worksheet = workbook.Sheets[sheetName];
 
-				const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+				let jsonData = XLSX.utils.sheet_to_json(worksheet, {
 					header: 1,
+				});
+
+				jsonData = jsonData.filter((row) => {
+					return row.some(
+						(cell) =>
+							cell !== undefined && cell !== null && cell !== '',
+					);
 				});
 
 				result[sheetName] = jsonData;

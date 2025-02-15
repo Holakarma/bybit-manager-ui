@@ -39,8 +39,46 @@ const AccountRow = ({ account, onEdit, sx, ...props }) => {
 		>
 			<AccountCell
 				inputProps={{
+					name: `accounts[${account.id}][note]`,
+					value: tempAccount.note,
+					placeholder: 'Note',
+					onChange: handleChange,
+					onBlur: handleBlur,
+				}}
+			/>
+			<AccountCell
+				inputProps={{
+					required,
+					name: `accounts[${account.id}][group]`,
+					value: tempAccount.group,
+					placeholder: 'Group name',
+					onChange: handleChange,
+					onBlur: handleBlur,
+				}}
+			/>
+			<AccountCell
+				inputProps={{
+					name: `accounts[${account.id}][name]`,
+					value: tempAccount.name,
+					placeholder: 'Account name',
+					onChange: handleChange,
+					onBlur: handleBlur,
+				}}
+			/>
+			<AccountCell
+				inputProps={{
+					name: `accounts[${account.id}][ref_code]`,
+					value: tempAccount.ref_code,
+					placeholder: "Inviter's code",
+					onChange: handleChange,
+					onBlur: handleBlur,
+				}}
+			/>
+			<AccountCell
+				inputProps={{
 					required,
 					name: `accounts[${account.id}][bybit_email]`,
+					type: 'email',
 					value: tempAccount.bybit_email,
 					placeholder: 'example@gmail.com',
 					onChange: handleChange,
@@ -49,7 +87,16 @@ const AccountRow = ({ account, onEdit, sx, ...props }) => {
 			/>
 			<AccountCell
 				inputProps={{
-					required,
+					name: `accounts[${account.id}][imap_address]`,
+					value: tempAccount.imap_address,
+					type: 'email',
+					placeholder: 'IMAP address',
+					onChange: handleChange,
+					onBlur: handleBlur,
+				}}
+			/>
+			<AccountCell
+				inputProps={{
 					name: `accounts[${account.id}][imap_password]`,
 					value: tempAccount.imap_password,
 					placeholder: 'IMAP password',
@@ -59,18 +106,18 @@ const AccountRow = ({ account, onEdit, sx, ...props }) => {
 			/>
 			<AccountCell
 				inputProps={{
-					name: `accounts[${account.id}][imap_address]`,
-					value: tempAccount.imap_address,
-					placeholder: 'IMAP address',
+					name: `accounts[${account.id}][bybit_password]`,
+					value: tempAccount.bybit_password,
+					placeholder: 'Bybit password',
 					onChange: handleChange,
 					onBlur: handleBlur,
 				}}
 			/>
 			<AccountCell
 				inputProps={{
-					name: `accounts[${account.id}][bybit_password]`,
-					value: tempAccount.bybit_password,
-					placeholder: 'Bybit password',
+					name: `accounts[${account.id}][bybit_totp]`,
+					value: tempAccount.bybit_totp,
+					placeholder: 'TOTP secret',
 					onChange: handleChange,
 					onBlur: handleBlur,
 				}}
@@ -91,6 +138,31 @@ const AccountRow = ({ account, onEdit, sx, ...props }) => {
 					placeholder: 'Email proxy',
 					onChange: handleChange,
 					onBlur: handleBlur,
+				}}
+			/>
+			<AccountCell
+				inputProps={{
+					name: `accounts[${account.id}][country_code]`,
+					value: tempAccount.country_code,
+					placeholder: 'Country code',
+					onChange: handleChange,
+					onBlur: handleBlur,
+				}}
+			/>
+			<AccountCell
+				inputProps={{
+					name: `accounts[${account.id}][cookies]`,
+					value: tempAccount.cookies,
+					placeholder: 'Cookies',
+					onChange: handleChange,
+					onBlur: handleBlur,
+				}}
+			/>
+			<AccountCell
+				inputProps={{
+					name: `accounts[${account.id}][id]`,
+					value: tempAccount.id,
+					type: 'hidden',
 				}}
 			/>
 		</TableRow>

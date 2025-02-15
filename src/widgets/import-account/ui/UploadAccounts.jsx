@@ -1,7 +1,8 @@
 import { Button } from '@mui/material';
-import { useAccounts } from 'features/import-accounts';
+import { createAccountObject, useAccounts } from 'features/import-accounts';
 import { useSnackbar } from 'notistack';
 import { readExcelSheets } from 'shared/lib/read-excel-file';
+import AccountExcelDTO from '../model/accountExcelDTO';
 
 const UploadAccounts = ({ file }) => {
 	const { enqueueSnackbar } = useSnackbar();
@@ -17,12 +18,6 @@ const UploadAccounts = ({ file }) => {
 		});
 	};
 
-	const handleSuccess = (msg) => {
-		enqueueSnackbar(msg, {
-			variant: 'success',
-		});
-	};
-
 	const uploadHandler = (sheets) => {
 		for (var [sheetName, sheet] of Object.entries(sheets)) {
 			if (sheet.length < 3) {
@@ -30,25 +25,31 @@ const UploadAccounts = ({ file }) => {
 				continue;
 			}
 
-			sheet.slice(2).forEach((accountData) => {
-				const bybit_email = accountData[4];
+			const headers = sheet[0];
+
+			sheet.slice(2).forEach((rowData) => {
+				const accountData = headers.reduce((acc, header, index) => {
+					acc[header] = rowData[index] || undefined;
+					return acc;
+				}, {});
 
 				if (
 					accounts.find(
-						(account) => account.bybit_email === bybit_email,
+						(account) =>
+							account.bybit_email ===
+							accountData['[email] Address'],
 					)
 				) {
-					handleError(`email ${bybit_email} is already in table`);
+					handleError(
+						`Email ${accountData['[email] Address']} is already in the table`,
+					);
 					return;
 				}
-				const newAccount = {
-					bybit_email: bybit_email,
-					imap_password: accountData[6],
-					imap_address: accountData[5],
-					bybit_password: accountData[7],
-					bybit_proxy: accountData[9],
-					email_proxy: accountData[10],
-				};
+
+				const newAccount = createAccountObject(
+					new AccountExcelDTO(accountData),
+				);
+
 				addAccount(newAccount);
 			});
 		}

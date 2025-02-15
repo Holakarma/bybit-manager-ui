@@ -1,56 +1,89 @@
-import { Paper, Stack, Typography } from '@mui/material';
-import {
-	ImportAccountsButton,
-	ImportAccountTable,
-	useImportAccountsMutation,
-} from 'features/import-accounts';
-import { SnackbarProvider, useSnackbar } from 'notistack';
-import { ImportAccount } from 'widgets/import-account';
+import { Box, Button, Modal, Stack, Typography } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
+import { ImportAccountForm, useAccounts } from 'features/import-accounts';
+import { useSnackbar } from 'notistack';
+import { useState } from 'react';
+
+const style = {
+	position: 'absolute',
+	top: '50%',
+	left: '50%',
+	transform: 'translate(-50%, -50%)',
+	bgcolor: 'background.paper',
+	border: '2px solid #000',
+	boxShadow: 24,
+	p: 4,
+};
 
 const ImportPage = () => {
-	const { mutate: importAccounts } = useImportAccountsMutation();
+	const deleteAccount = useAccounts.use.deleteAccount();
 	const { enqueueSnackbar } = useSnackbar();
+	const [open, setOpen] = useState(false);
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
+	const [account, setAccount] = useState(null);
+	const [error, setError] = useState(null);
+	const queryClient = useQueryClient();
+
+	const handleError = (account, error) => {
+		enqueueSnackbar(`Import ${account.bybit_email} failed`, {
+			variant: 'error',
+
+			action: () => (
+				<Button
+					onClick={() => {
+						handleOpen();
+						setAccount(account);
+						setError(error);
+					}}
+					color="inherit"
+					size="small"
+				>
+					DETAILS
+				</Button>
+			),
+		});
+	};
+
+	const handleSuccess = (account, result) => {
+		enqueueSnackbar(`${result.email.address} successfully imported`, {
+			variant: 'success',
+		});
+		deleteAccount(account.id);
+		queryClient.invalidateQueries({ key: ['accounts'] });
+	};
 
 	return (
-		<SnackbarProvider maxSnack={3}>
-			<Stack
-				gap={4}
-				flexGrow={1}
-				maxHeight="100%"
+		<Stack
+			gap={4}
+			flexGrow={1}
+			maxHeight="100%"
+		>
+			<Typography variant="H3">Import accounts</Typography>
+			<ImportAccountForm
+				onError={handleError}
+				onSuccess={handleSuccess}
+			/>
+
+			<Modal
+				open={open}
+				onClose={handleClose}
 			>
-				<Typography variant="H3">Import accounts</Typography>
-				<Paper
-					sx={{ flexGrow: 1, overflow: 'auto' }}
-					component={'form'}
-					onSubmit={(e) => {
-						e.preventDefault();
-						importAccounts({
-							form: new FormData(e.target),
-							onError: (account) => {
-								console.log(account);
-								enqueueSnackbar(
-									`${account.bybit_email} Failed`,
-									{
-										variant: 'error',
-									},
-								);
-							},
-						});
-					}}
-				>
-					<Stack
-						p={3}
-						height="100%"
-					>
-						<ImportAccount />
-						<ImportAccountTable
-							sx={{ marginTop: 2, flexGrow: 1, overflow: 'auto' }}
-						/>
-						<ImportAccountsButton />
-					</Stack>
-				</Paper>
-			</Stack>
-		</SnackbarProvider>
+				<Box sx={style}>
+					<Typography variant="H6">
+						Error while import account{' '}
+						{account?.email.address || ''}
+					</Typography>
+					<Typography sx={{ mt: 2 }}>
+						{!error
+							? 'Cannot reach the server. It looks like you forgot to turn on the API server.'
+							: Array.isArray(error.data.detail)
+								? error.data.detail[0].msg
+								: error.data.detail}
+					</Typography>
+				</Box>
+			</Modal>
+		</Stack>
 	);
 };
 

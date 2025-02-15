@@ -18,7 +18,7 @@ class Api {
 					return resolve(response.data);
 				})
 				.catch((error) => {
-					return reject(error);
+					return reject(error.response);
 				});
 		});
 
@@ -36,7 +36,7 @@ class Api {
 					resolve(response.data);
 				})
 				.catch((error) => {
-					reject(error);
+					reject(error.response);
 				});
 		});
 
@@ -86,7 +86,7 @@ class Api {
 					return resolve(response.data);
 				})
 				.catch((error) => {
-					return reject(error);
+					return reject(error.response);
 				});
 		});
 

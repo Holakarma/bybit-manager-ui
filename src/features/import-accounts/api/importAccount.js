@@ -5,22 +5,11 @@ const importAccount = (account) => {
 
 	const url = ENDPOINTS.import_account;
 
-	return new Promise((resolve, reject) => {
-		api.Post({
-			url,
-			params: {
-				email: {
-					address: account.bybit_email,
-					imap_address: account.imap_address,
-					imap_password: account.imap_password,
-				},
-				password: account.bybit_password,
-			},
-		})
-			.then((result) => {
-				resolve(result);
-			})
-			.catch((e) => reject(e.response));
+	return api.Post({
+		url,
+		params: {
+			...account,
+		},
 	});
 };
 

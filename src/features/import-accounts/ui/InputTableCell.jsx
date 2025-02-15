@@ -2,6 +2,8 @@ import { OutlinedInput, useTheme } from '@mui/material';
 
 const InputTableCell = ({ inputProps, ...props }) => {
 	const theme = useTheme();
+	const isHidden = inputProps.type === 'hidden';
+
 	return (
 		<OutlinedInput
 			size="small"
@@ -16,6 +18,7 @@ const InputTableCell = ({ inputProps, ...props }) => {
 				...inputProps,
 			}}
 			sx={{
+				...(isHidden && { display: 'none' }),
 				'&::placeholder': {
 					color: theme.palette.text.secondary,
 					opacity: 1,

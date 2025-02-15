@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import { Stack, useTheme } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
@@ -10,16 +10,25 @@ import AccountRow from './AccountRow';
 const ImportAccountTable = ({ ...props }) => {
 	const accounts = useAccounts.use.accounts();
 	const editAccount = useAccounts.use.editAccount();
+	const theme = useTheme();
 
 	return (
 		<SnackbarProvider maxSnack={5}>
 			<Stack
 				justifyContent="space-between"
 				alignItems="end"
+				overflow="auto"
 				{...props}
 			>
-				<TableContainer>
-					<Table sx={{ minWidth: 650 }}>
+				<TableContainer
+					sx={{
+						flexGrow: 1,
+						paddingBlock: 1,
+						scrollbarWidth: 'thin',
+						scrollbarColor: `${theme.palette.textSecondary.default} transparent`,
+					}}
+				>
+					<Table sx={{ minWidth: 2200 }}>
 						<AccountHeader />
 						<TableBody>
 							{accounts.map((account, i) => (

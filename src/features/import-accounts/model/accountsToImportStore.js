@@ -1,42 +1,10 @@
 import { createSelectors } from 'shared/zustand';
 import { create } from 'zustand';
 import isAccountEmpty from '../lib/isAccountEmpty';
-
-const accountObj = {
-	bybit_email: '',
-	imap_password: '',
-	imap_address: '',
-	bybit_password: '',
-	bybit_proxy: '',
-	email_proxy: '',
-};
-
-const uniqueId = () => `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-
-const createEmptyObject = () => ({
-	...accountObj,
-	id: uniqueId(),
-});
-
-const createAccountObject = (account) => ({
-	...accountObj,
-	...account,
-	id: uniqueId(),
-});
+import { createAccountObject, createEmptyObject } from './accountObj';
 
 const useAccountsBase = create((set) => ({
-	accounts: [
-		// ...Array.from({ length: 100 }, () => ({
-		// 	id: uniqueId(),
-		// 	bybit_email: 'first_acc@firstmail.com',
-		// 	imap_password: '12dsSq3fh&k',
-		// 	imap_address: '',
-		// 	bybit_password: '',
-		// 	bybit_proxy: '',
-		// 	email_proxy: '',
-		// })),
-		createEmptyObject(),
-	],
+	accounts: [createEmptyObject()],
 	setAccounts: (newAccounts) =>
 		set({
 			accounts: [
@@ -71,6 +39,12 @@ const useAccountsBase = create((set) => ({
 
 			return { accounts };
 		}),
+	deleteAccount: (id) =>
+		set((state) => ({
+			accounts: [...state.accounts].filter(
+				(account) => account.id !== id,
+			),
+		})),
 }));
 
 const useAccounts = createSelectors(useAccountsBase);

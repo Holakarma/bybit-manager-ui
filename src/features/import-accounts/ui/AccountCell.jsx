@@ -6,7 +6,11 @@ const AccountCell = ({ inputProps, ...props }) => {
 		<TableCell
 			component="th"
 			scope="row"
-			sx={{ padding: '12px 4px 0' }}
+			sx={
+				inputProps?.type !== 'hidden'
+					? { padding: '12px 4px 0' }
+					: { padding: 0 }
+			}
 			{...props}
 		>
 			<InputTableCell inputProps={inputProps} />

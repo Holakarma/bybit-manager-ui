@@ -1,4 +1,6 @@
 import importAccount from '../api/importAccount';
+import AccountDTO from '../model/accountDTO';
+import isAccountEmpty from './isAccountEmpty';
 
 const mutateImportAccounts = ({ form, onError, onSuccess }) => {
 	const accounts = {};
@@ -7,32 +9,35 @@ const mutateImportAccounts = ({ form, onError, onSuccess }) => {
 		if (match) {
 			const [, id, field] = match;
 			accounts[id] = accounts[id] || {};
-			accounts[id][field] = value;
+			accounts[id][field] = value || undefined;
 		}
 	}
 
-	const accountList = Object.values(accounts);
+	const accountList = Object.values(accounts).filter(
+		(account) => !isAccountEmpty(account),
+	);
 
-	const importAccountsSequentially = (index = 0, results = []) => {
-		if (index >= accountList.length) {
-			return Promise.resolve(results);
-		}
+	const importAccountsSequentially = (index = 0, results = []) =>
+		new Promise((resolve) => {
+			if (index >= accountList.length) {
+				return resolve(results);
+			}
 
-		const account = accountList[index];
-		if (!account.bybit_email) return;
+			const account = new AccountDTO(accountList[index]);
 
-		return importAccount(account)
-			.then((result) => {
-				if (onSuccess) onSuccess(account, result);
-				results.push(result);
-				return importAccountsSequentially(index + 1, results);
-			})
-			.catch((error) => {
-				if (onError) onError(account, error);
-				results.push({ success: false, account, error });
-				return importAccountsSequentially(index + 1, results);
-			});
-	};
+			return importAccount(account)
+				.then((result) => {
+					if (onSuccess) onSuccess(accountList[index], result);
+					results.push(result);
+				})
+				.catch((error) => {
+					if (onError) onError(account, error);
+					results.push({ success: false, account, error });
+				})
+				.finally(() => {
+					resolve(importAccountsSequentially(index + 1, results));
+				});
+		});
 
 	return importAccountsSequentially();
 };

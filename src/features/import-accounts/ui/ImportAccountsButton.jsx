@@ -1,7 +1,7 @@
 import { Box, Button } from '@mui/material';
 import useAccounts from '../model/accountsToImportStore';
 
-const ImportAccountsButton = ({ ...props }) => {
+const ImportAccountsButton = ({ buttonProps, ...props }) => {
 	const accounts = useAccounts.use.accounts();
 
 	if (!accounts.slice(1).length) {
@@ -18,6 +18,8 @@ const ImportAccountsButton = ({ ...props }) => {
 				variant="contained"
 				color="primary"
 				type="submit"
+				loadingIndicator="Importing..."
+				{...buttonProps}
 			>
 				Start import
 			</Button>
