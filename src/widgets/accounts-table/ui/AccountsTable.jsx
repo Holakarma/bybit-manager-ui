@@ -4,6 +4,7 @@ import {
 	ColumnVisibilityContext,
 	ToggleNameContext,
 	useDefaultAccount,
+	useSelectedAccountsId,
 	useUpdateAccountMutation,
 } from 'entities/account';
 import { useFilter } from 'features/filter-accounts';
@@ -21,6 +22,9 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 	const searchEmail = useFilter.use.email();
 	const addGroup = useFilter.use.addGroup();
 	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
+	const setSelectedAccountsId =
+		useSelectedAccountsId.use.setSelectedAccountsId();
+	const selectedAccountsId = useSelectedAccountsId.use.selectedAccountsId();
 	const queryClient = useQueryClient();
 	const { mutate: update, isPending } = useUpdateAccountMutation();
 
@@ -126,15 +130,20 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 							},
 						}}
 						pageSizeOptions={[5, 10]}
-						checkboxSelection
 						sx={tableSx}
 						loading={isPending}
+						checkboxSelection
 						disableRowSelectionOnClick
 						processRowUpdate={processRowUpdate}
 						onCellEditStop={(params) => setReason(params.reason)}
+						keepNonExistentRowsSelected
 						onColumnVisibilityModelChange={(newModel) =>
 							setColumnVisibilityModel(newModel)
 						}
+						onRowSelectionModelChange={(newRowSelectionModel) => {
+							setSelectedAccountsId(newRowSelectionModel);
+						}}
+						rowSelectionModel={selectedAccountsId}
 					/>
 				</ToggleNameContext.Provider>
 			</ColumnVisibilityContext.Provider>

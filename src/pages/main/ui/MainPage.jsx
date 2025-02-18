@@ -1,7 +1,9 @@
-import { Paper, Stack, Typography, useTheme } from '@mui/material';
+import { Grid2, Paper, Stack, Typography, useTheme } from '@mui/material';
 import { DefaultAccount } from 'entities/account';
+import { Login } from 'features/login';
 import { Accounts } from 'widgets/accounts-table';
 import { Filters } from 'widgets/filters';
+import { TaskDrawer } from 'widgets/tasks-drawer';
 
 const MainPage = () => {
 	const theme = useTheme();
@@ -17,9 +19,26 @@ const MainPage = () => {
 				alignItems="center"
 			>
 				<Typography variant="H3">Accounts</Typography>
-				<DefaultAccount />
+				<Stack
+					direction="row"
+					alignItems="center"
+					gap={1}
+				>
+					<DefaultAccount />
+					<TaskDrawer />
+				</Stack>
 			</Stack>
-			<Filters />
+			<Stack gap={2}>
+				<Filters />
+				<Grid2
+					container
+					columns={12}
+				>
+					<Grid2 size={2}>
+						<Login />
+					</Grid2>
+				</Grid2>
+			</Stack>
 			<Paper
 				sx={{
 					flexGrow: 1,

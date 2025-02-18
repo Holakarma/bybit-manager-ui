@@ -1,20 +1,10 @@
-import { Box, Button, Modal, Stack, Typography } from '@mui/material';
+import { Button, Modal, Stack, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { ImportAccountForm, useAccounts } from 'features/import-accounts';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { ERRORS } from 'shared/api';
-
-const style = {
-	position: 'absolute',
-	top: '50%',
-	left: '50%',
-	transform: 'translate(-50%, -50%)',
-	bgcolor: 'background.paper',
-	border: '2px solid #000',
-	boxShadow: 24,
-	p: 4,
-};
+import { ModalBody } from 'shared/ui/modal-body';
 
 const ImportPage = () => {
 	const deleteAccount = useAccounts.use.deleteAccount();
@@ -69,11 +59,8 @@ const ImportPage = () => {
 			<Modal
 				open={open}
 				onClose={handleClose}
-				slotProps={{
-					root: { sx: { '& .MuiBox-root ': { border: 'none' } } },
-				}}
 			>
-				<Box sx={style}>
+				<ModalBody>
 					<Typography variant="H6">
 						Error while import account{' '}
 						{account?.email.address || ''}
@@ -83,7 +70,7 @@ const ImportPage = () => {
 							? 'Cannot reach the server. It looks like you forgot to turn on the API server.'
 							: ERRORS[error.data.error] || error.data.detail}
 					</Typography>
-				</Box>
+				</ModalBody>
 			</Modal>
 		</Stack>
 	);

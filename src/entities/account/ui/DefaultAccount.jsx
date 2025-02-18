@@ -61,6 +61,7 @@ const DefaultAccount = () => {
 			</Tooltip>
 		);
 	}
+
 	if (defaultAccount) {
 		return (
 			<Button
