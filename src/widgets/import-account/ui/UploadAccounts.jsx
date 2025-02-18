@@ -27,7 +27,7 @@ const UploadAccounts = ({ file }) => {
 
 			const headers = sheet[0];
 
-			sheet.slice(2).forEach((rowData) => {
+			sheet.slice(1).forEach((rowData) => {
 				const accountData = headers.reduce((acc, header, index) => {
 					acc[header] = rowData[index] || undefined;
 					return acc;

@@ -14,20 +14,5 @@ const templateImportAccount = [
 		'[bybit] Country code',
 		'[bybit] Cookies',
 	],
-	[
-		'OPTIONAL FIELD',
-		'OPTIONAL FIELD',
-		'OPTIONAL FIELD',
-		'OPTIONAL FIELD',
-		'REQUIRED FIELD',
-		'"OPTIONAL FIELDiCloud: Main email address"',
-		'"OPTIONAL FIELDiCloud: https://support.apple.com/102654"',
-		'OPTIONAL FIELD',
-		'"OPTIONAL FIELDTOTP secret key (2FA)"',
-		'"OPTIONAL FIELDTOTP secret key (2FA)"',
-		'"OPTIONAL FIELDHTTP or SOCKS5 proxy.Any format"',
-		'"OPTIONAL FIELDПредпочитаемый код страны. Будет сверяться с кодом страны прокси и предупреждать при несоответствии. Пример: RU"',
-		'"OPTIONAL FIELD[{""name"": ""secure-token"", ""value"": ""..."", ""domain"": "".bybitglobal.com"", ""path"": ""/"", ""expires"": 1728800230, ""secure"": true, ""session"": false, ""httpOnly"": false, ""sameSite"": ""unspecified""}]"',
-	],
 ];
 export default templateImportAccount;
