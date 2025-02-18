@@ -7,7 +7,12 @@ import AccountsTable from './AccountsTable';
 
 const Accounts = () => {
 	const groups = useFilter.use.groups();
-	const { data: accounts, error, isLoading } = useGetAccountsQuery(groups);
+	const {
+		data: accounts,
+		error,
+		isLoading,
+		isError,
+	} = useGetAccountsQuery(groups);
 	const { enqueueSnackbar } = useSnackbar();
 
 	const rows = useMemo(() => {
@@ -29,7 +34,7 @@ const Accounts = () => {
 		);
 	}
 
-	if (error) {
+	if (isError) {
 		return (
 			<Stack
 				justifyContent="center"
@@ -39,11 +44,10 @@ const Accounts = () => {
 				<Typography variant="h3>">
 					Error while receiving accounts.
 					<br />
-					{error.code === 'ERR_NETWORK'
+					{!error
 						? 'Looks like you forgot to turn on the API server.'
-						: ''}
+						: error.code}
 					<br />
-					{error.code}
 				</Typography>
 			</Stack>
 		);

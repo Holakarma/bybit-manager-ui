@@ -20,7 +20,7 @@ const UploadAccounts = ({ file }) => {
 
 	const uploadHandler = (sheets) => {
 		for (var [sheetName, sheet] of Object.entries(sheets)) {
-			if (sheet.length < 3) {
+			if (sheet.length < 2) {
 				handleError(`sheet ${sheetName} is empty`);
 				continue;
 			}

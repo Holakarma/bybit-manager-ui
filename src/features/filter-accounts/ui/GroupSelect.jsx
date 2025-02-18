@@ -12,9 +12,10 @@ const GroupSelect = ({ ...props }) => {
 		<Autocomplete
 			{...props}
 			multiple
-			onChange={(_e, value) =>
-				setGroups(value.map((group) => group.group))
-			}
+			onChange={(_e, value) => {
+				// @FIXME: убрать возможность выбора дубликатов
+				setGroups(value.map((group) => group.group));
+			}}
 			disablePortal
 			value={groups.map((group) => ({ group })) || []}
 			options={availableGroups || []}

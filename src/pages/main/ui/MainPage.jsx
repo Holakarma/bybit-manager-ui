@@ -1,4 +1,5 @@
 import { Paper, Stack, Typography, useTheme } from '@mui/material';
+import { DefaultAccount } from 'entities/account';
 import { Accounts } from 'widgets/accounts-table';
 import { Filters } from 'widgets/filters';
 
@@ -10,7 +11,14 @@ const MainPage = () => {
 			flexGrow={1}
 			maxWidth="100%"
 		>
-			<Typography variant="H3">Accounts</Typography>
+			<Stack
+				direction="row"
+				justifyContent="space-between"
+				alignItems="center"
+			>
+				<Typography variant="H3">Accounts</Typography>
+				<DefaultAccount />
+			</Stack>
 			<Filters />
 			<Paper
 				sx={{

@@ -3,10 +3,15 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
 	ColumnVisibilityContext,
 	ToggleNameContext,
+	useDefaultAccount,
 	useUpdateAccountMutation,
 } from 'entities/account';
 import { useFilter } from 'features/filter-accounts';
 import { useMemo, useState } from 'react';
+import {
+	getVisibilityModel,
+	setColumnVisibilityModel,
+} from '../lib/visibilityModel';
 import columns from './ColumnsConfig';
 import tableSx from './tableStyles';
 
@@ -15,6 +20,7 @@ const paginationModel = { page: 0, pageSize: 5 };
 const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 	const searchEmail = useFilter.use.email();
 	const addGroup = useFilter.use.addGroup();
+	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
 	const queryClient = useQueryClient();
 	const { mutate: update, isPending } = useUpdateAccountMutation();
 
@@ -45,6 +51,13 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 		return false;
 	};
 	const [toggleName, setToggleName] = useState(getInitialToggleName());
+
+	const handleRowContextMenu = (event) => {
+		event.preventDefault();
+		setDefaultAccountId(
+			Number(event.currentTarget.getAttribute('data-id')),
+		);
+	};
 
 	const computeMutation = (newRow, oldRow) => {
 		if (newRow.name !== oldRow.name) {
@@ -93,22 +106,6 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 		});
 	};
 
-	const setColumnVisibilityModel = (newVisibility) => {
-		localStorage.setItem('visibilityModel', JSON.stringify(newVisibility));
-	};
-
-	const getVisibilityModel = () => {
-		const model = localStorage.getItem('visibilityModel');
-		if (model) {
-			try {
-				return JSON.parse(model);
-			} catch (e) {
-				console.error('Error while getting visibility model: ', e);
-			}
-		}
-		return null;
-	};
-
 	return (
 		<>
 			<ColumnVisibilityContext.Provider value={[visible, setVisible]}>
@@ -120,6 +117,12 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 							pagination: { paginationModel },
 							columns: {
 								columnVisibilityModel: getVisibilityModel(),
+							},
+						}}
+						slotProps={{
+							row: {
+								onContextMenu: handleRowContextMenu,
+								style: { cursor: 'context-menu' },
 							},
 						}}
 						pageSizeOptions={[5, 10]}
