@@ -10,6 +10,8 @@ import {
 import { useSelectedAccounts } from 'entities/account';
 import { useState } from 'react';
 import { ModalBody } from 'shared/ui/modal-body';
+import useLoginTask from '../api/loginAccount';
+import LoginSettings from './LoginSettings';
 
 const Login = ({ ...props }) => {
 	const [open, setOpen] = useState(false);
@@ -22,7 +24,13 @@ const Login = ({ ...props }) => {
 		isError,
 	} = useSelectedAccounts();
 
-	console.log(selectedAccounts);
+	const mutation = useLoginTask();
+
+	const [settings, setSettings] = useState({
+		order: 'parallel',
+		delay: 500,
+		shuffle: false,
+	});
 
 	return (
 		<>
@@ -41,7 +49,14 @@ const Login = ({ ...props }) => {
 				onClose={handleClose}
 			>
 				<Box>
-					<ModalBody>
+					<ModalBody position="relative">
+						<LoginSettings
+							settings={settings}
+							onSettingsChange={(newSettings) =>
+								setSettings(newSettings)
+							}
+						/>
+
 						<Typography variant="H5">Create login task</Typography>
 						<Typography
 							variant="Title1"
@@ -53,7 +68,7 @@ const Login = ({ ...props }) => {
 
 						<List
 							sx={{
-								marginTop: 2,
+								marginBlock: 2,
 								maxHeight: '300px',
 								overflow: 'auto',
 							}}
@@ -87,12 +102,18 @@ const Login = ({ ...props }) => {
 							))}
 						</List>
 
-						<Box
-							textAlign="end"
-							mt={2}
+						<Button
+							sx={{ position: 'absolute', bottom: 12, right: 12 }}
+							onClick={() => {
+								mutation.mutate(
+									selectedAccounts.map(
+										(account) => account.database_id,
+									),
+								);
+							}}
 						>
-							<Button>Start task</Button>
-						</Box>
+							Start task
+						</Button>
 					</ModalBody>
 				</Box>
 			</Modal>

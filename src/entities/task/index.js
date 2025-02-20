@@ -1,1 +1,4 @@
-export { default as useTasks } from './model/tasksStore';
+export {
+	createPendingTask,
+	default as usePendingTasks
+} from './model/pendingTasksStore';

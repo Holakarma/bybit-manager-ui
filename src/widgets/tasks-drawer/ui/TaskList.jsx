@@ -4,9 +4,10 @@ import {
 	Divider,
 	List,
 	ListItem,
+	Stack,
 	Typography,
 } from '@mui/material';
-import { useTasks } from 'entities/task';
+import { usePendingTasks } from 'entities/task';
 
 const statusColor = {
 	pending: 'warning',
@@ -15,7 +16,9 @@ const statusColor = {
 };
 
 const TaskList = () => {
-	const tasks = useTasks.use.tasks();
+	const pendingTasks = usePendingTasks.use.tasks();
+
+	console.log(pendingTasks);
 
 	return (
 		<Box minWidth="400px">
@@ -27,14 +30,14 @@ const TaskList = () => {
 					variant="Title1"
 					color="textSecondary.default"
 				>
-					{tasks.length ? 'Task queue' : 'Empty task queue'}
+					Task queue
 				</Typography>
 			</Box>
 			<Divider />
 
-			{tasks.length ? (
+			{pendingTasks.length ? (
 				<List>
-					{tasks.map((task) => (
+					{pendingTasks.map((task) => (
 						<ListItem key={task.id}>
 							<Button
 								variant="outlined"
@@ -53,7 +56,15 @@ const TaskList = () => {
 						</ListItem>
 					))}
 				</List>
-			) : null}
+			) : (
+				<Stack
+					justifyContent="center"
+					alignItems="center"
+					p={4}
+				>
+					<Typography color="textSecondary.default">Empty</Typography>
+				</Stack>
+			)}
 		</Box>
 	);
 };

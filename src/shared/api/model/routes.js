@@ -5,6 +5,7 @@ const ENDPOINTS = {
 	update_account: `${BASE_URL}/update-account`,
 	groups: `${BASE_URL}/filter/groups`,
 	import_account: `${BASE_URL}/import-account`,
+	login_account: `${BASE_URL}/private/login`,
 };
 
 export default ENDPOINTS;
