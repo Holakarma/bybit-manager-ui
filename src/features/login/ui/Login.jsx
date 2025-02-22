@@ -120,11 +120,12 @@ const Login = ({ ...props }) => {
 										(account) => account.database_id,
 									),
 									settings,
-									onSettled: async ({ data }) => {
+									onSettled: async ({ data, taskId }) => {
 										await taskDB.addTask({
 											type: 'login',
 											status: 'completed',
 											data,
+											taskId,
 											startedAt: Date.now(),
 										});
 

@@ -8,7 +8,7 @@ import {
 	Typography,
 } from '@mui/material';
 import { useGetTasks, usePendingTasks } from 'entities/task';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDate } from 'shared/lib/formatDate';
 import formatTime from 'shared/lib/formatDate/formatTime';
 import { Pulsing } from 'shared/ui/pulsing';
@@ -25,6 +25,18 @@ const TaskList = () => {
 	const { data: tasks, isLoading, isError } = useGetTasks();
 	const [task, setTask] = useState(null);
 	const handleCloseTaskModal = () => setTask(null);
+
+	useEffect(() => {
+		if (pendingTask) {
+			const id = pendingTask.id;
+			const changingTask = tasks.find((task) => task.taskId === id);
+
+			if (changingTask) {
+				setPendingTask(null);
+				setTask(changingTask);
+			}
+		}
+	}, [tasks, pendingTask]);
 
 	if (isLoading) {
 		return (
