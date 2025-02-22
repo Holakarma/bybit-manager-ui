@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import getAccountsById from '../lib/getAccountsById';
 import useSelectedAccountsId from '../model/selectedAccountsIdStore';
 import useGetAccountsQuery from './useGetAccountsQuery';
 
@@ -8,16 +9,7 @@ const useSelectedAccounts = () => {
 
 	const selectedAccounts = useMemo(() => {
 		if (accounts && selectedAccountsId) {
-			let result = [];
-
-			selectedAccountsId.forEach((id) => {
-				const account = accounts.find((a) => a.database_id === id);
-				if (account) {
-					result.push(account);
-				}
-			});
-
-			return result;
+			return getAccountsById(accounts, selectedAccountsId);
 		}
 		return null;
 	}, [accounts, selectedAccountsId]);

@@ -7,7 +7,10 @@ import {
 	Modal,
 	Typography,
 } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSelectedAccounts } from 'entities/account';
+import { taskDB } from 'entities/task';
+import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { ModalBody } from 'shared/ui/modal-body';
 import useLoginTask from '../api/loginAccount';
@@ -17,6 +20,9 @@ const Login = ({ ...props }) => {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
+	const { enqueueSnackbar } = useSnackbar();
+
+	const queryClient = useQueryClient();
 
 	const {
 		data: selectedAccounts,
@@ -27,8 +33,8 @@ const Login = ({ ...props }) => {
 	const mutation = useLoginTask();
 
 	const [settings, setSettings] = useState({
-		order: 'parallel',
-		delay: 500,
+		threads: 1,
+		delay: { min: 60, max: 90 },
 		shuffle: false,
 	});
 
@@ -49,7 +55,10 @@ const Login = ({ ...props }) => {
 				onClose={handleClose}
 			>
 				<Box>
-					<ModalBody position="relative">
+					<ModalBody
+						position="relative"
+						sx={{ minWidth: '400px' }}
+					>
 						<LoginSettings
 							settings={settings}
 							onSettingsChange={(newSettings) =>
@@ -61,6 +70,7 @@ const Login = ({ ...props }) => {
 						<Typography
 							variant="Title1"
 							color="textSecondary"
+							mt={2}
 						>
 							Are you sure you want to login for following
 							accounts?
@@ -68,7 +78,7 @@ const Login = ({ ...props }) => {
 
 						<List
 							sx={{
-								marginBlock: 2,
+								marginBlock: 1,
 								maxHeight: '300px',
 								overflow: 'auto',
 							}}
@@ -105,11 +115,44 @@ const Login = ({ ...props }) => {
 						<Button
 							sx={{ position: 'absolute', bottom: 12, right: 12 }}
 							onClick={() => {
-								mutation.mutate(
-									selectedAccounts.map(
+								mutation.mutate({
+									database_ids: selectedAccounts.map(
 										(account) => account.database_id,
 									),
-								);
+									settings,
+									onSettled: async ({ data }) => {
+										await taskDB.addTask({
+											type: 'login',
+											status: 'completed',
+											data,
+											startedAt: Date.now(),
+										});
+
+										queryClient.invalidateQueries({
+											queryKey: ['tasks'],
+										});
+
+										enqueueSnackbar('Login completed', {
+											variant: 'info',
+										});
+										data.forEach((account) => {
+											if (account.error) {
+												enqueueSnackbar(
+													`${account.id} ${
+														account?.error
+															?.bybit_response
+															?.ret_msg ||
+														'Some error occured'
+													}`,
+													{
+														variant: 'error',
+													},
+												);
+											}
+										});
+									},
+								});
+								handleClose();
 							}}
 						>
 							Start task

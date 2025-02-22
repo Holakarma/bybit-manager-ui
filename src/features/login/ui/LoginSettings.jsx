@@ -7,43 +7,111 @@ import {
 	Stack,
 	Switch,
 	TextField,
-	ToggleButton,
-	ToggleButtonGroup,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 
+const NumberField = ({ label, value, onChange, onBlur, unit }) => (
+	<TextField
+		slotProps={{
+			input: {
+				endAdornment: (
+					<InputAdornment position="end">{unit}</InputAdornment>
+				),
+			},
+		}}
+		sx={{ maxWidth: '185px' }}
+		label={label}
+		variant="standard"
+		size="small"
+		value={value}
+		onChange={onChange}
+		onBlur={onBlur}
+	/>
+);
+
+const DelaySettings = ({
+	minDelay,
+	maxDelay,
+	onMinChange,
+	onMaxChange,
+	onMinBlur,
+	onMaxBlur,
+}) => (
+	<Stack
+		direction="row"
+		gap={2}
+		sx={{ maxWidth: '185px' }}
+	>
+		<NumberField
+			label="Min cooldown"
+			value={minDelay}
+			onChange={onMinChange}
+			onBlur={onMinBlur}
+			unit="sec"
+		/>
+		<NumberField
+			label="Max cooldown"
+			value={maxDelay}
+			onChange={onMaxChange}
+			onBlur={onMaxBlur}
+			unit="sec"
+		/>
+	</Stack>
+);
+
 const LoginSettings = ({ settings, onSettingsChange }) => {
 	const [anchorEl, setAnchorEl] = useState(null);
+	const [inputMinDelay, setInputMinDelay] = useState(
+		String(settings.delay.min),
+	);
+	const [inputMaxDelay, setInputMaxDelay] = useState(
+		String(settings.delay.max),
+	);
+	const [inputThreads, setInputThreads] = useState(String(settings.threads));
+
 	const openMenu = Boolean(anchorEl);
-	const [inputValue, setInputValue] = useState(String(settings.delay));
-
-	const handleMenuOpen = (event) => {
-		setAnchorEl(event.currentTarget);
-	};
-	const handleMenuClose = () => {
-		setAnchorEl(null);
-	};
-
-	const order = useMemo(() => settings.order, [settings]);
 	const shuffle = useMemo(() => settings.shuffle, [settings]);
 
-	const handleOrderChange = (_event, newOrder) => {
-		if (newOrder !== null) {
-			onSettingsChange((prev) => ({ ...prev, order: newOrder }));
-		}
-	};
-	const handleDelayChange = (event) => {
-		setInputValue(event.target.value);
-	};
+	const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+	const handleMenuClose = () => setAnchorEl(null);
 
-	const handleDelayBlur = () => {
-		const parsedDelay = Number(inputValue) || 500;
-		const delay = parsedDelay > 0 ? parsedDelay : 500;
+	const handleInputChange = (setter) => (event) => setter(event.target.value);
+
+	const handleMinDelayBlur = () => {
+		const minDelay = Math.max(
+			1,
+			Number(inputMinDelay) || settings.delay.min,
+		);
+		const maxDelay = Math.max(minDelay + 30, settings.delay.max);
+
 		onSettingsChange((prev) => ({
 			...prev,
-			delay,
+			delay: { min: minDelay, max: maxDelay },
 		}));
-		setInputValue(String(delay));
+
+		setInputMinDelay(String(minDelay));
+		setInputMaxDelay(String(maxDelay));
+	};
+
+	const handleMaxDelayBlur = () => {
+		const maxDelay = Math.max(
+			settings.delay.min,
+			Number(inputMaxDelay) || settings.delay.max,
+		);
+
+		onSettingsChange((prev) => ({
+			...prev,
+			delay: { ...prev.delay, max: maxDelay },
+		}));
+
+		setInputMaxDelay(String(maxDelay));
+	};
+
+	const handleThreadsBlur = () => {
+		const threads = Math.max(1, Number(inputThreads) || settings.threads);
+
+		onSettingsChange((prev) => ({ ...prev, threads }));
+		setInputThreads(String(threads));
 	};
 
 	const handleShuffleChange = (_event, newShuffle) => {
@@ -54,9 +122,8 @@ const LoginSettings = ({ settings, onSettingsChange }) => {
 		<>
 			<IconButton
 				sx={{ position: 'absolute', top: 12, right: 12 }}
-				aria-label="more"
-				id="long-button"
-				aria-controls={openMenu ? 'long-menu' : undefined}
+				aria-label="settings"
+				aria-controls={openMenu ? 'settings-menu' : undefined}
 				aria-expanded={openMenu ? 'true' : undefined}
 				aria-haspopup="true"
 				onClick={handleMenuOpen}
@@ -74,50 +141,32 @@ const LoginSettings = ({ settings, onSettingsChange }) => {
 					alignItems="start"
 					gap={2}
 				>
-					<ToggleButtonGroup
-						color="primary"
-						value={order}
-						exclusive
-						onChange={handleOrderChange}
-						size="small"
-					>
-						<ToggleButton value="parallel">Parallel</ToggleButton>
-						<ToggleButton value="сonsistently">
-							Consistently
-						</ToggleButton>
-					</ToggleButtonGroup>
+					<NumberField
+						label="Threads"
+						value={inputThreads}
+						onChange={handleInputChange(setInputThreads)}
+						onBlur={handleThreadsBlur}
+						unit="threads"
+					/>
 
-					{order === 'сonsistently' ? (
-						<Stack gap={1}>
-							<FormControlLabel
-								control={
-									<Switch
-										checked={shuffle}
-										onChange={handleShuffleChange}
-									/>
-								}
-								label="Shuffle"
+					<FormControlLabel
+						control={
+							<Switch
+								checked={shuffle}
+								onChange={handleShuffleChange}
 							/>
-							<TextField
-								slotProps={{
-									input: {
-										endAdornment: (
-											<InputAdornment position="end">
-												sec
-											</InputAdornment>
-										),
-									},
-								}}
-								sx={{ maxWidth: '185px' }}
-								label="Delay"
-								variant="standard"
-								size="small"
-								value={inputValue}
-								onChange={handleDelayChange}
-								onBlur={handleDelayBlur}
-							/>
-						</Stack>
-					) : null}
+						}
+						label="Shuffle"
+					/>
+
+					<DelaySettings
+						minDelay={inputMinDelay}
+						maxDelay={inputMaxDelay}
+						onMinChange={handleInputChange(setInputMinDelay)}
+						onMaxChange={handleInputChange(setInputMaxDelay)}
+						onMinBlur={handleMinDelayBlur}
+						onMaxBlur={handleMaxDelayBlur}
+					/>
 				</Stack>
 			</Menu>
 		</>
