@@ -2,11 +2,12 @@ import { uniqueId } from 'shared/lib/generateUniqueId';
 import { createSelectors } from 'shared/zustand';
 import { create } from 'zustand';
 
-export const createPendingTask = ({ data, type }) => ({
+export const createPendingTask = ({ data, type, abort }) => ({
 	id: uniqueId(),
 	data,
 	type: type || 'default',
 	startedAt: Date.now(),
+	abort,
 });
 
 const usePendingTasksBase = create((set) => ({

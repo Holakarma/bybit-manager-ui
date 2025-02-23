@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPendingTask, usePendingTasks } from 'entities/task';
 import { Api, ENDPOINTS } from 'shared/api';
 
-const loginAccount = (database_id) => {
+const loginAccount = (database_id, signal) => {
 	const api = new Api();
 
 	const url = ENDPOINTS.login_account;
@@ -12,13 +12,14 @@ const loginAccount = (database_id) => {
 		query: {
 			database_id,
 		},
+		config: { signal },
 	});
 };
 
 const useLoginAccountMutation = () =>
 	useMutation({
-		mutationFn: async (database_id) => ({
-			data: await loginAccount(database_id),
+		mutationFn: async ({ database_id, signal }) => ({
+			data: await loginAccount(database_id, signal),
 			database_id,
 		}),
 		mutationKey: ['login'],
@@ -30,8 +31,12 @@ const useLoginTask = () => {
 	const mutation = useLoginAccountMutation();
 	const addTask = usePendingTasks.use.addTask();
 	let data = null;
+	let abortController = null;
 
-	const mutate = async ({ database_ids, settings, onSettled }) => {
+	const mutate = async ({ database_ids, settings, onSuccess, onAbort }) => {
+		// Создаем новый контроллер для этой мутации
+		abortController = new AbortController();
+
 		const idsToProcess = settings.shuffle
 			? [...database_ids].sort(() => Math.random() - 0.5)
 			: database_ids;
@@ -39,29 +44,46 @@ const useLoginTask = () => {
 		const task = createPendingTask({
 			data: idsToProcess,
 			type: 'login',
+			abort: () => abortController.abort(),
 		});
 		addTask(task);
 
 		const getRandomDelay = () => {
-			const min = settings.delay.min * 1000; // конвертируем в миллисекунды
+			const min = settings.delay.min * 1000;
 			const max = settings.delay.max * 1000;
 			return Math.floor(Math.random() * (max - min + 1) + min);
 		};
 
-		data = await processChunks({
-			idsToProcess,
-			threads: settings.threads,
-			asyncMutatuionFn: mutation.mutateAsync,
-			getRandomDelay,
-		});
-		if (onSettled) {
-			onSettled({ data, taskId: task.id });
+		try {
+			data = await processChunks({
+				idsToProcess,
+				threads: settings.threads,
+				asyncMutatuionFn: mutation.mutateAsync,
+				getRandomDelay,
+				signal: abortController.signal,
+			});
+			if (onSuccess) {
+				onSuccess({ data, taskId: task.id });
+			}
+		} catch (error) {
+			if (error.name === 'AbortError') {
+				if (onAbort) onAbort({ taskId: task.id });
+			} else {
+				throw error;
+			}
+		} finally {
+			deleteTask(task.id);
+			queryClient.invalidateQueries({ queryKey: ['accounts'] });
 		}
-		deleteTask(task.id);
-		queryClient.invalidateQueries({ queryKey: ['accounts'] });
 	};
 
-	return { data, mutate };
+	const abort = () => {
+		if (abortController) {
+			abortController.abort();
+		}
+	};
+
+	return { data, mutate, abort };
 };
 
 const processChunks = ({
@@ -69,12 +91,29 @@ const processChunks = ({
 	threads,
 	asyncMutatuionFn,
 	getRandomDelay,
+	signal,
 }) => {
 	let data = [];
 	let i = 0;
 
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
+		// Проверяем не отменена ли операция
+		if (signal.aborted) {
+			reject(new DOMException('Aborted', 'AbortError'));
+			return;
+		}
+
+		// Добавляем слушатель для отмены
+		signal.addEventListener('abort', () => {
+			reject(new DOMException('Aborted', 'AbortError'));
+		});
+
 		function processNextChunk() {
+			if (signal.aborted) {
+				reject(new DOMException('Aborted', 'AbortError'));
+				return;
+			}
+
 			if (i >= idsToProcess.length) {
 				resolve(data);
 				return;
@@ -84,7 +123,7 @@ const processChunks = ({
 
 			Promise.allSettled(
 				chunk.map((id) =>
-					asyncMutatuionFn(id)
+					asyncMutatuionFn({ database_id: id, signal })
 						.then(() => ({ id }))
 						.catch((error) => {
 							throw Error(
@@ -96,6 +135,11 @@ const processChunks = ({
 						}),
 				),
 			).then((results) => {
+				if (signal.aborted) {
+					reject(new DOMException('Aborted', 'AbortError'));
+					return;
+				}
+
 				data.push(
 					...results.map((result) => {
 						return result.status === 'fulfilled'

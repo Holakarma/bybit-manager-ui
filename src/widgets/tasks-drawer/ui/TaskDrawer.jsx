@@ -1,4 +1,5 @@
-import { Button, Drawer } from '@mui/material';
+import { Badge, Button, Drawer } from '@mui/material';
+import { usePendingTasks } from 'entities/task';
 import { useState } from 'react';
 import { ListsIcon } from 'shared/assets/icons/lists';
 import TaskList from './TaskList';
@@ -10,6 +11,8 @@ const TaskDrawer = () => {
 		setOpen(newOpen);
 	};
 
+	const pendingTasks = usePendingTasks.use.tasks();
+
 	return (
 		<>
 			<Button
@@ -17,7 +20,12 @@ const TaskDrawer = () => {
 				variant="contained"
 				color="secondary"
 			>
-				<ListsIcon />
+				<Badge
+					badgeContent={pendingTasks.length}
+					color="primary"
+				>
+					<ListsIcon />
+				</Badge>
 			</Button>
 			<Drawer
 				open={open}

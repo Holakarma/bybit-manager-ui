@@ -38,6 +38,37 @@ const Login = ({ ...props }) => {
 		shuffle: false,
 	});
 
+	const successHandler = async ({ data, taskId }) => {
+		await taskDB.addTask({
+			type: 'login',
+			status: 'completed',
+			data,
+			taskId,
+			startedAt: Date.now(),
+		});
+
+		queryClient.invalidateQueries({
+			queryKey: ['tasks'],
+		});
+
+		enqueueSnackbar('Login completed', {
+			variant: 'info',
+		});
+		data.forEach((account) => {
+			if (account.error) {
+				enqueueSnackbar(
+					`${account.id} ${
+						account?.error?.bybit_response?.ret_msg ||
+						'Some error occured'
+					}`,
+					{
+						variant: 'error',
+					},
+				);
+			}
+		});
+	};
+
 	return (
 		<>
 			<Button
@@ -120,36 +151,10 @@ const Login = ({ ...props }) => {
 										(account) => account.database_id,
 									),
 									settings,
-									onSettled: async ({ data, taskId }) => {
-										await taskDB.addTask({
-											type: 'login',
-											status: 'completed',
-											data,
-											taskId,
-											startedAt: Date.now(),
-										});
-
-										queryClient.invalidateQueries({
-											queryKey: ['tasks'],
-										});
-
-										enqueueSnackbar('Login completed', {
-											variant: 'info',
-										});
-										data.forEach((account) => {
-											if (account.error) {
-												enqueueSnackbar(
-													`${account.id} ${
-														account?.error
-															?.bybit_response
-															?.ret_msg ||
-														'Some error occured'
-													}`,
-													{
-														variant: 'error',
-													},
-												);
-											}
+									onSuccess: successHandler,
+									onAbort: () => {
+										enqueueSnackbar('Task aborted', {
+											variant: 'warning',
 										});
 									},
 								});

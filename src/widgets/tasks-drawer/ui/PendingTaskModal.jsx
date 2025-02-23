@@ -15,6 +15,10 @@ import taskTitle from '../model/taskTitles';
 const PendingTaskModal = ({ task, open, handleClose }) => {
 	const { data: accounts, isLoading, isError } = useGetAccountsQuery([]);
 
+	if (!task) {
+		return null;
+	}
+
 	if (isLoading) {
 		return (
 			<Modal

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 class Api {
-	Get = ({ url, params, query, headers }) =>
+	Get = ({ url, params, query, config }) =>
 		new Promise((resolve, reject) => {
 			let urlWithQuery = url;
 			if (query) {
@@ -11,7 +11,7 @@ class Api {
 
 			axios
 				.get(urlWithQuery, {
-					headers,
+					config,
 					params,
 				})
 				.then((response) => {
@@ -22,7 +22,7 @@ class Api {
 				});
 		});
 
-	Post = ({ url, params, query, headers }) =>
+	Post = ({ url, params, query, config }) =>
 		new Promise((resolve, reject) => {
 			let urlWithQuery = url;
 			if (query) {
@@ -31,7 +31,7 @@ class Api {
 			}
 
 			axios
-				.post(urlWithQuery, params, headers)
+				.post(urlWithQuery, params, config)
 				.then((response) => {
 					resolve(response.data);
 				})
@@ -40,7 +40,7 @@ class Api {
 				});
 		});
 
-	AllPages = ({ request, url, params, query, headers }) =>
+	AllPages = ({ request, url, params, query, config }) =>
 		new Promise((resolve, reject) => {
 			let allResults = [];
 			const queryParams = Object.assign({ page: 1, offset: 1 }, query);
@@ -48,7 +48,7 @@ class Api {
 			const queryString = new URLSearchParams(queryParams).toString();
 			urlWithQuery = `${url}?${queryString}`;
 
-			request({ url: urlWithQuery, params, headers })
+			request({ url: urlWithQuery, params, config })
 				.then((result) => {
 					allResults = [...allResults, ...result.result];
 					if (!result.next_page) {
@@ -63,7 +63,7 @@ class Api {
 								page: result.next_page,
 								offset: queryParams.offset,
 							},
-							headers,
+							config,
 						}).then((nextPageData) => {
 							resolve([...allResults, ...nextPageData]);
 						});
@@ -72,7 +72,7 @@ class Api {
 				.catch((error) => reject(error));
 		});
 
-	Patch = ({ url, params, query, headers }) =>
+	Patch = ({ url, params, query, config }) =>
 		new Promise((resolve, reject) => {
 			let urlWithQuery = url;
 			if (query) {
@@ -81,7 +81,7 @@ class Api {
 			}
 
 			axios
-				.patch(urlWithQuery, params, headers)
+				.patch(urlWithQuery, params, config)
 				.then((response) => {
 					return resolve(response.data);
 				})

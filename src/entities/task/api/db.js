@@ -94,6 +94,19 @@ class TaskDatabase {
 			request.onerror = () => reject(request.error);
 		});
 	}
+
+	async deleteTask(taskId) {
+		await this.init();
+
+		return new Promise((resolve, reject) => {
+			const transaction = this.db.transaction([TASKS_STORE], 'readwrite');
+			const store = transaction.objectStore(TASKS_STORE);
+			const request = store.delete(taskId);
+
+			request.onsuccess = () => resolve();
+			request.onerror = () => reject(request.error);
+		});
+	}
 }
 
 export const taskDB = new TaskDatabase();

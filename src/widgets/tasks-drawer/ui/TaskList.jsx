@@ -1,20 +1,19 @@
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import {
 	Box,
-	Button,
 	Divider,
+	IconButton,
 	List,
 	ListItem,
 	Stack,
+	Tooltip,
 	Typography,
 } from '@mui/material';
-import { useGetTasks, usePendingTasks } from 'entities/task';
+import { useQueryClient } from '@tanstack/react-query';
+import { taskDB, useGetTasks, usePendingTasks } from 'entities/task';
 import { useEffect, useState } from 'react';
-import { formatDate } from 'shared/lib/formatDate';
-import formatTime from 'shared/lib/formatDate/formatTime';
-import { Pulsing } from 'shared/ui/pulsing';
-import color from '../model/taskStatusColor';
-import taskTitle from '../model/taskTitles';
 import PendingTaskModal from './PendingTaskModal';
+import TaskItem from './TaskItem';
 import TaskModal from './TaskModal';
 
 const TaskList = () => {
@@ -25,6 +24,8 @@ const TaskList = () => {
 	const { data: tasks, isLoading, isError } = useGetTasks();
 	const [task, setTask] = useState(null);
 	const handleCloseTaskModal = () => setTask(null);
+
+	const queryClient = useQueryClient();
 
 	useEffect(() => {
 		if (pendingTask) {
@@ -67,7 +68,7 @@ const TaskList = () => {
 						variant="Title1"
 						color="textSecondary.default"
 					>
-						database error
+						Error while getting tasks
 					</Typography>
 				</Box>
 			</Box>
@@ -81,114 +82,60 @@ const TaskList = () => {
 					padding={2}
 					paddingTop={4}
 				>
-					<Typography
-						variant="Title1"
-						color="textSecondary.default"
+					<Stack
+						direction="row"
+						justifyContent="space-between"
+						alignItems="center"
 					>
-						Task queue
-					</Typography>
+						<Typography
+							variant="Title1"
+							color="textSecondary.default"
+						>
+							Task queue
+						</Typography>
+
+						<Tooltip title="Clear history">
+							<IconButton
+								onClick={async () => {
+									await taskDB.clearTasks();
+									queryClient.invalidateQueries({
+										queryKey: ['tasks'],
+									});
+								}}
+							>
+								<ClearRoundedIcon />
+							</IconButton>
+						</Tooltip>
+					</Stack>
 				</Box>
 				<Divider />
 
 				{pendingTasks.length || tasks.length ? (
-					<>
-						<List>
-							{pendingTasks.map((task) => (
+					<List>
+						{pendingTasks.map((task) => (
+							<ListItem key={task.id}>
+								<TaskItem
+									onClick={() => {
+										setPendingTask(task);
+									}}
+									task={task}
+								/>
+							</ListItem>
+						))}
+
+						{[...tasks]
+							.sort((a, b) => b.timestamp - a.timestamp)
+							.map((task) => (
 								<ListItem key={task.id}>
-									<Button
-										variant="outlined"
-										color="secondary"
-										fullWidth
+									<TaskItem
 										onClick={() => {
-											setPendingTask(task);
+											setTask(task);
 										}}
-										sx={{ justifyContent: 'space-between' }}
-									>
-										<Stack
-											direction="row"
-											gap={1}
-											alignItems="baseline"
-										>
-											<Typography>
-												{taskTitle[task.type]}
-											</Typography>
-											<Typography
-												color="textSecondary"
-												variant="caption"
-											>
-												{formatTime(
-													new Date(task.startedAt),
-												)}
-											</Typography>
-										</Stack>
-										<Stack
-											direction="row"
-											gap={1}
-											alignItems="center"
-										>
-											<Typography
-												variant="caption"
-												color="warning"
-											>
-												pending
-											</Typography>
-											<Pulsing />
-										</Stack>
-									</Button>
+										task={task}
+									/>
 								</ListItem>
 							))}
-
-							{[...tasks]
-								.sort((a, b) => b.timestamp - a.timestamp)
-								.map((task) => (
-									<ListItem key={task.id}>
-										<Button
-											variant="outlined"
-											color="secondary"
-											fullWidth
-											onClick={() => {
-												setTask(task);
-											}}
-											sx={{
-												justifyContent: 'space-between',
-											}}
-										>
-											<Stack
-												direction="row"
-												gap={1}
-												alignItems="baseline"
-											>
-												<Typography>
-													{taskTitle[task.type]}
-												</Typography>
-												<Typography
-													color="textSecondary"
-													variant="caption"
-												>
-													{formatDate(
-														new Date(
-															task.timestamp,
-														),
-													)}
-												</Typography>
-											</Stack>
-											<Stack
-												direction="row"
-												gap={1}
-												alignItems="center"
-											>
-												<Typography
-													variant="caption"
-													color={color[task.status]}
-												>
-													{task.status}
-												</Typography>
-											</Stack>
-										</Button>
-									</ListItem>
-								))}
-						</List>
-					</>
+					</List>
 				) : (
 					<Stack
 						justifyContent="center"
@@ -204,12 +151,12 @@ const TaskList = () => {
 
 			<PendingTaskModal
 				task={pendingTask}
-				open={pendingTask}
+				open={Boolean(pendingTask)}
 				handleClose={handleClosePendingModal}
 			/>
 			<TaskModal
 				task={task}
-				open={task}
+				open={Boolean(task)}
 				handleClose={handleCloseTaskModal}
 			/>
 		</>
