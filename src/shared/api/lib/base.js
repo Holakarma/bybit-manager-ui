@@ -85,7 +85,6 @@ class Api {
 			let allResults = [];
 			this.Post(url, body, config)
 				.then((response) => {
-					console.log(response);
 					allResults = [...allResults, ...response.result];
 					if (!response.next_page) {
 						resolve(allResults);

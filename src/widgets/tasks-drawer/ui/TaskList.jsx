@@ -13,10 +13,23 @@ import {
 } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { taskDB, useGetTasks, usePendingTasks } from 'entities/task';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PendingTaskModal from './PendingTaskModal';
 import TaskItem from './TaskItem';
 import TaskModal from './TaskModal';
+
+const tooltipSlotProps = {
+	popper: {
+		modifiers: [
+			{
+				name: 'offset',
+				options: {
+					offset: [0, -14],
+				},
+			},
+		],
+	},
+};
 
 const TaskList = () => {
 	const pendingTasks = usePendingTasks.use.tasks();
@@ -40,6 +53,22 @@ const TaskList = () => {
 			}
 		}
 	}, [tasks, pendingTask]);
+
+	const sortedTasks = useMemo(
+		() => tasks && [...tasks].sort((a, b) => b.timestamp - a.timestamp),
+		[tasks],
+	);
+
+	const groupedTasks = useMemo(() => {
+		return sortedTasks?.reduce((acc, task) => {
+			const date = new Date(task.timestamp).toLocaleDateString();
+			if (!acc[date]) {
+				acc[date] = [];
+			}
+			acc[date].push(task);
+			return acc;
+		}, {});
+	}, [sortedTasks]);
 
 	if (isLoading) {
 		return (
@@ -101,46 +130,70 @@ const TaskList = () => {
 							</Typography>
 						</Box>
 						<Divider />
-					</Box>
 
-					<Box sx={{ overflow: 'auto' }}>
-						{pendingTasks.length || tasks.length ? (
-							<List>
-								{pendingTasks.map((task) => (
-									<ListItem key={task.id}>
-										<TaskItem
-											onClick={() => {
-												setPendingTask(task);
-											}}
-											task={task}
-										/>
-									</ListItem>
-								))}
-
-								{[...tasks]
-									.sort((a, b) => b.timestamp - a.timestamp)
-									.map((task) => (
+						<Box sx={{ overflow: 'auto' }}>
+							{pendingTasks.length || tasks.length ? (
+								<List>
+									{pendingTasks.map((task) => (
 										<ListItem key={task.id}>
 											<TaskItem
 												onClick={() => {
-													setTask(task);
+													setPendingTask(task);
 												}}
 												task={task}
 											/>
 										</ListItem>
 									))}
-							</List>
-						) : (
-							<Stack
-								justifyContent="center"
-								alignItems="center"
-								p={4}
-							>
-								<Typography color="textSecondary.default">
-									Empty
-								</Typography>
-							</Stack>
-						)}
+
+									{Object.entries(groupedTasks).map(
+										([date, tasks]) => (
+											<Box key={date}>
+												<Stack
+													direction="row"
+													justifyContent="space-between"
+													paddingInline={2}
+													paddingTop={1}
+												>
+													<Typography
+														variant="caption"
+														color="textSecondary"
+													>
+														{date}
+													</Typography>
+													<Typography
+														variant="caption"
+														color="textSecondary"
+													>
+														{tasks.length} tasks
+													</Typography>
+												</Stack>
+
+												{tasks.map((task) => (
+													<ListItem key={task.id}>
+														<TaskItem
+															onClick={() => {
+																setTask(task);
+															}}
+															task={task}
+														/>
+													</ListItem>
+												))}
+											</Box>
+										),
+									)}
+								</List>
+							) : (
+								<Stack
+									justifyContent="center"
+									alignItems="center"
+									p={4}
+								>
+									<Typography color="textSecondary.default">
+										Empty
+									</Typography>
+								</Stack>
+							)}
+						</Box>
 					</Box>
 
 					<Box>
@@ -152,7 +205,10 @@ const TaskList = () => {
 							padding={2}
 							gap={1}
 						>
-							<Tooltip title="Clear history">
+							<Tooltip
+								title="Clear history"
+								slotProps={tooltipSlotProps}
+							>
 								<IconButton
 									onClick={async () => {
 										await taskDB.clearTasks();
@@ -165,13 +221,19 @@ const TaskList = () => {
 								</IconButton>
 							</Tooltip>
 
-							<Tooltip title="Export tasks (future)">
+							<Tooltip
+								title="Export tasks (future)"
+								slotProps={tooltipSlotProps}
+							>
 								<IconButton>
 									<FileUploadRoundedIcon />
 								</IconButton>
 							</Tooltip>
 
-							<Tooltip title="Import tasks (future)">
+							<Tooltip
+								title="Import tasks (future)"
+								slotProps={tooltipSlotProps}
+							>
 								<IconButton>
 									<FileDownloadRoundedIcon />
 								</IconButton>
