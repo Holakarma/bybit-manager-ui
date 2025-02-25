@@ -130,70 +130,70 @@ const TaskList = () => {
 							</Typography>
 						</Box>
 						<Divider />
+					</Box>
 
-						<Box sx={{ overflow: 'auto' }}>
-							{pendingTasks.length || tasks.length ? (
-								<List>
-									{pendingTasks.map((task) => (
-										<ListItem key={task.id}>
-											<TaskItem
-												onClick={() => {
-													setPendingTask(task);
-												}}
-												task={task}
-											/>
-										</ListItem>
-									))}
+					<Box sx={{ overflow: 'auto', flexGrow: 1 }}>
+						{pendingTasks.length || tasks.length ? (
+							<List>
+								{pendingTasks.map((task) => (
+									<ListItem key={task.id}>
+										<TaskItem
+											onClick={() => {
+												setPendingTask(task);
+											}}
+											task={task}
+										/>
+									</ListItem>
+								))}
 
-									{Object.entries(groupedTasks).map(
-										([date, tasks]) => (
-											<Box key={date}>
-												<Stack
-													direction="row"
-													justifyContent="space-between"
-													paddingInline={2}
-													paddingTop={1}
+								{Object.entries(groupedTasks).map(
+									([date, tasks]) => (
+										<Box key={date}>
+											<Stack
+												direction="row"
+												justifyContent="space-between"
+												paddingInline={2}
+												paddingTop={1}
+											>
+												<Typography
+													variant="caption"
+													color="textSecondary"
 												>
-													<Typography
-														variant="caption"
-														color="textSecondary"
-													>
-														{date}
-													</Typography>
-													<Typography
-														variant="caption"
-														color="textSecondary"
-													>
-														{tasks.length} tasks
-													</Typography>
-												</Stack>
+													{date}
+												</Typography>
+												<Typography
+													variant="caption"
+													color="textSecondary"
+												>
+													{tasks.length} tasks
+												</Typography>
+											</Stack>
 
-												{tasks.map((task) => (
-													<ListItem key={task.id}>
-														<TaskItem
-															onClick={() => {
-																setTask(task);
-															}}
-															task={task}
-														/>
-													</ListItem>
-												))}
-											</Box>
-										),
-									)}
-								</List>
-							) : (
-								<Stack
-									justifyContent="center"
-									alignItems="center"
-									p={4}
-								>
-									<Typography color="textSecondary.default">
-										Empty
-									</Typography>
-								</Stack>
-							)}
-						</Box>
+											{tasks.map((task) => (
+												<ListItem key={task.id}>
+													<TaskItem
+														onClick={() => {
+															setTask(task);
+														}}
+														task={task}
+													/>
+												</ListItem>
+											))}
+										</Box>
+									),
+								)}
+							</List>
+						) : (
+							<Stack
+								justifyContent="center"
+								alignItems="center"
+								p={4}
+							>
+								<Typography color="textSecondary.default">
+									Empty
+								</Typography>
+							</Stack>
+						)}
 					</Box>
 
 					<Box>
