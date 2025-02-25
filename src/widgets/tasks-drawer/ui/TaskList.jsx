@@ -165,7 +165,7 @@ const TaskList = () => {
 													variant="caption"
 													color="textSecondary"
 												>
-													{tasks.length} tasks
+													{tasks.length} completed
 												</Typography>
 											</Stack>
 
