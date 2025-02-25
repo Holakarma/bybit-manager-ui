@@ -7,12 +7,9 @@ const loginAccount = (database_id, signal) => {
 
 	const url = ENDPOINTS.login_account;
 
-	return api.Post({
-		url,
-		query: {
-			database_id,
-		},
-		config: { signal },
+	return api.Post(url, null, {
+		signal,
+		params: { database_id },
 	});
 };
 

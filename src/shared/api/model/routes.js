@@ -1,11 +1,9 @@
-const BASE_URL = `http://localhost:8000`;
-
 const ENDPOINTS = {
-	accounts: `${BASE_URL}/accounts`,
-	update_account: `${BASE_URL}/update-account`,
-	groups: `${BASE_URL}/filter/groups`,
-	import_account: `${BASE_URL}/import-account`,
-	login_account: `${BASE_URL}/private/login`,
+	accounts: '/accounts',
+	update_account: '/update-account',
+	groups: '/filter/groups',
+	import_account: '/import-account',
+	login_account: '/private/login',
 };
 
 export default ENDPOINTS;

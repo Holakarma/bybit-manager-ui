@@ -5,12 +5,7 @@ const importAccount = (account) => {
 
 	const url = ENDPOINTS.import_account;
 
-	return api.Post({
-		url,
-		params: {
-			...account,
-		},
-	});
+	return api.Post(url, account);
 };
 
 export default importAccount;

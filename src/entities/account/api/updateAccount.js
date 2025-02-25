@@ -23,19 +23,13 @@ const updateAccount = (account) => {
 	const api = new Api();
 
 	if (!account.id) {
-		throw new Error('Account id is required');
+		throw Error('Account id is required');
 	}
 
 	const { id, ...updatingFields } = account;
 
-	return new Promise((resolve, reject) => {
-		api.Patch({
-			url: ENDPOINTS.update_account,
-			query: { database_id: id },
-			params: updatingFields,
-		})
-			.then(resolve)
-			.catch(reject);
+	return api.Patch(ENDPOINTS.update_account, updatingFields, {
+		params: { database_id: id },
 	});
 };
 

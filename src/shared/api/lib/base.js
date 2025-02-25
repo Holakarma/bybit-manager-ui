@@ -1,19 +1,39 @@
 import axios from 'axios';
 
-class Api {
-	Get = ({ url, params, query, config }) =>
-		new Promise((resolve, reject) => {
-			let urlWithQuery = url;
-			if (query) {
-				const queryString = new URLSearchParams(query).toString();
-				urlWithQuery = `${url}?${queryString}`;
-			}
+const instance = axios.create({
+	baseURL: 'http://localhost:8000/',
+});
 
-			axios
-				.get(urlWithQuery, {
-					config,
-					params,
-				})
+instance.interceptors.request.use((config) => {
+	if (!config.url) {
+		return config;
+	}
+
+	const currentUrl = new URL(config.url, config.baseURL);
+
+	Object.entries(config.urlParams || {}).forEach(([k, v]) => {
+		currentUrl.pathname = currentUrl.pathname.replace(
+			`:${k}`,
+			encodeURIComponent(v),
+		);
+	});
+
+	const authPart =
+		currentUrl.username && currentUrl.password
+			? `${currentUrl.username}:${currentUrl.password}`
+			: '';
+	return {
+		...config,
+		baseURL: `${currentUrl.protocol}//${authPart}${currentUrl.host}`,
+		url: currentUrl.pathname,
+	};
+});
+
+class Api {
+	Get = (url, config = {}) =>
+		new Promise((resolve, reject) => {
+			instance
+				.get(url, config)
 				.then((response) => {
 					return resolve(response.data);
 				})
@@ -22,16 +42,10 @@ class Api {
 				});
 		});
 
-	Post = ({ url, params, query, config }) =>
+	Post = (url, body, config = {}) =>
 		new Promise((resolve, reject) => {
-			let urlWithQuery = url;
-			if (query) {
-				const queryString = new URLSearchParams(query).toString();
-				urlWithQuery = `${url}?${queryString}`;
-			}
-
-			axios
-				.post(urlWithQuery, params, config)
+			instance
+				.post(url, body, config)
 				.then((response) => {
 					resolve(response.data);
 				})
@@ -40,48 +54,63 @@ class Api {
 				});
 		});
 
-	AllPages = ({ request, url, params, query, config }) =>
+	GetAll = (url, config = {}) =>
 		new Promise((resolve, reject) => {
 			let allResults = [];
-			const queryParams = Object.assign({ page: 1, offset: 1 }, query);
-			let urlWithQuery = url;
-			const queryString = new URLSearchParams(queryParams).toString();
-			urlWithQuery = `${url}?${queryString}`;
-
-			request({ url: urlWithQuery, params, config })
-				.then((result) => {
-					allResults = [...allResults, ...result.result];
-					if (!result.next_page) {
+			this.Get(url, config)
+				.then((response) => {
+					allResults = [...allResults, ...response.result];
+					if (!response.next_page) {
 						resolve(allResults);
 					} else {
-						this.AllPages({
-							request,
-							url,
-							params,
-							query: {
-								...query,
-								page: result.next_page,
-								offset: queryParams.offset,
+						this.GetAll(url, {
+							...config,
+							params: {
+								...config.params,
+								page: response.next_page,
 							},
-							config,
-						}).then((nextPageData) => {
-							resolve([...allResults, ...nextPageData]);
 						});
 					}
 				})
-				.catch((error) => reject(error));
+				.then((nextPageData) => {
+					resolve([...allResults, ...nextPageData]);
+				})
+				.catch((error) => {
+					return reject(error.response);
+				});
 		});
 
-	Patch = ({ url, params, query, config }) =>
+	PostAll = (url, body, config = {}) =>
 		new Promise((resolve, reject) => {
-			let urlWithQuery = url;
-			if (query) {
-				const queryString = new URLSearchParams(query).toString();
-				urlWithQuery = `${url}?${queryString}`;
-			}
+			let allResults = [];
+			this.Post(url, body, config)
+				.then((response) => {
+					console.log(response);
+					allResults = [...allResults, ...response.result];
+					if (!response.next_page) {
+						resolve(allResults);
+					} else {
+						this.PostAll(url, body, {
+							...config,
+							params: {
+								...config.params,
+								page: response.next_page,
+							},
+						});
+					}
+				})
+				.then((nextPageData) => {
+					resolve([...allResults, ...nextPageData]);
+				})
+				.catch((error) => {
+					return reject(error.response);
+				});
+		});
 
-			axios
-				.patch(urlWithQuery, params, config)
+	Patch = (url, body, config) =>
+		new Promise((resolve, reject) => {
+			instance
+				.patch(url, body, config)
 				.then((response) => {
 					return resolve(response.data);
 				})
@@ -89,26 +118,6 @@ class Api {
 					return reject(error.response);
 				});
 		});
-
-	// GetBlob = async (url, params, headers) => {
-	// 	try {
-	// 		const response = await axios.get(url, {
-	// 			headers: {
-	// 				...headers,
-	// 			},
-	// 			responseType: 'arraybuffer',
-	// 			...params,
-	// 		});
-
-	// 		return new Blob([response.data], {
-	// 			type:
-	// 				response.headers['content-type'] ||
-	// 				'application/octet-stream',
-	// 		});
-	// 	} catch (e) {
-	// 		throw Error(e?.response?.data?.error || e);
-	// 	}
-	// };
 }
 
 export default Api;
