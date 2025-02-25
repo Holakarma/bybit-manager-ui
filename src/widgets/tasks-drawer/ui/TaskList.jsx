@@ -1,4 +1,6 @@
-import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+import FileDownloadRoundedIcon from '@mui/icons-material/FileDownloadRounded';
+import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import {
 	Box,
 	Divider,
@@ -77,76 +79,106 @@ const TaskList = () => {
 
 	return (
 		<>
-			<Box minWidth="400px">
-				<Box
-					padding={2}
-					paddingTop={4}
+			<Box
+				minWidth="400px"
+				height="100%"
+			>
+				<Stack
+					height="100%"
+					justifyContent="space-between"
+					alignItems="stretch"
 				>
-					<Stack
-						direction="row"
-						justifyContent="space-between"
-						alignItems="center"
-					>
-						<Typography
-							variant="Title1"
-							color="textSecondary.default"
+					<Box>
+						<Box
+							padding={2}
+							paddingTop={4}
 						>
-							Task queue
-						</Typography>
-
-						<Tooltip title="Clear history">
-							<IconButton
-								onClick={async () => {
-									await taskDB.clearTasks();
-									queryClient.invalidateQueries({
-										queryKey: ['tasks'],
-									});
-								}}
+							<Typography
+								variant="Title1"
+								color="textSecondary.default"
 							>
-								<ClearRoundedIcon />
-							</IconButton>
-						</Tooltip>
-					</Stack>
-				</Box>
-				<Divider />
+								Task queue
+							</Typography>
+						</Box>
+						<Divider />
+					</Box>
 
-				{pendingTasks.length || tasks.length ? (
-					<List>
-						{pendingTasks.map((task) => (
-							<ListItem key={task.id}>
-								<TaskItem
-									onClick={() => {
-										setPendingTask(task);
+					<Box sx={{ overflow: 'auto' }}>
+						{pendingTasks.length || tasks.length ? (
+							<List>
+								{pendingTasks.map((task) => (
+									<ListItem key={task.id}>
+										<TaskItem
+											onClick={() => {
+												setPendingTask(task);
+											}}
+											task={task}
+										/>
+									</ListItem>
+								))}
+
+								{[...tasks]
+									.sort((a, b) => b.timestamp - a.timestamp)
+									.map((task) => (
+										<ListItem key={task.id}>
+											<TaskItem
+												onClick={() => {
+													setTask(task);
+												}}
+												task={task}
+											/>
+										</ListItem>
+									))}
+							</List>
+						) : (
+							<Stack
+								justifyContent="center"
+								alignItems="center"
+								p={4}
+							>
+								<Typography color="textSecondary.default">
+									Empty
+								</Typography>
+							</Stack>
+						)}
+					</Box>
+
+					<Box>
+						<Divider />
+						<Stack
+							alignItems="center"
+							justifyContent="start"
+							direction="row"
+							padding={2}
+							gap={1}
+						>
+							<Tooltip title="Clear history">
+								<IconButton
+									onClick={async () => {
+										await taskDB.clearTasks();
+										queryClient.invalidateQueries({
+											queryKey: ['tasks'],
+										});
 									}}
-									task={task}
-								/>
-							</ListItem>
-						))}
+								>
+									<DeleteForeverRoundedIcon />
+								</IconButton>
+							</Tooltip>
 
-						{[...tasks]
-							.sort((a, b) => b.timestamp - a.timestamp)
-							.map((task) => (
-								<ListItem key={task.id}>
-									<TaskItem
-										onClick={() => {
-											setTask(task);
-										}}
-										task={task}
-									/>
-								</ListItem>
-							))}
-					</List>
-				) : (
-					<Stack
-						justifyContent="center"
-						alignItems="center"
-						p={4}
-					>
-						<Typography color="textSecondary.default">
-							Empty
-						</Typography>
-					</Stack>
-				)}
+							<Tooltip title="Export tasks (future)">
+								<IconButton>
+									<FileUploadRoundedIcon />
+								</IconButton>
+							</Tooltip>
+
+							<Tooltip title="Import tasks (future)">
+								<IconButton>
+									<FileDownloadRoundedIcon />
+								</IconButton>
+							</Tooltip>
+						</Stack>
+					</Box>
+				</Stack>
 			</Box>
 
 			<PendingTaskModal
