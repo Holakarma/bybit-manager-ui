@@ -14,6 +14,17 @@ import { ImportIcon } from 'shared/assets/icons/import';
 import ROUTES from 'shared/config/routes';
 import useAside from '../model/asideStore';
 
+const MENU = {
+	[ROUTES.IMPORT]: {
+		icon: <ImportIcon />,
+		label: 'Import',
+	},
+	[ROUTES.MAIN]: {
+		icon: <ExchangeIcon />,
+		label: 'Accounts',
+	},
+};
+
 const Navigation = () => {
 	const { pathname } = useLocation();
 	const theme = useTheme();
@@ -70,45 +81,40 @@ const Navigation = () => {
 							</Typography>
 						</Link>
 					</Box>
-					<Button
-						to={ROUTES.IMPORT}
-						component={Link}
-						variant="contained"
-						disableElevation
-						sx={{ width: '100%' }}
-					>
-						{collapse ? <ImportIcon /> : 'Import'}
-					</Button>
 				</Stack>
-				<Stack>
-					<Button
-						component={Link}
-						to={ROUTES.MAIN}
-						fullWidth
-						variant={
-							pathname === ROUTES.MAIN ? 'contained' : 'outlined'
-						}
-						color="secondary"
-						startIcon={collapse ? undefined : <ExchangeIcon />}
-						sx={{
-							justifyContent: collapse ? 'center' : 'start',
-						}}
-					>
-						{collapse ? (
-							<ExchangeIcon />
-						) : (
-							<Typography
-								variant="body"
-								color={
-									pathname === ROUTES.MAIN
-										? theme.palette.primary.main
-										: ''
-								}
-							>
-								Accounts
-							</Typography>
-						)}
-					</Button>
+				<Stack gap={1}>
+					{Object.entries(MENU).map(([route, { icon, label }]) => (
+						<Button
+							key={route}
+							to={route}
+							component={Link}
+							fullWidth
+							disableElevation
+							color="secondary"
+							sx={{
+								justifyContent: collapse ? 'center' : 'start',
+							}}
+							variant={
+								pathname === route ? 'contained' : 'outlined'
+							}
+							startIcon={collapse ? undefined : icon}
+						>
+							{collapse ? (
+								icon
+							) : (
+								<Typography
+									variant="body"
+									color={
+										pathname === route
+											? theme.palette.primary.main
+											: ''
+									}
+								>
+									{label}
+								</Typography>
+							)}
+						</Button>
+					))}
 				</Stack>
 			</Stack>
 		</Paper>

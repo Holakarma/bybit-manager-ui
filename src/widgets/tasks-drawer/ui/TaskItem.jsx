@@ -1,3 +1,4 @@
+import CancelScheduleSendRoundedIcon from '@mui/icons-material/CancelScheduleSendRounded';
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import {
 	Button,
@@ -94,6 +95,7 @@ const TaskItem = ({ onClick, task }) => {
 					/>
 				</Stack>
 			</Button>
+
 			<Menu
 				open={contextMenu !== null}
 				onClose={handleClose}
@@ -117,7 +119,7 @@ const TaskItem = ({ onClick, task }) => {
 				) : (
 					<MenuItem onClick={handleAbort}>
 						<ListItemIcon>
-							<DeleteForeverRoundedIcon fontSize="small" />
+							<CancelScheduleSendRoundedIcon fontSize="small" />
 						</ListItemIcon>
 						<ListItemText>Abort</ListItemText>
 					</MenuItem>
