@@ -4,21 +4,35 @@ import { Api, ENDPOINTS } from 'shared/api';
 
 const loginAccount = (database_id, signal) => {
 	const api = new Api();
-
-	const url = ENDPOINTS.login_account;
-
-	return api.Post(url, null, {
+	return api.Post(ENDPOINTS.login_account, null, {
 		signal,
 		params: { database_id },
 	});
 };
 
+const activeRequests = new Map();
+
 const useLoginAccountMutation = () =>
 	useMutation({
-		mutationFn: async ({ database_id, signal }) => ({
-			data: await loginAccount(database_id, signal),
-			database_id,
-		}),
+		mutationFn: async ({ database_id, signal }) => {
+			// @TODO: create lib function for deduplicate reauests
+			if (activeRequests.has(database_id)) {
+				return activeRequests.get(database_id);
+			}
+
+			const promise = loginAccount(database_id, signal)
+				.then((response) => {
+					activeRequests.delete(database_id);
+					return { response, database_id };
+				})
+				.catch((error) => {
+					activeRequests.delete(database_id);
+					throw error;
+				});
+
+			activeRequests.set(database_id, promise);
+			return promise;
+		},
 		mutationKey: ['login'],
 	});
 
@@ -31,7 +45,6 @@ const useLoginTask = () => {
 	let abortController = null;
 
 	const mutate = async ({ database_ids, settings, onSuccess, onAbort }) => {
-		// Создаем новый контроллер для этой мутации
 		abortController = new AbortController();
 
 		const idsToProcess = settings.shuffle
@@ -126,7 +139,7 @@ const processChunks = ({
 							throw Error(
 								JSON.stringify({
 									id,
-									error: error.data,
+									error: error?.data || 'Aborted by user',
 								}),
 							);
 						}),

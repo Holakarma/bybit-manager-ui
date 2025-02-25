@@ -26,6 +26,8 @@ const LoginTaskResult = ({ task, ...props }) => {
 		}));
 	}, [accounts, task]);
 
+	console.log(taskAccounts);
+
 	if (isLoading) {
 		return (
 			<Box {...props}>
@@ -91,6 +93,7 @@ const LoginTaskResult = ({ task, ...props }) => {
 											? 'Cookies were updated'
 											: task?.error?.bybit_response
 													?.ret_msg ||
+												task?.error ||
 												'Some error occured'
 									}
 								>
