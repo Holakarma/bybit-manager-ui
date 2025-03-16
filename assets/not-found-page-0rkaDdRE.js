@@ -1,0 +1,1 @@
+import{j as a,k as s,T as o,ar as n,as as r}from"./index-2Bg-OccH.js";const e=()=>a.jsxs(s,{children:[a.jsx(o,{variant:"h1",children:"404. Page was not found"}),"Go to ",a.jsx(n,{to:r.MAIN,children:"main page"}),"."]});export{e as default};
