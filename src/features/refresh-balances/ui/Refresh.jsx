@@ -2,25 +2,25 @@ import { Button } from '@mui/material';
 import { useSelectedAccounts } from 'entities/account';
 import { TaskModal } from 'entities/task';
 import { useState } from 'react';
-import useLoginTask from '../api/loginAccount';
+import useRefreshTask from '../api/refreshBalances';
 import Settings from './Settngs';
 
-const Login = ({ ...props }) => {
-	const [open, setOpen] = useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
-
+const Refresh = ({ ...props }) => {
 	const {
 		data: selectedAccounts,
 		isLoading,
 		isError,
 	} = useSelectedAccounts();
+	const [open, setOpen] = useState(false);
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
 
-	const mutation = useLoginTask();
+	const mutation = useRefreshTask();
 
 	const [settings, setSettings] = useState({
 		threads: 1,
 		delay: { min: 60, max: 90 },
+		prelogin: false,
 		shuffle: false,
 	});
 
@@ -38,20 +38,20 @@ const Login = ({ ...props }) => {
 		<>
 			<Button
 				{...props}
-				variant="contained"
-				fullWidth
 				disabled={isLoading || isError || !selectedAccounts.length}
 				loading={isLoading}
+				variant="contained"
+				fullWidth
 				onClick={handleOpen}
 			>
-				Login
+				Refresh
 			</Button>
 			<TaskModal
 				open={open}
 				onClose={handleClose}
-				taskTitle="Create login task"
-				taskDescription="Are you sure you want to login for following
-							accounts?"
+				taskTitle="Create refresh balances task"
+				taskDescription="Are you sure you want to refresh for following
+								accounts?"
 				accounts={selectedAccounts}
 				onStart={startHandler}
 				settingsComponent={
@@ -67,4 +67,4 @@ const Login = ({ ...props }) => {
 	);
 };
 
-export default Login;
+export default Refresh;

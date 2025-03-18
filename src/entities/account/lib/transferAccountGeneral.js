@@ -2,7 +2,7 @@ import findLatestExpires from './findLatestExpires';
 import getMarksArray from './getMarksArray';
 import getWarnings from './getWarnings';
 
-const transferAccount = (account) => {
+const transferAccountGeneral = (account) => {
 	const sessoinCookie = account.cookies?.filter(
 		(cookie) => cookie.name === 'secure-token',
 	);
@@ -27,4 +27,4 @@ const transferAccount = (account) => {
 	};
 };
 
-export default transferAccount;
+export default transferAccountGeneral;

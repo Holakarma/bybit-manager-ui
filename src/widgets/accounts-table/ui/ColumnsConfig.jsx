@@ -9,11 +9,83 @@ import NameCell from './table-parts/NameCell';
 import ToggleNameHeader from './table-parts/ToggleNameHeader';
 import VisibilityChangingHeader from './table-parts/VisibilityChangingHeader';
 
-const columns = (toggleName = false) => [
+const columns = (toggleName, layer = 'general', additionalColumns = []) => {
+	switch (layer) {
+		case 'general':
+			return [...generalLayerColumns(toggleName), ...additionalColumns];
+		case 'balances':
+			return [...balancesLayerColumns(toggleName), ...additionalColumns];
+	}
+};
+
+const balancesLayerColumns = (toggleName = false) => [
+	{
+		hideable: false,
+		field: toggleName ? 'name' : 'id',
+		headerName: toggleName ? 'Name' : 'ID',
+		minWidth: 130,
+		display: 'flex',
+		flex: 1,
+		editable: toggleName,
+		renderHeader: (params) => <ToggleNameHeader params={params} />,
+		renderCell: (params) => <NameCell params={params} />,
+	},
+	{
+		field: 'group_name',
+		headerName: 'Group',
+		width: 240,
+		editable: true,
+		renderCell: (params) =>
+			params.row.group_name || (
+				<Stack
+					height="100%"
+					justifyContent="center"
+				>
+					<Typography color="textSecondary.default">
+						No group
+					</Typography>
+				</Stack>
+			),
+		renderEditCell: (params) => <GroupEditCell params={params} />,
+	},
+	{
+		field: 'email',
+		headerName: 'Email',
+		hideable: false,
+		width: 240,
+		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
+		renderCell: (params) => (
+			<HidingCell
+				params={params}
+				hidingFn={obfuscateEmail}
+				context={ColumnVisibilityContext}
+			>
+				{params.value}
+			</HidingCell>
+		),
+	},
+	{
+		field: 'balance',
+		headerName: 'Balance',
+		width: 170,
+		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
+		renderCell: (params) => (
+			<HidingCell
+				params={params}
+				context={ColumnVisibilityContext}
+			>
+				{params.value}
+			</HidingCell>
+		),
+	},
+];
+
+const generalLayerColumns = (toggleName = false) => [
 	{
 		field: toggleName ? 'name' : 'id',
 		headerName: toggleName ? 'Name' : 'ID',
 		minWidth: 130,
+		maxWidth: 150,
 		display: 'flex',
 		flex: 1,
 		editable: toggleName,

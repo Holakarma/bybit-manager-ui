@@ -4,6 +4,7 @@ import { useContext } from 'react';
 
 const ToggleNameHeader = ({ params }) => {
 	const [toggleName, setToggleName] = useContext(ToggleNameContext);
+
 	const clickHandler = (e) => {
 		e.stopPropagation();
 		localStorage.setItem('toggleName', !toggleName);

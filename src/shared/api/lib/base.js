@@ -12,6 +12,7 @@ instance.interceptors.request.use((config) => {
 	const currentUrl = new URL(config.url, config.baseURL);
 
 	Object.entries(config.urlParams || {}).forEach(([k, v]) => {
+		console.log(encodeURIComponent(v));
 		currentUrl.pathname = currentUrl.pathname.replace(
 			`:${k}`,
 			encodeURIComponent(v),
@@ -94,11 +95,16 @@ class Api {
 							params: {
 								...config.params,
 								page: response.next_page,
+								offset: response.offset || 50,
 							},
 						});
 					}
 				})
 				.then((nextPageData) => {
+					if (!nextPageData) {
+						return resolve(allResults);
+					}
+
 					resolve([...allResults, ...nextPageData]);
 				})
 				.catch((error) => {

@@ -3,49 +3,80 @@ import { taskDB, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
-const loginAccount = (database_id, signal) => {
+// eslint-disable-next-line no-restricted-imports
+import { useLoginAccountMutation } from 'features/login/@X/refresh-balances';
+
+const getFinanceAccounts = (database_id, signal) => {
 	const api = new Api();
-	return api.Post(ENDPOINTS.login_account, null, {
-		signal,
-		params: { database_id },
+
+	const url = ENDPOINTS.finance_accounts;
+
+	return new Promise((resolve, reject) => {
+		api.Get(url, {
+			params: { database_id, ['quote_coin_symbol']: 'BTC' },
+			signal,
+		})
+			.then((response) => {
+				return resolve({ database_id, ...response });
+			})
+			.catch((error) => {
+				return reject({ database_id, ...error });
+			});
 	});
 };
 
-export const useLoginAccountMutation = () => {
+const useRefreshFinancesAccounts = (props) => {
 	const mutationFunction = ({ database_id, signal }) => {
 		return deduplicateRequests({
-			requestKey: ['login', database_id],
+			requestKey: ['refresh finance accounts', database_id],
 			requestFn: async () => {
-				const result = await loginAccount(database_id, signal);
-				return { result, database_id };
+				const result = await getFinanceAccounts(database_id, signal);
+				return { ...result, database_id };
 			},
 		});
 	};
 
 	return useMutation({
 		mutationFn: mutationFunction,
-		mutationKey: ['login'],
+		mutationKey: ['refresh finance accounts'],
+		...props,
 	});
 };
 
-const useLoginTask = () => {
+const useRefreshTask = () => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
+	const loginMutation = useLoginAccountMutation();
+
+	const mutation = useRefreshFinancesAccounts({
+		onMutate: (variables) =>
+			/* Prelogin */
+			new Promise((resolve, reject) => {
+				if (variables.settings.prelogin) {
+					loginMutation
+						.mutateAsync(variables)
+						.then((result) => {
+							resolve(result);
+						})
+						.catch((error) => {
+							reject(error);
+						});
+				} else {
+					resolve();
+				}
+			}),
+	});
 
 	const successHandler = async ({ data: accounts, taskId }) => {
 		await taskDB.addTask({
-			type: 'login',
+			type: 'finance accounts',
 			status: 'completed',
 			data: accounts,
 			taskId,
 			startedAt: Date.now(),
 		});
 
-		queryClient.invalidateQueries({
-			queryKey: ['tasks'],
-		});
-
-		enqueueSnackbar('Login completed', {
+		enqueueSnackbar('Refresh completed', {
 			variant: 'info',
 		});
 
@@ -79,19 +110,20 @@ const useLoginTask = () => {
 
 	const settleHandler = () => {
 		queryClient.invalidateQueries({
-			queryKey: ['accounts', 'tasks'],
+			queryKey: ['finance accounts'],
+		});
+		queryClient.invalidateQueries({
+			queryKey: ['tasks'],
 		});
 	};
-
-	const mutation = useLoginAccountMutation();
 
 	return useTask({
 		asyncMutation: mutation.mutateAsync,
 		onSuccess: successHandler,
 		onError: errorHandler,
 		onSettled: settleHandler,
-		type: 'login',
+		type: 'finance accounts',
 	});
 };
 
-export default useLoginTask;
+export default useRefreshTask;

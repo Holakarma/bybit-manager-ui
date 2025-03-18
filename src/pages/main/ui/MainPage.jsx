@@ -1,12 +1,32 @@
-import { Grid2, Paper, Stack, Typography, useTheme } from '@mui/material';
+import {
+	Grid2,
+	Paper,
+	Stack,
+	ToggleButton,
+	ToggleButtonGroup,
+	Tooltip,
+	Typography,
+	useTheme,
+} from '@mui/material';
 import { DefaultAccount } from 'entities/account';
-import { Login } from 'features/login';
-import { Accounts } from 'widgets/accounts-table';
+import { DollarIcon } from 'shared/assets/icons/dollar';
+import { UsersIcon } from 'shared/assets/icons/users';
+import { Accounts, useLayer } from 'widgets/accounts-table';
 import { Filters } from 'widgets/filters';
+import { MainAction } from 'widgets/main-action';
 import { TaskDrawer } from 'widgets/tasks-drawer';
 
 const MainPage = () => {
 	const theme = useTheme();
+
+	const layer = useLayer.use.layer();
+	const setLayer = useLayer.use.setLayer();
+	const handleLayer = (event, newLayer) => {
+		if (newLayer !== null) {
+			setLayer(newLayer);
+		}
+	};
+
 	return (
 		<Stack
 			gap={4}
@@ -33,9 +53,44 @@ const MainPage = () => {
 				<Grid2
 					container
 					columns={12}
+					spacing={2}
 				>
 					<Grid2 size={2}>
-						<Login />
+						<MainAction />
+					</Grid2>
+					<Grid2 size={10}>
+						<ToggleButtonGroup
+							value={layer}
+							exclusive
+							onChange={handleLayer}
+							aria-label="text alignment"
+						>
+							<Tooltip
+								enterDelay={500}
+								title="General"
+								arrow
+							>
+								<ToggleButton
+									value="general"
+									aria-label="left aligned"
+								>
+									<UsersIcon />
+								</ToggleButton>
+							</Tooltip>
+
+							<Tooltip
+								enterDelay={500}
+								title="Balances"
+								arrow
+							>
+								<ToggleButton
+									value="balances"
+									aria-label="centered"
+								>
+									<DollarIcon />
+								</ToggleButton>
+							</Tooltip>
+						</ToggleButtonGroup>
 					</Grid2>
 				</Grid2>
 			</Stack>

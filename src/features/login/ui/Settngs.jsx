@@ -59,7 +59,7 @@ const DelaySettings = ({
 	</Stack>
 );
 
-const LoginSettings = ({ settings, onSettingsChange }) => {
+const Settings = ({ settings, onSettingsChange }) => {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [inputMinDelay, setInputMinDelay] = useState(
 		String(settings.delay.min),
@@ -139,7 +139,7 @@ const LoginSettings = ({ settings, onSettingsChange }) => {
 				<Stack
 					p={2}
 					alignItems="start"
-					gap={2}
+					gap={1}
 				>
 					<NumberField
 						label="Threads"
@@ -173,4 +173,4 @@ const LoginSettings = ({ settings, onSettingsChange }) => {
 	);
 };
 
-export default LoginSettings;
+export default Settings;

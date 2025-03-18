@@ -15,6 +15,8 @@ const VisibilityChangingHeader = ({ params }) => {
 		}));
 	};
 
+	if (!params.colDef) return null;
+
 	return (
 		<Stack
 			alignItems="center"

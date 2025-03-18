@@ -18,7 +18,13 @@ import tableSx from './tableStyles';
 
 const paginationModel = { page: 0, pageSize: 5 };
 
-const AccountsTable = ({ initialRows, onSuccess, onError }) => {
+const AccountsTable = ({
+	initialRows,
+	layer,
+	additionalColumns,
+	onSuccess,
+	onError,
+}) => {
 	const searchEmail = useFilter.use.email();
 	const addGroup = useFilter.use.addGroup();
 	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
@@ -116,7 +122,7 @@ const AccountsTable = ({ initialRows, onSuccess, onError }) => {
 				<ToggleNameContext.Provider value={[toggleName, setToggleName]}>
 					<DataGrid
 						rows={rows}
-						columns={columns(toggleName)}
+						columns={columns(toggleName, layer, additionalColumns)}
 						initialState={{
 							pagination: { paginationModel },
 							columns: {

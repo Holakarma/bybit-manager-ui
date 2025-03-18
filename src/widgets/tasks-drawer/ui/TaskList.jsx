@@ -222,7 +222,7 @@ const TaskList = () => {
 							</Tooltip>
 
 							<Tooltip
-								title="Export tasks (future)"
+								title="Export tasks (soon)"
 								slotProps={tooltipSlotProps}
 							>
 								<IconButton>
@@ -231,7 +231,7 @@ const TaskList = () => {
 							</Tooltip>
 
 							<Tooltip
-								title="Import tasks (future)"
+								title="Import tasks (soon)"
 								slotProps={tooltipSlotProps}
 							>
 								<IconButton>

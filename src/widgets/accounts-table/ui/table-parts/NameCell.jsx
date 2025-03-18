@@ -4,6 +4,7 @@ import { useContext } from 'react';
 
 const NameCell = ({ params }) => {
 	const [toggleName] = useContext(ToggleNameContext);
+
 	return toggleName && params.row.name ? (
 		params.row.name
 	) : (
