@@ -156,20 +156,6 @@ const generalLayerColumns = (toggleName = false) => [
 		),
 	},
 	{
-		field: 'web3_balance',
-		headerName: 'Web3',
-		width: 160,
-		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
-		renderCell: (params) => (
-			<HidingCell
-				params={params}
-				context={ColumnVisibilityContext}
-			>
-				{params.value}
-			</HidingCell>
-		),
-	},
-	{
 		field: 'kyc',
 		headerName: 'KYC',
 		sortable: false,

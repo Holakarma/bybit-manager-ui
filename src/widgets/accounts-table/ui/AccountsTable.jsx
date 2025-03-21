@@ -35,11 +35,14 @@ const AccountsTable = ({
 	const { mutate: update, isPending } = useUpdateAccountMutation();
 
 	const rows = useMemo(() => {
+		const searhQuery = searchEmail.toLowerCase();
 		if (initialRows) {
 			return initialRows.filter((row) => {
-				return row.email
-					.toLowerCase()
-					.includes(searchEmail.toLowerCase());
+				return (
+					row.email.toLowerCase().includes(searhQuery) ||
+					String(row.id).toLowerCase().includes(searhQuery) ||
+					row.name?.toLowerCase().includes(searhQuery)
+				);
 			});
 		}
 		return null;

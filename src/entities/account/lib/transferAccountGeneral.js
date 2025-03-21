@@ -12,8 +12,7 @@ const transferAccountGeneral = (account) => {
 		group_name: account.group_name,
 		email: account.email.address,
 		imap: account.email.imap_address,
-		balance: account.trading_balance || '0',
-		web3_balance: account.web3_balance || '0',
+		balance: account.balance_usd || 'update required',
 		kyc: (account.kyc_level || '') + ' ' + (account.country || ''),
 		loginCountry:
 			(account.last_login_country_code || '') +

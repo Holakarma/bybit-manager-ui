@@ -55,9 +55,12 @@ const MainPage = () => {
 					columns={12}
 					spacing={2}
 				>
+					{/* Actions */}
 					<Grid2 size={2}>
 						<MainAction />
 					</Grid2>
+
+					{/* Tables toggler */}
 					<Grid2 size={10}>
 						<ToggleButtonGroup
 							value={layer}
