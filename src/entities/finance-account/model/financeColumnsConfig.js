@@ -18,7 +18,7 @@ const financeColumnsConfig = [
 	},
 	{
 		field: 'ACCOUNT_TYPE_UNIFIED',
-		headerName: 'Unified',
+		headerName: 'Trading',
 	},
 	{
 		field: 'ACCOUNT_TYPE_INVESTMENT',
