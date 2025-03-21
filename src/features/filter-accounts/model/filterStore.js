@@ -2,9 +2,9 @@ import { createSelectors } from 'shared/zustand';
 import { create } from 'zustand';
 
 const useFilterBase = create((set) => ({
-	email: '',
+	search: '',
 	groups: [],
-	setEmail: (newEmail) => set({ email: newEmail }),
+	setSearch: (newSearch) => set({ search: newSearch }),
 	setGroups: (newGroups) => set({ groups: newGroups }),
 	addGroup: (newGroup) =>
 		set((state) => {

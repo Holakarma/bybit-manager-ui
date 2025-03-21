@@ -25,7 +25,7 @@ const AccountsTable = ({
 	onSuccess,
 	onError,
 }) => {
-	const searchEmail = useFilter.use.email();
+	const search = useFilter.use.search();
 	const addGroup = useFilter.use.addGroup();
 	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
 	const setSelectedAccountsId =
@@ -35,7 +35,7 @@ const AccountsTable = ({
 	const { mutate: update, isPending } = useUpdateAccountMutation();
 
 	const rows = useMemo(() => {
-		const searhQuery = searchEmail.toLowerCase();
+		const searhQuery = search.toLowerCase();
 		if (initialRows) {
 			return initialRows.filter((row) => {
 				return (
@@ -46,7 +46,7 @@ const AccountsTable = ({
 			});
 		}
 		return null;
-	}, [searchEmail, initialRows]);
+	}, [search, initialRows]);
 
 	const [visible, setVisible] = useState(
 		columns().reduce((acc, col) => ({ ...acc, [col.field]: true }), {}),

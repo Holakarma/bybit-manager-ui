@@ -2,7 +2,7 @@ import { TextField } from '@mui/material';
 import { useFilter } from '..';
 
 const SearchByEmail = () => {
-	const setEmail = useFilter.use.setEmail();
+	const setSearch = useFilter.use.setSearch();
 
 	return (
 		<TextField
@@ -10,7 +10,7 @@ const SearchByEmail = () => {
 			variant="outlined"
 			fullWidth
 			size="small"
-			onInput={(e) => setEmail(e.target.value)}
+			onInput={(e) => setSearch(e.target.value)}
 		/>
 	);
 };
