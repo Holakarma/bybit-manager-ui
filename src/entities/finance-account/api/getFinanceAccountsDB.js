@@ -3,7 +3,7 @@ import { Api, ENDPOINTS } from 'shared/api';
 
 const useGetFinanceAccountsDB = (uids) =>
 	useQuery({
-		queryFn: () => getFinanceAccountsDB(uids),
+		queryFn: () => getFinanceAccountsDB(uids.filter((uid) => Boolean(uid))),
 		queryKey: ['finance accounts', { uids }],
 		staleTime: 5 * 1000 * 60,
 		retry: false,

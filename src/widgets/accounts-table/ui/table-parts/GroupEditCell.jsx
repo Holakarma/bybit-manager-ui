@@ -26,8 +26,9 @@ const GroupEditCell = ({ params }) => {
 			value={value}
 			renderInput={(params) => (
 				<InputBase
+					disabled={isError}
 					autoFocus
-					inputProps={{ ...params.inputProps }}
+					inputProps={{ ...params.inputProps, disabled: isError }}
 					ref={params.InputProps.ref}
 					sx={{ paddingInline: 2 }}
 				/>

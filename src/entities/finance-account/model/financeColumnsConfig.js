@@ -1,10 +1,17 @@
 const createFinanceAccountsConfig = (accounts) => {
-	return financeColumnsConfig().filter((column) =>
-		accounts.every((account) => account[column.field]),
+	console.log(accounts);
+
+	return financeColumnsConfig.filter(
+		(column) =>
+			!accounts.every(
+				(account) =>
+					account[column.field] === 0 ||
+					account[column.field] === undefined,
+			),
 	);
 };
 
-const financeColumnsConfig = () => [
+const financeColumnsConfig = [
 	{
 		field: 'ACCOUNT_TYPE_FUND',
 		headerName: 'Funding',

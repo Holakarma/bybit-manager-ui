@@ -3,7 +3,7 @@ import { useGetGroupsQuery } from 'entities/group';
 import useFilter from '../model/filterStore';
 
 const GroupSelect = ({ ...props }) => {
-	const { data: availableGroups, isLoading, error } = useGetGroupsQuery();
+	const { data: availableGroups, isLoading, isError } = useGetGroupsQuery();
 
 	const setGroups = useFilter.use.setGroups();
 	const groups = useFilter.use.groups();
@@ -21,15 +21,14 @@ const GroupSelect = ({ ...props }) => {
 			options={availableGroups || []}
 			fullWidth
 			size="small"
-			disabled={error}
-			color="error"
+			disabled={isError}
 			loading={isLoading}
 			getOptionLabel={(option) => option.group || 'No group'}
 			noOptionsText="No groups"
 			renderInput={(params) => (
 				<TextField
 					{...params}
-					label={error ? 'Error' : 'Groups'}
+					label={isError ? 'Some error occured' : 'Groups'}
 					slotProps={{
 						input: {
 							...params.InputProps,
