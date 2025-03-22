@@ -12,7 +12,6 @@ instance.interceptors.request.use((config) => {
 	const currentUrl = new URL(config.url, config.baseURL);
 
 	Object.entries(config.urlParams || {}).forEach(([k, v]) => {
-		console.log(encodeURIComponent(v));
 		currentUrl.pathname = currentUrl.pathname.replace(
 			`:${k}`,
 			encodeURIComponent(v),
@@ -58,58 +57,61 @@ class Api {
 	GetAll = (url, config = {}) =>
 		new Promise((resolve, reject) => {
 			let allResults = [];
-			this.Get(url, config)
-				.then((response) => {
-					allResults = [...allResults, ...response.result];
-					if (!response.next_page) {
-						resolve(allResults);
-					} else {
-						this.GetAll(url, {
-							...config,
-							params: {
-								...config.params,
-								page: response.next_page,
-							},
-						});
-					}
-				})
-				.then((nextPageData) => {
-					resolve([...allResults, ...nextPageData]);
-				})
-				.catch((error) => {
-					return reject(error.response);
-				});
+
+			const getPage = (pageConfig) => {
+				this.Get(url, pageConfig)
+					.then((response) => {
+						allResults = allResults.concat(response.result);
+
+						if (response.next_page) {
+							getPage({
+								...config,
+								params: {
+									...config.params,
+									page: response.next_page,
+									offset: response.offset || 50,
+								},
+							});
+						} else {
+							resolve(allResults);
+						}
+					})
+					.catch((error) => {
+						reject(error);
+					});
+			};
+
+			getPage(config);
 		});
 
 	PostAll = (url, body, config = {}) =>
 		new Promise((resolve, reject) => {
 			let allResults = [];
-			this.Post(url, body, config)
-				.then((response) => {
-					allResults = [...allResults, ...response.result];
-					if (!response.next_page) {
-						resolve(allResults);
-					} else {
-						this.PostAll(url, body, {
-							...config,
-							params: {
-								...config.params,
-								page: response.next_page,
-								offset: response.offset || 50,
-							},
-						});
-					}
-				})
-				.then((nextPageData) => {
-					if (!nextPageData) {
-						return resolve(allResults);
-					}
 
-					resolve([...allResults, ...nextPageData]);
-				})
-				.catch((error) => {
-					return reject(error.response);
-				});
+			const postPage = (pageConfig) => {
+				this.Post(url, body, pageConfig)
+					.then((response) => {
+						allResults = allResults.concat(response.result);
+
+						if (response.next_page) {
+							postPage({
+								...config,
+								params: {
+									...config.params,
+									page: response.next_page,
+									offset: response.offset || 50,
+								},
+							});
+						} else {
+							resolve(allResults);
+						}
+					})
+					.catch((error) => {
+						reject(error);
+					});
+			};
+
+			postPage(config);
 		});
 
 	Patch = (url, body, config) =>

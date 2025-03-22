@@ -138,7 +138,7 @@ const AccountsTable = ({
 								style: { cursor: 'context-menu' },
 							},
 						}}
-						pageSizeOptions={[5, 10]}
+						pageSizeOptions={[5, 10, 50, 100]}
 						sx={tableSx}
 						loading={isPending}
 						checkboxSelection

@@ -113,6 +113,9 @@ const useRefreshTask = () => {
 			queryKey: ['finance accounts'],
 		});
 		queryClient.invalidateQueries({
+			queryKey: ['accounts'],
+		});
+		queryClient.invalidateQueries({
 			queryKey: ['tasks'],
 		});
 	};

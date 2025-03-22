@@ -21,7 +21,6 @@ const useGetFinanceAccountsDB = (uids) => {
 export default useGetFinanceAccountsDB;
 
 const getFinanceAccountsDB = (uids) => {
-	console.log(uids);
 	const api = new Api();
 
 	const body = uids.length ? { uids } : undefined;
