@@ -18,11 +18,11 @@ const AccountHeader = () => {
 				<TableCell sx={{ padding: '4px' }}>Bybit address*</TableCell>
 				<TableCell sx={{ padding: '4px' }}>IMAP address</TableCell>
 				<TableCell sx={{ padding: '4px' }}>IMAP password</TableCell>
+				<TableCell sx={{ padding: '4px' }}>Bybit password</TableCell>
+				<TableCell sx={{ padding: '4px' }}>TOTP Secret</TableCell>
 				<TableCell sx={{ padding: '4px' }}>
 					WEB3 Mnemonic Phase
 				</TableCell>
-				<TableCell sx={{ padding: '4px' }}>Bybit password</TableCell>
-				<TableCell sx={{ padding: '4px' }}>TOTP Secret</TableCell>
 				{/* <TableCell sx={{ padding: '4px' }}>Payment password</TableCell> */}
 				<TableCell sx={{ padding: '4px' }}>Bybit proxy</TableCell>
 				<TableCell sx={{ padding: '4px' }}>Email proxy</TableCell>
