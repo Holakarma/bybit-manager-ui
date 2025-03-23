@@ -160,7 +160,7 @@ const AccountsTable = ({
 							setSelectedAccountsId(newRowSelectionModel);
 						}}
 						rowSelectionModel={selectedAccountsId}
-						onColumnResize={(params) => {
+						onColumnWidthChange={(params) => {
 							setColumnWidthModel((prev) => ({
 								...prev,
 								[params.colDef.field]: params.width,
