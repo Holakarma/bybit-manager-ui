@@ -8,7 +8,8 @@ import {
 	useUpdateAccountMutation,
 } from 'entities/account';
 import { useFilter } from 'features/filter-accounts';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { usePersistState } from 'shared/lib/react';
 import {
 	getVisibilityModel,
 	setColumnVisibilityModel,
@@ -105,14 +106,8 @@ const AccountsTable = ({
 		});
 	};
 
-	const [columnWidthModel, setColumnWidthModel] = useState(() => {
-		const savedWidths = localStorage.getItem('columnWidths');
-		return savedWidths ? JSON.parse(savedWidths) : {};
-	});
-
-	useEffect(() => {
-		localStorage.setItem('columnWidths', JSON.stringify(columnWidthModel));
-	}, [columnWidthModel]);
+	const [columnWidthModel, setColumnWidthModel] =
+		usePersistState('columnWidths');
 
 	const memoColumns = useMemo(
 		() =>
