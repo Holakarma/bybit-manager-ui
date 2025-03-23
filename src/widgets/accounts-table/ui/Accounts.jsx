@@ -11,6 +11,7 @@ import {
 import { useFilter } from 'features/filter-accounts';
 import { useSnackbar } from 'notistack';
 import { useMemo } from 'react';
+import { usePersistState } from 'shared/lib/react';
 import useLayer from '../model/layerStore';
 import AccountsTable from './AccountsTable';
 
@@ -62,12 +63,15 @@ const Accounts = () => {
 		return [];
 	}, [rows, search]);
 
+	const [columnWidthModel, setColumnWidthModel] =
+		usePersistState('columnWidths');
+
 	const additionalColumns = useMemo(() => {
 		if (layer === 'balances' && rows) {
-			return createFinanceAccountsConfig(rows);
+			return createFinanceAccountsConfig(rows, columnWidthModel);
 		}
 		return [];
-	}, [layer, rows]);
+	}, [layer, rows, columnWidthModel]);
 
 	const generealBalance = useMemo(() => {
 		if (filteredRows) {
@@ -117,6 +121,7 @@ const Accounts = () => {
 			layer={layer}
 			initialRows={filteredRows}
 			balance={generealBalance}
+			columnWidthModel={columnWidthModel}
 			onSuccess={() => {
 				enqueueSnackbar('Row updated', {
 					variant: 'success',
@@ -126,6 +131,12 @@ const Accounts = () => {
 				enqueueSnackbar(`Some error occured`, {
 					variant: 'error',
 				});
+			}}
+			onColumnWidthChange={(params) => {
+				setColumnWidthModel((prev) => ({
+					...prev,
+					[params.colDef.field]: params.width,
+				}));
 			}}
 		/>
 	);

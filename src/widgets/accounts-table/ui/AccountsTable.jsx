@@ -9,7 +9,6 @@ import {
 } from 'entities/account';
 import { useFilter } from 'features/filter-accounts';
 import { useMemo, useState } from 'react';
-import { usePersistState } from 'shared/lib/react';
 import {
 	getVisibilityModel,
 	setColumnVisibilityModel,
@@ -26,6 +25,8 @@ const AccountsTable = ({
 	balance,
 	onSuccess,
 	onError,
+	columnWidthModel,
+	onColumnWidthChange,
 }) => {
 	const addGroup = useFilter.use.addGroup();
 	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
@@ -106,9 +107,6 @@ const AccountsTable = ({
 		});
 	};
 
-	const [columnWidthModel, setColumnWidthModel] =
-		usePersistState('columnWidths');
-
 	const memoColumns = useMemo(
 		() =>
 			columns({
@@ -155,12 +153,7 @@ const AccountsTable = ({
 							setSelectedAccountsId(newRowSelectionModel);
 						}}
 						rowSelectionModel={selectedAccountsId}
-						onColumnWidthChange={(params) => {
-							setColumnWidthModel((prev) => ({
-								...prev,
-								[params.colDef.field]: params.width,
-							}));
-						}}
+						onColumnWidthChange={onColumnWidthChange}
 					/>
 				</ToggleNameContext.Provider>
 			</ColumnVisibilityContext.Provider>
