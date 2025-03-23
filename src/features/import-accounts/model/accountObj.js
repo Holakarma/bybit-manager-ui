@@ -8,6 +8,7 @@ const accountObj = {
 	bybit_email: undefined,
 	imap_address: undefined,
 	imap_password: undefined,
+	web3_mnemonic_phrase: undefined,
 	bybit_password: undefined,
 	bybit_totp: undefined,
 	bybit_proxy: undefined,

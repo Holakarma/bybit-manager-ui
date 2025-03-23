@@ -106,6 +106,15 @@ const AccountRow = ({ account, onEdit, sx, ...props }) => {
 			/>
 			<AccountCell
 				inputProps={{
+					name: `accounts[${account.id}][web3_mnemonic_phrase]`,
+					value: tempAccount.web3_mnemonic_phrase,
+					placeholder: 'W3 Mnemonic Phase',
+					onChange: handleChange,
+					onBlur: handleBlur,
+				}}
+			/>
+			<AccountCell
+				inputProps={{
 					name: `accounts[${account.id}][bybit_password]`,
 					value: tempAccount.bybit_password,
 					placeholder: 'Bybit password',

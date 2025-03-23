@@ -7,6 +7,7 @@ const templateImportAccount = [
 		'[email] Address',
 		'[email] IMAP Address',
 		'[email] IMAP password',
+		'[bybit] Mnemonic phrase',
 		'[bybit] Password',
 		'[bybit] TOTP secret',
 		'[bybit] Proxy',

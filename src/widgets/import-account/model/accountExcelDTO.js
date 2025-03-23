@@ -7,6 +7,7 @@ class AccountExcelDTO {
 		this.bybit_email = columns['[email] Address'];
 		this.imap_address = columns['[email] IMAP Address'];
 		this.imap_password = columns['[email] IMAP password'];
+		this.web3_mnemonic_phrase = columns['[bybit] Mnemonic phrase'];
 		this.bybit_password = columns['[bybit] Password'];
 		this.bybit_totp = columns['[bybit] TOTP secret'];
 		this.bybit_proxy = columns['[bybit] Proxy'];
