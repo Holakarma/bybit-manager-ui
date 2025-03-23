@@ -14,6 +14,9 @@ const tableSx = {
 	'& .MuiDataGrid-row--borderBottom': {
 		borderBottom: '1px solid #333537',
 	},
+	'& .MuiDataGrid-virtualScroller': {
+		overflowY: 'hidden',
+	},
 };
 
 export default tableSx;

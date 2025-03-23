@@ -8,7 +8,7 @@ import {
 	useUpdateAccountMutation,
 } from 'entities/account';
 import { useFilter } from 'features/filter-accounts';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
 	getVisibilityModel,
 	setColumnVisibilityModel,
@@ -16,16 +16,16 @@ import {
 import columns from './ColumnsConfig';
 import tableSx from './tableStyles';
 
-const paginationModel = { page: 0, pageSize: 5 };
+const paginationModel = { page: 0, pageSize: 10 };
 
 const AccountsTable = ({
 	initialRows,
 	layer,
 	additionalColumns,
+	balance,
 	onSuccess,
 	onError,
 }) => {
-	const search = useFilter.use.search();
 	const addGroup = useFilter.use.addGroup();
 	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
 	const setSelectedAccountsId =
@@ -33,20 +33,6 @@ const AccountsTable = ({
 	const selectedAccountsId = useSelectedAccountsId.use.selectedAccountsId();
 	const queryClient = useQueryClient();
 	const { mutate: update, isPending } = useUpdateAccountMutation();
-
-	const rows = useMemo(() => {
-		const searhQuery = search.toLowerCase();
-		if (initialRows) {
-			return initialRows.filter((row) => {
-				return (
-					row.email.toLowerCase().includes(searhQuery) ||
-					String(row.id).toLowerCase().includes(searhQuery) ||
-					row.name?.toLowerCase().includes(searhQuery)
-				);
-			});
-		}
-		return null;
-	}, [search, initialRows]);
 
 	const [visible, setVisible] = useState(
 		columns().reduce((acc, col) => ({ ...acc, [col.field]: true }), {}),
@@ -119,13 +105,34 @@ const AccountsTable = ({
 		});
 	};
 
+	const [columnWidthModel, setColumnWidthModel] = useState(() => {
+		const savedWidths = localStorage.getItem('columnWidths');
+		return savedWidths ? JSON.parse(savedWidths) : {};
+	});
+
+	useEffect(() => {
+		localStorage.setItem('columnWidths', JSON.stringify(columnWidthModel));
+	}, [columnWidthModel]);
+
+	const memoColumns = useMemo(
+		() =>
+			columns({
+				toggleName,
+				layer,
+				additionalColumns,
+				balance,
+				widths: columnWidthModel,
+			}),
+		[toggleName, layer, additionalColumns, balance, columnWidthModel],
+	);
+
 	return (
 		<>
 			<ColumnVisibilityContext.Provider value={[visible, setVisible]}>
 				<ToggleNameContext.Provider value={[toggleName, setToggleName]}>
 					<DataGrid
-						rows={rows}
-						columns={columns(toggleName, layer, additionalColumns)}
+						rows={initialRows}
+						columns={memoColumns}
 						initialState={{
 							pagination: { paginationModel },
 							columns: {
@@ -153,6 +160,12 @@ const AccountsTable = ({
 							setSelectedAccountsId(newRowSelectionModel);
 						}}
 						rowSelectionModel={selectedAccountsId}
+						onColumnResize={(params) => {
+							setColumnWidthModel((prev) => ({
+								...prev,
+								[params.colDef.field]: params.width,
+							}));
+						}}
 					/>
 				</ToggleNameContext.Provider>
 			</ColumnVisibilityContext.Provider>

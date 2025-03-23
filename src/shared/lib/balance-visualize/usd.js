@@ -3,6 +3,8 @@ const usd = (balance, precision = 2) => {
 
 	if (isNaN(num)) return balance;
 
+	if (num === 0) return '$0';
+
 	const minValue = Math.pow(10, -precision);
 
 	if (num < minValue) {

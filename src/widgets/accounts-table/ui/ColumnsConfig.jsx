@@ -10,23 +10,36 @@ import NameCell from './table-parts/NameCell';
 import ToggleNameHeader from './table-parts/ToggleNameHeader';
 import VisibilityChangingHeader from './table-parts/VisibilityChangingHeader';
 
-const columns = (toggleName, layer = 'general', additionalColumns = []) => {
+const columns = ({
+	toggleName,
+	layer = 'general',
+	additionalColumns = [],
+	balance = 0,
+	widths = {},
+} = {}) => {
 	switch (layer) {
 		case 'general':
-			return [...generalLayerColumns(toggleName), ...additionalColumns];
+			return [
+				...generalLayerColumns(toggleName, balance, widths),
+				...additionalColumns,
+			];
 		case 'balances':
-			return [...balancesLayerColumns(toggleName), ...additionalColumns];
+			return [
+				...balancesLayerColumns(toggleName, balance, widths),
+				...additionalColumns,
+			];
 	}
 };
 
-const balancesLayerColumns = (toggleName = false) => [
+const balancesLayerColumns = (toggleName = false, balance = 0, widths) => [
 	{
 		hideable: false,
 		field: toggleName ? 'name' : 'id',
 		headerName: toggleName ? 'Name' : 'ID',
-		minWidth: 130,
-		display: 'flex',
-		flex: 1,
+		minWidth: 100,
+		maxWidth: 150,
+		width: toggleName ? widths['name'] : widths['id'] || 100,
+		resizable: false,
 		editable: toggleName,
 		renderHeader: (params) => <ToggleNameHeader params={params} />,
 		renderCell: (params) => <NameCell params={params} />,
@@ -34,7 +47,9 @@ const balancesLayerColumns = (toggleName = false) => [
 	{
 		field: 'group_name',
 		headerName: 'Group',
-		width: 240,
+		width: widths.group_name || 240,
+		minWidth: 115,
+		maxWidth: 300,
 		editable: true,
 		renderCell: (params) =>
 			params.row.group_name || (
@@ -53,7 +68,9 @@ const balancesLayerColumns = (toggleName = false) => [
 		field: 'email',
 		headerName: 'Email',
 		hideable: false,
-		width: 240,
+		width: widths.email || 200,
+		minWidth: 115,
+		maxWidth: 280,
 		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
 		renderCell: (params) => (
 			<HidingCell
@@ -67,28 +84,29 @@ const balancesLayerColumns = (toggleName = false) => [
 	},
 	{
 		field: 'balance',
-		headerName: 'Balance',
-		width: 170,
+		headerName: `Balance ${usd(balance) || ''}`,
+		width: widths.balance || 200,
+		minWidth: 120,
+		maxWidth: 280,
 		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
 		renderCell: (params) => (
 			<HidingCell
 				params={params}
 				context={ColumnVisibilityContext}
 			>
-				{params.value}
+				{params.value === null ? 'update required' : usd(params.value)}
 			</HidingCell>
 		),
 	},
 ];
 
-const generalLayerColumns = (toggleName = false) => [
+const generalLayerColumns = (toggleName = false, balance = 0, widths) => [
 	{
 		field: toggleName ? 'name' : 'id',
 		headerName: toggleName ? 'Name' : 'ID',
-		minWidth: 130,
+		minWidth: 100,
 		maxWidth: 150,
-		display: 'flex',
-		flex: 1,
+		width: toggleName ? widths['name'] : widths['id'] || 100,
 		editable: toggleName,
 		renderHeader: (params) => <ToggleNameHeader params={params} />,
 		renderCell: (params) => <NameCell params={params} />,
@@ -96,8 +114,10 @@ const generalLayerColumns = (toggleName = false) => [
 	{
 		field: 'group_name',
 		headerName: 'Group',
-		width: 240,
 		editable: true,
+		width: widths.group_name || 240,
+		minWidth: 115,
+		maxWidth: 300,
 		renderCell: (params) =>
 			params.row.group_name || (
 				<Stack
@@ -115,7 +135,9 @@ const generalLayerColumns = (toggleName = false) => [
 		field: 'email',
 		headerName: 'Email',
 		hideable: false,
-		width: 240,
+		width: widths.email || 200,
+		minWidth: 115,
+		maxWidth: 280,
 		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
 		renderCell: (params) => (
 			<HidingCell
@@ -130,7 +152,9 @@ const generalLayerColumns = (toggleName = false) => [
 	{
 		field: 'imap',
 		headerName: 'Imap',
-		width: 240,
+		width: widths.imap || 200,
+		minWidth: 115,
+		maxWidth: 280,
 		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
 		renderCell: (params) => (
 			<HidingCell
@@ -144,8 +168,10 @@ const generalLayerColumns = (toggleName = false) => [
 	},
 	{
 		field: 'balance',
-		headerName: 'Balance',
-		width: 170,
+		headerName: `Balance ${usd(balance) || ''}`,
+		width: widths.balance || 200,
+		minWidth: 120,
+		maxWidth: 280,
 		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
 		renderCell: (params) => (
 			<HidingCell
@@ -160,13 +186,17 @@ const generalLayerColumns = (toggleName = false) => [
 		field: 'kyc',
 		headerName: 'KYC',
 		sortable: false,
-		width: 170,
+		width: widths.kyc || 170,
+		minWidth: 80,
+		maxWidth: 200,
 	},
 	{
 		field: 'loginCountry',
 		headerName: 'Login Country',
 		sortable: false,
-		width: 175,
+		width: widths.loginCountry || 170,
+		minWidth: 75,
+		maxWidth: 200,
 		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
 		renderCell: (params) => (
 			<HidingCell
@@ -180,14 +210,18 @@ const generalLayerColumns = (toggleName = false) => [
 	{
 		field: 'marks',
 		headerName: 'Marks',
-		width: 290,
+		width: widths.marks || 100,
+		minWidth: 100,
+		maxWidth: 200,
 		sortable: false,
 		renderCell: (params) => <MarkList marks={params.row.marks} />,
 	},
 	{
 		field: 'session',
 		headerName: 'Session',
-		width: 200,
+		width: widths.session || 100,
+		minWidth: 100,
+		maxWidth: 200,
 		renderCell: (params) => {
 			const date = params.row.session;
 			const now = new Date();
@@ -214,7 +248,9 @@ const generalLayerColumns = (toggleName = false) => [
 		field: 'warnings',
 		headerName: 'Warnings',
 		sortable: false,
-		width: 120,
+		width: widths.warnings || 100,
+		minWidth: 100,
+		maxWidth: 200,
 		renderCell: (params) => (
 			<AccountWarnings warnings={params.row.warnings} />
 		),

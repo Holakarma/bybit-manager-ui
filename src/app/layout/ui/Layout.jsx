@@ -21,7 +21,7 @@ const Layout = () => {
 			</Box>
 			<Stack
 				p={4}
-				overflow="hidden"
+				overflow="auto"
 				sx={{
 					backgroundColor: 'background.default',
 				}}

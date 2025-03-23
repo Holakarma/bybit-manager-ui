@@ -32,7 +32,7 @@ const MainPage = () => {
 			gap={4}
 			flexGrow={1}
 			maxWidth="100%"
-			maxHeight="100%"
+			// maxHeight="100%"
 		>
 			<Stack
 				direction="row"
@@ -100,17 +100,17 @@ const MainPage = () => {
 			</Stack>
 			<Paper
 				sx={{
-					flexShrink: 1,
+					flexGrow: 1,
 					backgroundColor: theme.palette.secondary.dark,
 					backgroundImage: 'none',
-					maxHeight: '100%',
-					overflow: 'auto',
+					// maxHeight: '100%',
+					// overflow: 'auto',
 				}}
 			>
 				<Stack
 					overflow="auto"
 					maxWidth="100%"
-					minHeight="100%"
+					height="100%"
 				>
 					<Accounts />
 				</Stack>
