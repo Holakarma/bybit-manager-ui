@@ -1,12 +1,12 @@
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import LoginIcon from '@mui/icons-material/Login';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
 import {
-	FormControlLabel,
-	IconButton,
 	InputAdornment,
-	Menu,
 	Stack,
-	Switch,
 	TextField,
+	ToggleButton,
+	Tooltip,
+	Typography,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 
@@ -19,7 +19,7 @@ const NumberField = ({ label, value, onChange, onBlur, unit }) => (
 				),
 			},
 		}}
-		sx={{ maxWidth: '185px' }}
+		sx={{ maxWidth: '75px' }}
 		label={label}
 		variant="standard"
 		size="small"
@@ -37,30 +37,38 @@ const DelaySettings = ({
 	onMinBlur,
 	onMaxBlur,
 }) => (
-	<Stack
-		direction="row"
-		gap={2}
-		sx={{ maxWidth: '185px' }}
-	>
-		<NumberField
-			label="Min cooldown"
-			value={minDelay}
-			onChange={onMinChange}
-			onBlur={onMinBlur}
-			unit="sec"
-		/>
-		<NumberField
-			label="Max cooldown"
-			value={maxDelay}
-			onChange={onMaxChange}
-			onBlur={onMaxBlur}
-			unit="sec"
-		/>
+	<Stack>
+		<Tooltip title="Generate random delay between actions">
+			<Typography
+				variant="Caption"
+				color="text.secondary"
+			>
+				Delay interval
+			</Typography>
+		</Tooltip>
+		<Stack
+			direction="row"
+			gap={2}
+			sx={{ maxWidth: '100%' }}
+		>
+			<NumberField
+				value={minDelay}
+				onChange={onMinChange}
+				onBlur={onMinBlur}
+				unit="sec"
+			/>
+			-
+			<NumberField
+				value={maxDelay}
+				onChange={onMaxChange}
+				onBlur={onMaxBlur}
+				unit="sec"
+			/>
+		</Stack>
 	</Stack>
 );
 
 const Settings = ({ settings, onSettingsChange }) => {
-	const [anchorEl, setAnchorEl] = useState(null);
 	const [inputMinDelay, setInputMinDelay] = useState(
 		String(settings.delay.min),
 	);
@@ -69,12 +77,8 @@ const Settings = ({ settings, onSettingsChange }) => {
 	);
 	const [inputThreads, setInputThreads] = useState(String(settings.threads));
 
-	const openMenu = Boolean(anchorEl);
 	const shuffle = useMemo(() => settings.shuffle, [settings]);
 	const prelogin = useMemo(() => settings.prelogin, [settings]);
-
-	const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
-	const handleMenuClose = () => setAnchorEl(null);
 
 	const handleInputChange = (setter) => (event) => setter(event.target.value);
 
@@ -115,76 +119,67 @@ const Settings = ({ settings, onSettingsChange }) => {
 		setInputThreads(String(threads));
 	};
 
-	const handleShuffleChange = (_event, newShuffle) => {
-		onSettingsChange((prev) => ({ ...prev, shuffle: newShuffle }));
+	const handleShuffleChange = (_event) => {
+		onSettingsChange((prev) => ({ ...prev, shuffle: !prev.shuffle }));
 	};
 
-	const handlePreloginChange = (_event, newPrelogin) => {
-		onSettingsChange((prev) => ({ ...prev, prelogin: newPrelogin }));
+	const handlePreloginChange = (_event) => {
+		onSettingsChange((prev) => ({ ...prev, prelogin: !prev.prelogin }));
 	};
 
 	return (
-		<>
-			<IconButton
-				sx={{ position: 'absolute', top: 12, right: 12 }}
-				aria-label="settings"
-				aria-controls={openMenu ? 'settings-menu' : undefined}
-				aria-expanded={openMenu ? 'true' : undefined}
-				aria-haspopup="true"
-				onClick={handleMenuOpen}
+		<Stack
+			alignItems="start"
+			gap={2}
+			width="100%"
+			minWidth="460px"
+			direction="row"
+			paddingBlock={2}
+		>
+			<Stack
+				direction="row"
+				gap={2}
+				justifyContent="space-between"
 			>
-				<SettingsRoundedIcon />
-			</IconButton>
+				<NumberField
+					label="Threads"
+					value={inputThreads}
+					onChange={handleInputChange(setInputThreads)}
+					onBlur={handleThreadsBlur}
+				/>
 
-			<Menu
-				anchorEl={anchorEl}
-				open={openMenu}
-				onClose={handleMenuClose}
-			>
-				<Stack
-					p={2}
-					alignItems="start"
-					gap={1}
-				>
-					<NumberField
-						label="Threads"
-						value={inputThreads}
-						onChange={handleInputChange(setInputThreads)}
-						onBlur={handleThreadsBlur}
-						unit="threads"
-					/>
+				<Tooltip title="Shuffle accounts">
+					<ToggleButton
+						size="small"
+						value="shuffle"
+						selected={shuffle}
+						onChange={handleShuffleChange}
+					>
+						<ShuffleIcon />
+					</ToggleButton>
+				</Tooltip>
 
-					<FormControlLabel
-						control={
-							<Switch
-								checked={shuffle}
-								onChange={handleShuffleChange}
-							/>
-						}
-						label="Shuffle"
-					/>
+				<Tooltip title="Prelogin">
+					<ToggleButton
+						size="small"
+						value="prelogin"
+						selected={prelogin}
+						onChange={handlePreloginChange}
+					>
+						<LoginIcon />
+					</ToggleButton>
+				</Tooltip>
+			</Stack>
 
-					<FormControlLabel
-						control={
-							<Switch
-								checked={prelogin}
-								onChange={handlePreloginChange}
-							/>
-						}
-						label="Prelogin"
-					/>
-
-					<DelaySettings
-						minDelay={inputMinDelay}
-						maxDelay={inputMaxDelay}
-						onMinChange={handleInputChange(setInputMinDelay)}
-						onMaxChange={handleInputChange(setInputMaxDelay)}
-						onMinBlur={handleMinDelayBlur}
-						onMaxBlur={handleMaxDelayBlur}
-					/>
-				</Stack>
-			</Menu>
-		</>
+			<DelaySettings
+				minDelay={inputMinDelay}
+				maxDelay={inputMaxDelay}
+				onMinChange={handleInputChange(setInputMinDelay)}
+				onMaxChange={handleInputChange(setInputMaxDelay)}
+				onMinBlur={handleMinDelayBlur}
+				onMaxBlur={handleMaxDelayBlur}
+			/>
+		</Stack>
 	);
 };
 

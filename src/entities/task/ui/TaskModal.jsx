@@ -1,10 +1,12 @@
 import {
 	Box,
 	Button,
+	Divider,
 	Grid2,
 	List,
 	ListItem,
 	Modal,
+	Stack,
 	Typography,
 } from '@mui/material';
 import { ModalBody } from 'shared/ui/modal-body';
@@ -25,62 +27,74 @@ const TaskModal = ({
 		>
 			<Box>
 				<ModalBody
-					position="relative"
 					sx={{ minWidth: '400px' }}
+					position="relative"
 				>
-					{settingsComponent || null}
-
-					<Typography variant="H5">{taskTitle}</Typography>
-					<Typography
-						variant="Title1"
-						color="textSecondary"
-						mt={2}
+					<Stack
+						direction="row"
+						gap={2}
 					>
-						{taskDescription}
-					</Typography>
+						<Stack>
+							<Typography variant="H5">{taskTitle}</Typography>
 
-					<List
-						sx={{
-							marginBlock: 1,
-							maxHeight: '300px',
-							overflow: 'auto',
-						}}
-					>
-						{(accounts || []).map((account) => (
-							<ListItem
-								key={account.database_id}
-								disablePadding
+							<Typography
+								variant="Body"
+								color="textSecondary"
 							>
-								<Grid2
-									container
-									spacing={1}
-									width="100%"
-								>
-									<Grid2 size={1}>
-										<Typography
-											variant="Caption"
-											color="textSecondary"
+								{taskDescription}
+							</Typography>
+
+							{settingsComponent || null}
+							<Divider />
+
+							<List
+								sx={{
+									marginBlock: 2,
+									maxHeight: '300px',
+									overflow: 'auto',
+								}}
+							>
+								{(accounts || []).map((account) => (
+									<ListItem
+										key={account.database_id}
+										disablePadding
+									>
+										<Grid2
+											container
+											spacing={1}
+											width="100%"
 										>
-											{account.database_id}
-										</Typography>
-									</Grid2>
+											<Grid2 size={1}>
+												<Typography
+													variant="Caption"
+													color="textSecondary"
+												>
+													{account.database_id}
+												</Typography>
+											</Grid2>
 
-									<Grid2 size="grow">
-										<Typography>
-											{account.email.address}
-										</Typography>
-									</Grid2>
-								</Grid2>
-							</ListItem>
-						))}
-					</List>
+											<Grid2 size="grow">
+												<Typography>
+													{account.email.address}
+												</Typography>
+											</Grid2>
+										</Grid2>
+									</ListItem>
+								))}
+							</List>
 
-					<Button
-						sx={{ position: 'absolute', bottom: 12, right: 12 }}
-						onClick={onStart}
-					>
-						Start task
-					</Button>
+							<Button
+								sx={{
+									position: 'absolute',
+									bottom: 12,
+									right: 12,
+								}}
+								onClick={onStart}
+							>
+								Start task
+							</Button>
+						</Stack>
+					</Stack>
 				</ModalBody>
 			</Box>
 		</Modal>
