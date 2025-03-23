@@ -1,5 +1,12 @@
-import { Autocomplete, CircularProgress, TextField } from '@mui/material';
+import {
+	Autocomplete,
+	CircularProgress,
+	Stack,
+	TextField,
+	Typography,
+} from '@mui/material';
 import { useGetGroupsQuery } from 'entities/group';
+import { useMemo } from 'react';
 import useFilter from '../model/filterStore';
 
 const GroupSelect = ({ ...props }) => {
@@ -8,23 +15,58 @@ const GroupSelect = ({ ...props }) => {
 	const setGroups = useFilter.use.setGroups();
 	const groups = useFilter.use.groups();
 
+	const filteredGroups = useMemo(() => {
+		if (availableGroups) {
+			return availableGroups.filter(
+				(availableGroup) => !groups.includes(availableGroup.group),
+			);
+		}
+
+		return [];
+	}, [availableGroups, groups]);
+
 	return (
 		<Autocomplete
 			{...props}
 			multiple
 			onChange={(_e, value) => {
-				// @FIXME: убрать возможность выбора дубликатов
 				setGroups(value.map((group) => group.group));
 			}}
 			disablePortal
 			value={groups.map((group) => ({ group })) || []}
-			options={availableGroups || []}
+			options={filteredGroups}
 			fullWidth
 			size="small"
 			disabled={isError}
 			loading={isLoading}
 			getOptionLabel={(option) => option.group || 'No group'}
 			noOptionsText="No groups"
+			renderOption={(props, option) => {
+				return (
+					<li
+						{...props}
+						key={option.group}
+					>
+						<Stack
+							flexDirection="row"
+							justifyContent="space-between"
+							gap={2}
+							width="100%"
+						>
+							<Typography variant="body1">
+								{option.group}
+							</Typography>
+							<Typography
+								variant="caption"
+								color="text.secondary"
+								style={{ marginTop: 2 }}
+							>
+								${option.balance_usd}
+							</Typography>
+						</Stack>
+					</li>
+				);
+			}}
 			renderInput={(params) => (
 				<TextField
 					{...params}

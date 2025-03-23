@@ -1,5 +1,5 @@
 import { Grid2 } from '@mui/material';
-import { GroupSelect, SearchByEmail } from 'features/filter-accounts';
+import { GroupSelect, Search } from 'features/filter-accounts';
 
 const Filters = () => {
 	return (
@@ -13,7 +13,7 @@ const Filters = () => {
 				<GroupSelect />
 			</Grid2>
 			<Grid2 size={3}>
-				<SearchByEmail />
+				<Search />
 			</Grid2>
 
 			{/* <Grid2 size={1}>

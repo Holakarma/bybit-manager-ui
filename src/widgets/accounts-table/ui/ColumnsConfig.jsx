@@ -1,7 +1,7 @@
 import { Stack, Typography } from '@mui/material';
 import { AccountWarnings, ColumnVisibilityContext } from 'entities/account';
 import { MarkList } from 'entities/mark';
-import { balanceVizualize } from 'shared/lib/balance-visualize';
+import { usd } from 'shared/lib/balance-visualize';
 import { formatDate, timeDifference } from 'shared/lib/formatDate';
 import { obfuscateEmail } from 'shared/lib/obfuscate-email';
 import GroupEditCell from './table-parts/GroupEditCell';
@@ -152,7 +152,7 @@ const generalLayerColumns = (toggleName = false) => [
 				params={params}
 				context={ColumnVisibilityContext}
 			>
-				{balanceVizualize(params.value)}
+				{usd(params.value)}
 			</HidingCell>
 		),
 	},
