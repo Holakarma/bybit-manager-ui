@@ -33,7 +33,7 @@ const TaskDrawer = () => {
 				anchor={'right'}
 				elevation={0}
 			>
-				<TaskList />
+				<TaskList minWidth="550px" />
 			</Drawer>
 		</>
 	);

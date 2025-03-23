@@ -31,7 +31,7 @@ const tooltipSlotProps = {
 	},
 };
 
-const TaskList = () => {
+const TaskList = ({ ...props }) => {
 	const pendingTasks = usePendingTasks.use.tasks();
 	const [pendingTask, setPendingTask] = useState(null);
 	const handleClosePendingModal = () => setPendingTask(null);
@@ -72,7 +72,7 @@ const TaskList = () => {
 
 	if (isLoading) {
 		return (
-			<Box minWidth="400px">
+			<Box {...props}>
 				<Box
 					padding={2}
 					paddingTop={4}
@@ -90,7 +90,7 @@ const TaskList = () => {
 
 	if (isError) {
 		return (
-			<Box minWidth="400px">
+			<Box {...props}>
 				<Box
 					padding={2}
 					paddingTop={4}
@@ -109,8 +109,8 @@ const TaskList = () => {
 	return (
 		<>
 			<Box
-				minWidth="400px"
 				height="100%"
+				{...props}
 			>
 				<Stack
 					height="100%"
