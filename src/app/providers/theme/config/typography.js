@@ -1,5 +1,5 @@
 const typography = {
-	fontFamily: 'IBM Plex Sans, serif',
+	fontFamily: 'JetBrains Mono, serif',
 	H1: {
 		fontSize: '3rem',
 		fontWeight: 400,

@@ -37,7 +37,7 @@ const Navigation = () => {
 			elevation={0}
 			sx={{
 				height: '100%',
-				width: collapse ? '96px' : '250px',
+				width: collapse ? '96px' : '270px',
 				transition: 'all .2s ease',
 			}}
 		>

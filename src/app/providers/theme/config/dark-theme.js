@@ -61,9 +61,6 @@ const paletteStyles = {
 };
 
 const darkTheme = createTheme({
-	// @TODO: transfer colors from figma
-	// MUI palette docs: (https://mui.com/material-ui/customization/dark-mode/)
-
 	palette: {
 		...paletteStyles,
 	},
