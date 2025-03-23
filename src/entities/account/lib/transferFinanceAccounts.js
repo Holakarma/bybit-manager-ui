@@ -16,7 +16,7 @@ const transferFinanceAccounts = (account, finance_accounts) => {
 
 	if (finance_accounts) {
 		for (let [k, v] of Object.entries(finance_accounts)) {
-			finance_accounts[k] = v > 0 && v < 0.01 ? '<0.01' : v || 0;
+			finance_accounts[k] = v || 0;
 		}
 	}
 

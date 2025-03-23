@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { useGetGroupsQuery } from 'entities/group';
 import { useMemo } from 'react';
+import { usd } from 'shared/lib/balance-visualize';
 import useFilter from '../model/filterStore';
 
 const GroupSelect = ({ ...props }) => {
@@ -61,7 +62,7 @@ const GroupSelect = ({ ...props }) => {
 								color="text.secondary"
 								style={{ marginTop: 2 }}
 							>
-								${option.balance_usd}
+								{usd(option.balance_usd)}
 							</Typography>
 						</Stack>
 					</li>
