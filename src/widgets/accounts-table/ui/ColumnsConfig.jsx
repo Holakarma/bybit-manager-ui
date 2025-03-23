@@ -221,7 +221,7 @@ const generalLayerColumns = (toggleName = false, balance = 0, widths) => [
 		headerName: 'Session',
 		width: widths.session || 100,
 		minWidth: 100,
-		maxWidth: 200,
+		maxWidth: 250,
 		renderCell: (params) => {
 			const date = params.row.session;
 			const now = new Date();
