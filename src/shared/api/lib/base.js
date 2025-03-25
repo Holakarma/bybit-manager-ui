@@ -1,7 +1,20 @@
 import axios from 'axios';
 
+export const defaultConfig = {
+	host: 'localhost',
+	port: '8000',
+};
+
+const config = () => {
+	try {
+		return JSON.parse(localStorage.getItem('appConfig')).apiConfig;
+	} catch (_e) {
+		return defaultConfig;
+	}
+};
+
 const instance = axios.create({
-	baseURL: 'http://localhost:8000/',
+	baseURL: `http://${config().host || 'localhost'}:${config().port || '8000'}/`,
 });
 
 instance.interceptors.request.use((config) => {
