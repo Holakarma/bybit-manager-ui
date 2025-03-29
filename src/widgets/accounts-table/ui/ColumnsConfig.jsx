@@ -4,9 +4,11 @@ import { MarkList } from 'entities/mark';
 import { usd } from 'shared/lib/balance-visualize';
 import { formatDate, timeDifference } from 'shared/lib/formatDate';
 import { obfuscateEmail } from 'shared/lib/obfuscate-email';
+import proxySortComparator from '../lib/proxySortComparator';
 import GroupEditCell from './table-parts/GroupEditCell';
 import HidingCell from './table-parts/HidingCell';
 import NameCell from './table-parts/NameCell';
+import ProxyCell from './table-parts/ProxyCell';
 import ToggleNameHeader from './table-parts/ToggleNameHeader';
 import VisibilityChangingHeader from './table-parts/VisibilityChangingHeader';
 
@@ -181,6 +183,42 @@ const generalLayerColumns = (toggleName = false, balance = 0, widths) => [
 				{usd(params.value)}
 			</HidingCell>
 		),
+	},
+	{
+		field: 'proxy',
+		headerName: 'Proxy',
+		width: widths.proxy || 280,
+		minWidth: 80,
+		maxWidth: 350,
+		sortComparator: proxySortComparator,
+		renderCell: (params) => <ProxyCell params={params} />,
+	},
+	{
+		field: 'email_proxy',
+		headerName: 'Email proxy',
+		width: widths.proxy || 280,
+		minWidth: 80,
+		maxWidth: 350,
+		sortComparator: proxySortComparator,
+		renderCell: (params) => <ProxyCell params={params} />,
+	},
+	{
+		field: 'onfido_proxy',
+		headerName: 'Onfido proxy',
+		width: widths.proxy || 280,
+		minWidth: 80,
+		maxWidth: 350,
+		sortComparator: proxySortComparator,
+		renderCell: (params) => <ProxyCell params={params} />,
+	},
+	{
+		field: 'sumsub_proxy',
+		headerName: 'Sumsub proxy',
+		width: widths.proxy || 280,
+		minWidth: 80,
+		maxWidth: 350,
+		sortComparator: proxySortComparator,
+		renderCell: (params) => <ProxyCell params={params} />,
 	},
 	{
 		field: 'kyc',

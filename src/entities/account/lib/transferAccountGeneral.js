@@ -20,6 +20,15 @@ const transferAccountGeneral = (account) => {
 		marks: getMarksArray(account),
 		session: expire ? new Date(expire * 1000) : null,
 		warnings: getWarnings(account),
+
+		/* Proxy  */
+		proxy: { proxy: account.proxy, error: account.proxy_error },
+		email_proxy: {
+			proxy: account.email.proxy,
+			error: account.email.proxy_error,
+		},
+		onfido_proxy: { proxy: account.onfido_proxy, error: null },
+		sumsub_proxy: { proxy: account.sumsub_proxy, error: null },
 	};
 };
 
