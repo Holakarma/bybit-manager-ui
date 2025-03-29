@@ -20,7 +20,7 @@ const Login = ({ ...props }) => {
 
 	const [settings, setSettings] = useState({
 		threads: 1,
-		delay: { min: 60, max: 90 },
+		delay: { min: 60, max: 90, enabled: true },
 		shuffle: false,
 	});
 

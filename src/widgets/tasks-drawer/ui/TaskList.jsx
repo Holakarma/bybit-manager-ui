@@ -14,6 +14,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { taskDB, useGetTasks, usePendingTasks } from 'entities/task';
 import { useEffect, useMemo, useState } from 'react';
+import PendingTaskItem from './PendingTaskItem';
 import PendingTaskModal from './PendingTaskModal';
 import TaskItem from './TaskItem';
 import TaskModal from './TaskModal';
@@ -137,7 +138,7 @@ const TaskList = ({ ...props }) => {
 							<List>
 								{pendingTasks.map((task) => (
 									<ListItem key={task.id}>
-										<TaskItem
+										<PendingTaskItem
 											onClick={() => {
 												setPendingTask(task);
 											}}
@@ -225,18 +226,22 @@ const TaskList = ({ ...props }) => {
 								title="Export tasks (soon)"
 								slotProps={tooltipSlotProps}
 							>
-								<IconButton>
-									<FileUploadRoundedIcon />
-								</IconButton>
+								<Box>
+									<IconButton disabled>
+										<FileUploadRoundedIcon />
+									</IconButton>
+								</Box>
 							</Tooltip>
 
 							<Tooltip
 								title="Import tasks (soon)"
 								slotProps={tooltipSlotProps}
 							>
-								<IconButton>
-									<FileDownloadRoundedIcon />
-								</IconButton>
+								<Box>
+									<IconButton disabled>
+										<FileDownloadRoundedIcon />
+									</IconButton>
+								</Box>
 							</Tooltip>
 						</Stack>
 					</Box>

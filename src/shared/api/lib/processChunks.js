@@ -29,7 +29,13 @@
  *
  *  */
 
-const processChunks = ({ idsToProcess, asyncMutation, settings, signal }) => {
+const processChunks = ({
+	idsToProcess,
+	asyncMutation,
+	settings,
+	signal,
+	onAccountProccessed,
+}) => {
 	const getRandomDelay = () => {
 		const min = settings.delay.min * 1000;
 		const max = settings.delay.max * 1000;
@@ -66,9 +72,15 @@ const processChunks = ({ idsToProcess, asyncMutation, settings, signal }) => {
 				chunk.map((id) =>
 					asyncMutation({ database_id: id, signal, settings })
 						.then((data) => {
+							if (onAccountProccessed) {
+								onAccountProccessed(id, data, null);
+							}
 							return { data, id };
 						})
 						.catch((error) => {
+							if (onAccountProccessed) {
+								onAccountProccessed(id, null, error);
+							}
 							throw Error(
 								JSON.stringify({
 									id,
@@ -102,7 +114,10 @@ const processChunks = ({ idsToProcess, asyncMutation, settings, signal }) => {
 
 				if (i < idsToProcess.length) {
 					new Promise((resolve) =>
-						setTimeout(resolve, getRandomDelay()),
+						setTimeout(
+							resolve,
+							settings.delay.enabled ? getRandomDelay() : 0,
+						),
 					).then(() => processNextChunk());
 				} else {
 					resolve(data);

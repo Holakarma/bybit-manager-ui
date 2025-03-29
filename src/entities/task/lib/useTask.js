@@ -20,6 +20,7 @@ const useTask = ({
 }) => {
 	const deleteTask = usePendingTasks.use.deleteTask();
 	const addTask = usePendingTasks.use.addTask();
+	const processAccount = usePendingTasks.use.processAccount();
 
 	let data = null;
 	let abortController = null;
@@ -39,7 +40,12 @@ const useTask = ({
 
 		const task = createPendingTask({
 			data: idsToProcess,
+			accounts: {
+				toProcess: idsToProcess,
+				processed: [],
+			},
 			type,
+			settings,
 			abort: () => abortController.abort(),
 		});
 		addTask(task);
@@ -50,6 +56,9 @@ const useTask = ({
 				settings,
 				asyncMutation,
 				signal: abortController.signal,
+				onAccountProccessed: (id, data, error) => {
+					processAccount(task.id, { accountId: id, data, error });
+				},
 			});
 			if (onSuccess) {
 				onSuccess({ data, taskId: task.id });

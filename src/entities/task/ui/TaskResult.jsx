@@ -55,8 +55,6 @@ const TaskResult = ({ task, tooltipText, ...props }) => {
 		);
 	}
 
-	console.log(task);
-
 	return (
 		<List {...props}>
 			{taskAccounts.map((task) => (

@@ -1,3 +1,4 @@
+import AvTimerIcon from '@mui/icons-material/AvTimer';
 import LoginIcon from '@mui/icons-material/Login';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import {
@@ -10,8 +11,9 @@ import {
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 
-const NumberField = ({ label, value, onChange, onBlur, unit }) => (
+const NumberField = ({ label, value, onChange, onBlur, unit, ...props }) => (
 	<TextField
+		{...props}
 		slotProps={{
 			input: {
 				endAdornment: (
@@ -36,6 +38,7 @@ const DelaySettings = ({
 	onMaxChange,
 	onMinBlur,
 	onMaxBlur,
+	disabled,
 }) => (
 	<Stack>
 		<Tooltip title="Generate random delay between actions">
@@ -56,6 +59,7 @@ const DelaySettings = ({
 				onChange={onMinChange}
 				onBlur={onMinBlur}
 				unit="sec"
+				disabled={disabled}
 			/>
 			-
 			<NumberField
@@ -63,6 +67,7 @@ const DelaySettings = ({
 				onChange={onMaxChange}
 				onBlur={onMaxBlur}
 				unit="sec"
+				disabled={disabled}
 			/>
 		</Stack>
 	</Stack>
@@ -79,6 +84,7 @@ const Settings = ({ settings, onSettingsChange }) => {
 
 	const shuffle = useMemo(() => settings.shuffle, [settings]);
 	const prelogin = useMemo(() => settings.prelogin, [settings]);
+	const delay = useMemo(() => settings.delay.enabled, [settings]);
 
 	const handleInputChange = (setter) => (event) => setter(event.target.value);
 
@@ -126,6 +132,12 @@ const Settings = ({ settings, onSettingsChange }) => {
 	const handlePreloginChange = (_event) => {
 		onSettingsChange((prev) => ({ ...prev, prelogin: !prev.prelogin }));
 	};
+	const handleDelayChange = (_event) => {
+		onSettingsChange((prev) => ({
+			...prev,
+			delay: { ...prev.delay, enabled: !prev.delay.enabled },
+		}));
+	};
 
 	return (
 		<Stack
@@ -169,6 +181,17 @@ const Settings = ({ settings, onSettingsChange }) => {
 						<LoginIcon />
 					</ToggleButton>
 				</Tooltip>
+
+				<Tooltip title="Enable delay">
+					<ToggleButton
+						size="small"
+						value="delay"
+						selected={delay}
+						onChange={handleDelayChange}
+					>
+						<AvTimerIcon />
+					</ToggleButton>
+				</Tooltip>
 			</Stack>
 
 			<DelaySettings
@@ -178,6 +201,7 @@ const Settings = ({ settings, onSettingsChange }) => {
 				onMaxChange={handleInputChange(setInputMaxDelay)}
 				onMinBlur={handleMinDelayBlur}
 				onMaxBlur={handleMaxDelayBlur}
+				disabled={!delay}
 			/>
 		</Stack>
 	);

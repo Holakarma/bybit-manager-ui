@@ -19,7 +19,7 @@ const Refresh = ({ ...props }) => {
 
 	const [settings, setSettings] = useState({
 		threads: 1,
-		delay: { min: 60, max: 90 },
+		delay: { enabled: true, min: 60, max: 90 },
 		prelogin: false,
 		shuffle: false,
 	});

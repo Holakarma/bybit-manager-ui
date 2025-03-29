@@ -73,33 +73,62 @@ const PendingTaskModal = ({ task, open, handleClose }) => {
 							overflow: 'auto',
 						}}
 					>
-						{getAccountsById(accounts, task.data).map((account) => (
-							<ListItem
-								key={account.database_id}
-								disablePadding
-							>
-								<Grid2
-									container
-									spacing={2}
-									width="100%"
-								>
-									<Grid2 size={1}>
-										<Typography
-											variant="Caption"
-											color="textSecondary"
-										>
-											{account.database_id}
-										</Typography>
-									</Grid2>
+						{getAccountsById(accounts, task.accounts.toProcess).map(
+							(account) => {
+								const processed = task.accounts.processed.find(
+									(acc) => acc.id === account.database_id,
+								);
 
-									<Grid2 size="grow">
-										<Typography>
-											{account.email.address}
-										</Typography>
-									</Grid2>
-								</Grid2>
-							</ListItem>
-						))}
+								return (
+									<ListItem
+										key={account.database_id}
+										disablePadding
+									>
+										<Grid2
+											container
+											spacing={2}
+											width="100%"
+										>
+											<Grid2 size={1}>
+												<Typography
+													variant="Caption"
+													color="textSecondary"
+												>
+													{account.database_id}
+												</Typography>
+											</Grid2>
+
+											<Grid2 size="grow">
+												<Typography>
+													{account.email.address}
+												</Typography>
+											</Grid2>
+
+											<Grid2 size={1}>
+												<Stack
+													alignItems="center"
+													justifyContent="center"
+													height="100%"
+												>
+													{processed ? (
+														<Pulsing
+															animate={false}
+															color={
+																processed.error
+																	? 'error.main'
+																	: 'success.main'
+															}
+														/>
+													) : (
+														<Pulsing />
+													)}
+												</Stack>
+											</Grid2>
+										</Grid2>
+									</ListItem>
+								);
+							},
+						)}
 					</List>
 				</ModalBody>
 			</Box>

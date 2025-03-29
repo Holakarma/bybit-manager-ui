@@ -1,3 +1,4 @@
+import AvTimerIcon from '@mui/icons-material/AvTimer';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import {
 	InputAdornment,
@@ -36,6 +37,7 @@ const DelaySettings = ({
 	onMaxChange,
 	onMinBlur,
 	onMaxBlur,
+	disabled,
 }) => (
 	<Stack>
 		<Tooltip title="Generate random delay between actions">
@@ -52,6 +54,7 @@ const DelaySettings = ({
 			sx={{ maxWidth: '100%' }}
 		>
 			<NumberField
+				disabled={disabled}
 				value={minDelay}
 				onChange={onMinChange}
 				onBlur={onMinBlur}
@@ -59,6 +62,7 @@ const DelaySettings = ({
 			/>
 			-
 			<NumberField
+				disabled={disabled}
 				value={maxDelay}
 				onChange={onMaxChange}
 				onBlur={onMaxBlur}
@@ -78,6 +82,7 @@ const Settings = ({ settings, onSettingsChange }) => {
 	const [inputThreads, setInputThreads] = useState(String(settings.threads));
 
 	const shuffle = useMemo(() => settings.shuffle, [settings]);
+	const delay = useMemo(() => settings.delay.enabled, [settings]);
 
 	const handleInputChange = (setter) => (event) => setter(event.target.value);
 
@@ -121,6 +126,12 @@ const Settings = ({ settings, onSettingsChange }) => {
 	const handleShuffleChange = (_event) => {
 		onSettingsChange((prev) => ({ ...prev, shuffle: !prev.shuffle }));
 	};
+	const handleDelayChange = (_event) => {
+		onSettingsChange((prev) => ({
+			...prev,
+			delay: { ...prev.delay, enabled: !prev.delay.enabled },
+		}));
+	};
 
 	return (
 		<Stack
@@ -153,6 +164,17 @@ const Settings = ({ settings, onSettingsChange }) => {
 						<ShuffleIcon />
 					</ToggleButton>
 				</Tooltip>
+
+				<Tooltip title="Enable delay">
+					<ToggleButton
+						size="small"
+						value="delay"
+						selected={delay}
+						onChange={handleDelayChange}
+					>
+						<AvTimerIcon />
+					</ToggleButton>
+				</Tooltip>
 			</Stack>
 
 			<DelaySettings
@@ -162,6 +184,7 @@ const Settings = ({ settings, onSettingsChange }) => {
 				onMaxChange={handleInputChange(setInputMaxDelay)}
 				onMinBlur={handleMinDelayBlur}
 				onMaxBlur={handleMaxDelayBlur}
+				disabled={!delay}
 			/>
 		</Stack>
 	);

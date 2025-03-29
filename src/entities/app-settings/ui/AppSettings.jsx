@@ -42,7 +42,6 @@ const AppSettings = ({ children, ...props }) => {
 
 	/* API Settings */
 	const handleApiSettingsChange = useCallback((newApiConfig) => {
-		console.log(newApiConfig);
 		if (!newApiConfig) {
 			handleApiError(true);
 			return;

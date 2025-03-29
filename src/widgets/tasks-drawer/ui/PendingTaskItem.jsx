@@ -1,4 +1,4 @@
-import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+import CancelScheduleSendRoundedIcon from '@mui/icons-material/CancelScheduleSendRounded';
 import {
 	Button,
 	ListItemIcon,
@@ -8,16 +8,22 @@ import {
 	Stack,
 	Typography,
 } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
-import { color, taskDB } from 'entities/task';
-import { useState } from 'react';
-import { formatDate } from 'shared/lib/formatDate';
-import { Pulsing } from 'shared/ui/pulsing';
+import { useEffect, useState } from 'react';
+import { formatSeconds, formatTime } from 'shared/lib/formatDate';
+import { CircularProgressWithLabel } from 'shared/ui/circular-progress-with-label';
 import taskTitle from '../model/taskTitles';
 
-const TaskItem = ({ onClick, task }) => {
+const calculateElapsedTime = (startedAt) => {
+	const nowDatw = new Date();
+	const startedAtData = new Date(startedAt);
+	return Math.floor((nowDatw - startedAtData) / 1000);
+};
+
+const PendingTaskItem = ({ onClick, task }) => {
 	const [contextMenu, setContextMenu] = useState(null);
-	const queryClient = useQueryClient();
+	const [elapsedTime, setElapsedTime] = useState(
+		calculateElapsedTime(task.startedAt),
+	);
 
 	const handleContextMenu = (event) => {
 		event.preventDefault();
@@ -36,11 +42,19 @@ const TaskItem = ({ onClick, task }) => {
 	const handleClose = () => {
 		setContextMenu(null);
 	};
-	const handleDelete = async () => {
-		await taskDB.deleteTask(task.id);
-		queryClient.invalidateQueries({ queryKey: ['tasks'] });
+	const handleAbort = async () => {
+		task.abort();
 		handleClose();
 	};
+
+	/* Effects */
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			setElapsedTime(calculateElapsedTime(task.startedAt));
+		}, 1000);
+
+		return () => clearInterval(intervalId);
+	}, [task.startedAt]);
 
 	return (
 		<>
@@ -49,7 +63,7 @@ const TaskItem = ({ onClick, task }) => {
 				color="secondary"
 				fullWidth
 				onClick={onClick}
-				sx={{ justifyContent: 'space-between', height: '58px' }}
+				sx={{ justifyContent: 'space-between' }}
 				onContextMenu={handleContextMenu}
 				style={{ cursor: 'context-menu' }}
 			>
@@ -63,7 +77,8 @@ const TaskItem = ({ onClick, task }) => {
 						color="textSecondary"
 						variant="caption"
 					>
-						{formatDate(new Date(task.timestamp))}
+						{formatTime(new Date(task.startedAt))}{' '}
+						{formatSeconds(elapsedTime)}
 					</Typography>
 				</Stack>
 				<Stack
@@ -73,14 +88,18 @@ const TaskItem = ({ onClick, task }) => {
 				>
 					<Typography
 						variant="caption"
-						color={color[task.status]}
+						color="warning"
 					>
 						{task.status || 'pending'}
 					</Typography>
 
-					<Pulsing
-						color={`${color[task.status]}.main`}
-						animate={!task.status}
+					<CircularProgressWithLabel
+						color="warning"
+						value={
+							(task.accounts.processed.length * 100) /
+							task.accounts.toProcess.length
+						}
+						label={`${task.accounts.processed.length}/${task.accounts.toProcess.length}`}
 					/>
 				</Stack>
 			</Button>
@@ -98,15 +117,15 @@ const TaskItem = ({ onClick, task }) => {
 						: undefined
 				}
 			>
-				<MenuItem onClick={handleDelete}>
+				<MenuItem onClick={handleAbort}>
 					<ListItemIcon>
-						<DeleteForeverRoundedIcon fontSize="small" />
+						<CancelScheduleSendRoundedIcon fontSize="small" />
 					</ListItemIcon>
-					<ListItemText>Delete</ListItemText>
+					<ListItemText>Abort</ListItemText>
 				</MenuItem>
 			</Menu>
 		</>
 	);
 };
 
-export default TaskItem;
+export default PendingTaskItem;
