@@ -75,7 +75,7 @@ const TaskItem = ({ onClick, task }) => {
 						variant="caption"
 						color={color[task.status]}
 					>
-						{task.status || 'pending'}
+						{task.status}
 					</Typography>
 
 					<Pulsing

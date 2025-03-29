@@ -1,11 +1,10 @@
-import findLatestExpires from './findLatestExpires';
+import { getExpireFromAllCookies } from 'shared/lib/session-cookies';
 import getMarksArray from './getMarksArray';
 import getWarnings from './getWarnings';
 
 const transferAccountGeneral = (account) => {
-	const sessoinCookie = account.cookies?.filter(
-		(cookie) => cookie.name === 'secure-token',
-	);
+	const expire = getExpireFromAllCookies(account.cookies);
+
 	return {
 		id: account.database_id,
 		name: account.name,
@@ -19,9 +18,7 @@ const transferAccountGeneral = (account) => {
 			' ' +
 			(account.last_login_ip || ''),
 		marks: getMarksArray(account),
-		session: sessoinCookie?.length
-			? new Date(findLatestExpires(sessoinCookie).expires * 1000)
-			: null,
+		session: expire ? new Date(expire * 1000) : null,
 		warnings: getWarnings(account),
 	};
 };

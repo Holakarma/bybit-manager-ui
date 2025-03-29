@@ -45,7 +45,7 @@ const TaskModal = ({
 							</Typography>
 
 							{settingsComponent || null}
-							<Divider />
+							<Divider sx={{ marginTop: 2 }} />
 
 							<List
 								sx={{

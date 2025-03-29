@@ -1,5 +1,6 @@
 import { Box, Modal, Stack, Typography } from '@mui/material';
 import { LoginTaskResult } from 'features/login';
+import { LogoutTaskResult } from 'features/logout';
 import { RefreshTaskResult } from 'features/refresh-balances';
 import { ModalBody } from 'shared/ui/modal-body';
 import taskTitle from '../model/taskTitles';
@@ -8,6 +9,8 @@ const taskResult = (task) => {
 	switch (task.type) {
 		case 'login':
 			return <LoginTaskResult task={task} />;
+		case 'logout':
+			return <LogoutTaskResult task={task} />;
 		case 'finance accounts':
 			return <RefreshTaskResult task={task} />;
 		default:

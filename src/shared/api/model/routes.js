@@ -4,6 +4,7 @@ const ENDPOINTS = {
 	groups: '/filter/groups',
 	import_account: '/import-account',
 	login_account: '/private/login',
+	logout_account: '/private/logout',
 	finance_accounts: '/private/finance-accounts',
 	finance_accounts_db: '/finance-accounts',
 };

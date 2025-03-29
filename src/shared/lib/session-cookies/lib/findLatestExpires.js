@@ -1,11 +1,11 @@
 const findLatestExpires = (cookies) => {
 	if (!Array.isArray(cookies) || cookies.length === 0) {
-		return null; // Если массив пустой или не является массивом, возвращаем null
+		return null;
 	}
 
 	return cookies.reduce((latest, current) =>
 		latest.expires > current.expires ? latest : current,
-	);
+	).expires;
 };
 
 export default findLatestExpires;

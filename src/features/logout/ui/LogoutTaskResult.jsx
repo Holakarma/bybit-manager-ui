@@ -1,6 +1,6 @@
 import { TaskResult } from 'entities/task';
 
-const LoginTaskResult = ({ task, ...props }) => {
+const LogoutTaskResult = ({ task, ...props }) => {
 	return (
 		<TaskResult
 			task={task}
@@ -10,4 +10,4 @@ const LoginTaskResult = ({ task, ...props }) => {
 	);
 };
 
-export default LoginTaskResult;
+export default LogoutTaskResult;

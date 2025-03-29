@@ -146,7 +146,7 @@ const Settings = ({ settings, onSettingsChange }) => {
 			width="100%"
 			minWidth="460px"
 			direction="row"
-			paddingBlock={2}
+			paddingTop={2}
 		>
 			<Stack
 				direction="row"

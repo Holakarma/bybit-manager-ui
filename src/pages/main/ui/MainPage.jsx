@@ -9,12 +9,29 @@ import {
 	useTheme,
 } from '@mui/material';
 import { DefaultAccount } from 'entities/account';
+import { Logout } from 'features/logout';
 import { DollarIcon } from 'shared/assets/icons/dollar';
 import { UsersIcon } from 'shared/assets/icons/users';
 import { Accounts, useLayer } from 'widgets/accounts-table';
 import { Filters } from 'widgets/filters';
 import { MainAction } from 'widgets/main-action';
 import { TaskDrawer } from 'widgets/tasks-drawer';
+
+const getActions = (layer) => {
+	switch (layer) {
+		case 'general':
+			return (
+				<Stack
+					justifyContent="center"
+					height="100%"
+				>
+					<Logout />
+				</Stack>
+			);
+		default:
+			return null;
+	}
+};
 
 const MainPage = () => {
 	const theme = useTheme();
@@ -56,13 +73,13 @@ const MainPage = () => {
 					columns={12}
 					spacing={2}
 				>
-					{/* Actions */}
+					{/* Main Action */}
 					<Grid2 size={2}>
 						<MainAction />
 					</Grid2>
 
 					{/* Tables toggler */}
-					<Grid2 size={10}>
+					<Grid2 size={'auto'}>
 						<ToggleButtonGroup
 							value={layer}
 							exclusive
@@ -96,6 +113,9 @@ const MainPage = () => {
 							</Tooltip>
 						</ToggleButtonGroup>
 					</Grid2>
+
+					{/* Actions */}
+					<Grid2 size={'auto'}>{getActions(layer)}</Grid2>
 				</Grid2>
 			</Stack>
 			<Paper

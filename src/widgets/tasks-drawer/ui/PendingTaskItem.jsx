@@ -90,7 +90,14 @@ const PendingTaskItem = ({ onClick, task }) => {
 						variant="caption"
 						color="warning"
 					>
-						{task.status || 'pending'}
+						pending
+					</Typography>
+
+					<Typography
+						variant="caption"
+						color="warning"
+					>
+						{`${task.accounts.processed.length}/${task.accounts.toProcess.length}`}
 					</Typography>
 
 					<CircularProgressWithLabel
@@ -99,7 +106,6 @@ const PendingTaskItem = ({ onClick, task }) => {
 							(task.accounts.processed.length * 100) /
 							task.accounts.toProcess.length
 						}
-						label={`${task.accounts.processed.length}/${task.accounts.toProcess.length}`}
 					/>
 				</Stack>
 			</Button>
