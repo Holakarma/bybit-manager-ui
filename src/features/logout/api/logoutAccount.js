@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAccountsById, useGetAccountsQuery } from 'entities/account';
-import { taskDB, useTask } from 'entities/task';
+import { taskDB, usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 import { getExpireFromAllCookies } from 'shared/lib/session-cookies';
@@ -23,10 +23,11 @@ export const useLogoutAccountMutation = () => {
 				const account = getAccountsById(accounts.data, [
 					database_id,
 				])[0];
+
 				const expire = getExpireFromAllCookies(account.cookies);
 
 				/* If account is not logged in */
-				if (!expire || expire < Date.now()) {
+				if (!expire || expire * 1000 < Date.now()) {
 					return { result: null, database_id };
 				}
 
@@ -46,6 +47,8 @@ export const useLogoutAccountMutation = () => {
 const useLogoutTask = () => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
+	const changeAccountDescription =
+		usePendingTasks.use.changeAccountDescription();
 
 	const successHandler = async ({ data: accounts, task }) => {
 		await taskDB.addTask({
@@ -100,7 +103,9 @@ const useLogoutTask = () => {
 			queryKey: ['tasks'],
 		});
 	};
-
+	const accountMutationHandler = (id, taskId) => {
+		changeAccountDescription(taskId, id, 'Logging out...');
+	};
 	const mutation = useLogoutAccountMutation();
 
 	return useTask({
@@ -108,6 +113,7 @@ const useLogoutTask = () => {
 		onSuccess: successHandler,
 		onError: errorHandler,
 		onSettled: settleHandler,
+		onAccountMutation: accountMutationHandler,
 		type: 'logout',
 	});
 };

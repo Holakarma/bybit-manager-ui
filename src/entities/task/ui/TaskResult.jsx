@@ -67,7 +67,7 @@ const TaskResult = ({ task, tooltipText, ...props }) => {
 						spacing={2}
 						width="100%"
 					>
-						<Grid2 size={1}>
+						<Grid2 size="auto">
 							<Typography
 								variant="Caption"
 								color="textSecondary"

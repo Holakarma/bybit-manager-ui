@@ -35,6 +35,8 @@ const processChunks = ({
 	settings,
 	signal,
 	onAccountProcessed,
+	onAccountMutation,
+	taskId,
 }) => {
 	const getRandomDelay = () => {
 		const min = settings.delay.min * 1000;
@@ -69,17 +71,33 @@ const processChunks = ({
 			const chunk = idsToProcess.slice(i, i + settings.threads);
 
 			Promise.allSettled(
-				chunk.map((id) =>
-					asyncMutation({ database_id: id, signal, settings })
+				chunk.map((id) => {
+					if (onAccountMutation) {
+						onAccountMutation(id, taskId);
+					}
+					return asyncMutation({
+						database_id: id,
+						signal,
+						settings,
+						taskId,
+					})
 						.then((data) => {
 							if (onAccountProcessed) {
-								onAccountProcessed(id, data, null);
+								onAccountProcessed({
+									database_id: id,
+									data,
+									taskId,
+								});
 							}
 							return { data, id };
 						})
 						.catch((error) => {
 							if (onAccountProcessed) {
-								onAccountProcessed(id, null, error);
+								onAccountProcessed({
+									database_id: id,
+									error: error?.data,
+									taskId,
+								});
 							}
 							throw Error(
 								JSON.stringify({
@@ -87,8 +105,8 @@ const processChunks = ({
 									error: error?.data,
 								}),
 							);
-						}),
-				),
+						});
+				}),
 			).then((results) => {
 				if (signal?.aborted) {
 					reject(new DOMException('Aborted', 'AbortError'));

@@ -3,6 +3,7 @@ import { LoginTaskResult } from 'features/login';
 import { LogoutTaskResult } from 'features/logout';
 import { RefreshTaskResult } from 'features/refresh-balances';
 import { RegisterTaskResult } from 'features/register';
+import { UpdateProfileTaskResult } from 'features/update-profile';
 import { timeDifference } from 'shared/lib/formatDate';
 import { ModalBody } from 'shared/ui/modal-body';
 import taskTitle from '../model/taskTitles';
@@ -17,6 +18,8 @@ const taskResult = (task) => {
 			return <RefreshTaskResult task={task} />;
 		case 'register':
 			return <RegisterTaskResult task={task} />;
+		case 'update':
+			return <UpdateProfileTaskResult task={task} />;
 		default:
 			return null;
 	}
@@ -33,7 +36,7 @@ const TaskModal = ({ task, open, handleClose }) => {
 			onClose={handleClose}
 		>
 			<Box>
-				<ModalBody minWidth="400px">
+				<ModalBody minWidth="600px">
 					<Stack
 						direction="row"
 						gap={2}

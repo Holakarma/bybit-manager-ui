@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { DefaultAccount } from 'entities/account';
 import { Logout } from 'features/logout';
+import { UpdateProfile } from 'features/update-profile';
 import { DollarIcon } from 'shared/assets/icons/dollar';
 import { RegisterIcon } from 'shared/assets/icons/register';
 import { UsersIcon } from 'shared/assets/icons/users';
@@ -21,7 +22,16 @@ import { TaskDrawer } from 'widgets/tasks-drawer';
 const getActions = (layer) => {
 	switch (layer) {
 		case 'general':
-			return <Logout />;
+			return (
+				<Stack
+					direction="row"
+					gap={2}
+					sx={{ height: '100%' }}
+				>
+					<Logout />
+					<UpdateProfile />
+				</Stack>
+			);
 		default:
 			return null;
 	}
@@ -125,6 +135,7 @@ const MainPage = () => {
 						<Stack
 							justifyContent="center"
 							height="100%"
+							gap={2}
 						>
 							{getActions(layer)}
 						</Stack>

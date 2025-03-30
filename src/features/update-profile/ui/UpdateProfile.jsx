@@ -1,21 +1,15 @@
-import { Button } from '@mui/material';
+import UpdateRoundedIcon from '@mui/icons-material/UpdateRounded';
+import { Box, Button, Tooltip } from '@mui/material';
 import { useSelectedAccounts } from 'entities/account';
 import { TaskModal } from 'entities/task';
 import { useState } from 'react';
-import useRefreshTask from '../api/refreshBalances';
+import useUpdateProfileTask from '../api/updateProfile';
 import Settings from './Settngs';
 
-const Refresh = ({ ...props }) => {
-	const {
-		data: selectedAccounts,
-		isLoading,
-		isError,
-	} = useSelectedAccounts();
+const UpdateProfile = () => {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
-
-	const mutation = useRefreshTask();
 
 	const [settings, setSettings] = useState({
 		threads: 1,
@@ -23,6 +17,8 @@ const Refresh = ({ ...props }) => {
 		prelogin: true,
 		shuffle: false,
 	});
+
+	const mutation = useUpdateProfileTask();
 
 	const startHandler = () => {
 		mutation.mutate({
@@ -34,24 +30,35 @@ const Refresh = ({ ...props }) => {
 		handleClose();
 	};
 
+	const {
+		data: selectedAccounts,
+		isLoading,
+		isError,
+	} = useSelectedAccounts();
+
 	return (
 		<>
-			<Button
-				{...props}
-				disabled={isLoading || isError || !selectedAccounts.length}
-				loading={isLoading}
-				variant="contained"
-				fullWidth
-				onClick={handleOpen}
-			>
-				Refresh
-			</Button>
+			<Tooltip title="Update profile">
+				<Box sx={{ height: '100%' }}>
+					<Button
+						sx={{ height: '100%' }}
+						variant="outlined"
+						color="secondary"
+						onClick={handleOpen}
+						disabled={
+							isLoading || isError || !selectedAccounts.length
+						}
+					>
+						<UpdateRoundedIcon />
+					</Button>
+				</Box>
+			</Tooltip>
 			<TaskModal
 				open={open}
 				onClose={handleClose}
-				taskTitle="Create refresh balances task"
-				taskDescription="Are you sure you want to refresh for following
-								accounts?"
+				taskTitle="Create update task"
+				taskDescription="Are you sure you want to update profiles for following
+					accounts?"
 				accounts={selectedAccounts}
 				onStart={startHandler}
 				settingsComponent={
@@ -67,4 +74,4 @@ const Refresh = ({ ...props }) => {
 	);
 };
 
-export default Refresh;
+export default UpdateProfile;

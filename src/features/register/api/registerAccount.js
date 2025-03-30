@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { taskDB, useTask } from 'entities/task';
+import { taskDB, usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
@@ -31,6 +31,8 @@ export const useRegisterAccountMutation = () => {
 const useRegisterTask = () => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
+	const changeAccountDescription =
+		usePendingTasks.use.changeAccountDescription();
 
 	const successHandler = async ({ data: accounts, task }) => {
 		await taskDB.addTask({
@@ -86,6 +88,10 @@ const useRegisterTask = () => {
 		}
 	};
 
+	const accountMutationHandler = (id, taskId) => {
+		changeAccountDescription(taskId, id, 'Signing up...');
+	};
+
 	const mutation = useRegisterAccountMutation();
 
 	return useTask({
@@ -94,6 +100,7 @@ const useRegisterTask = () => {
 		onError: errorHandler,
 		onSettled: settleHandler,
 		onAccountProcessed: processedAccountHandler,
+		onAccountMutation: accountMutationHandler,
 		type: 'register',
 	});
 };

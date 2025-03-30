@@ -33,15 +33,37 @@ const usePendingTasksBase = create((set) => ({
 							...task,
 							accounts: {
 								...task.accounts,
-								// toProcess: [
-								// 	...task.accounts.toProcess.filter(
-								// 		(id) => id !== accountId,
-								// 	),
-								// ],
 								processed: [
 									...task.accounts.processed,
 									{ id: accountId, data, error },
 								],
+							},
+						};
+					}
+					return task;
+				}),
+			};
+		}),
+	changeAccountDescription: (taskId, accountId, newDescription) =>
+		set((state) => {
+			return {
+				tasks: state.tasks.map((task) => {
+					if (task.id === taskId) {
+						return {
+							...task,
+							accounts: {
+								...task.accounts,
+								toProcess: task.accounts.toProcess.map(
+									(account) => {
+										if (account.id === accountId) {
+											return {
+												...account,
+												description: newDescription,
+											};
+										}
+										return account;
+									},
+								),
 							},
 						};
 					}
