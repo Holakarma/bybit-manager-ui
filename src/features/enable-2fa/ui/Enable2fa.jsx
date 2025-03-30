@@ -1,24 +1,23 @@
-import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
+import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import { IconButton, Stack, Tooltip } from '@mui/material';
 import { useSelectedAccounts } from 'entities/account';
 import { TaskModal } from 'entities/task';
 import { useState } from 'react';
-import useUpdateProfileTask from '../api/updateProfile';
+import useEnable2faTask from '../api/enable2fa.js';
 import Settings from './Settngs';
 
-const UpdateProfile = () => {
+const Enable2fa = () => {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
 
 	const [settings, setSettings] = useState({
 		threads: 1,
-		delay: { enabled: true, min: 60, max: 90 },
-		prelogin: true,
+		delay: { min: 60, max: 90, enabled: true },
 		shuffle: false,
 	});
 
-	const mutation = useUpdateProfileTask();
+	const mutation = useEnable2faTask();
 
 	const startHandler = () => {
 		mutation.mutate({
@@ -38,7 +37,7 @@ const UpdateProfile = () => {
 
 	return (
 		<>
-			<Tooltip title="Update profile">
+			<Tooltip title="Enable TOTP">
 				<Stack
 					sx={{ height: '100%' }}
 					justifyContent="center"
@@ -50,15 +49,15 @@ const UpdateProfile = () => {
 							isLoading || isError || !selectedAccounts.length
 						}
 					>
-						<SyncRoundedIcon />
+						<KeyRoundedIcon />
 					</IconButton>
 				</Stack>
 			</Tooltip>
 			<TaskModal
 				open={open}
 				onClose={handleClose}
-				taskTitle="Create update task"
-				taskDescription="Are you sure you want to update profiles for following
+				taskTitle="Create enable 2fa task"
+				taskDescription="Are you sure you want to enable 2fa for following
 					accounts?"
 				accounts={selectedAccounts}
 				onStart={startHandler}
@@ -75,4 +74,4 @@ const UpdateProfile = () => {
 	);
 };
 
-export default UpdateProfile;
+export default Enable2fa;

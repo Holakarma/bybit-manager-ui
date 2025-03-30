@@ -1,6 +1,7 @@
 import { CircularProgress, Stack, Typography } from '@mui/material';
 import {
 	transferAccountGeneral,
+	transferAccounts2fa,
 	transferAccountsRegister,
 	transferFinanceAccounts,
 	useGetAccountsQuery,
@@ -48,6 +49,8 @@ const Accounts = () => {
 					return accounts
 						.filter((account) => !account.registered)
 						.map(transferAccountsRegister);
+				case '2fa':
+					return accounts.map(transferAccounts2fa);
 				default:
 					return accounts.map(transferAccountGeneral);
 			}

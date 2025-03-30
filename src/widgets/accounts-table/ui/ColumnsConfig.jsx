@@ -10,6 +10,7 @@ import HidingCell from './cells/HidingCell';
 import NameCell from './cells/NameCell';
 import ProxyCell from './cells/ProxyCell';
 import RegisteredCell from './cells/RegisteredCell';
+import TotpEnabledCell from './cells/TotpEbanledCell';
 import ToggleNameHeader from './header-cells/ToggleNameHeader';
 import VisibilityChangingHeader from './header-cells/VisibilityChangingHeader';
 
@@ -21,11 +22,6 @@ const columns = ({
 	widths = {},
 } = {}) => {
 	switch (layer) {
-		case 'general':
-			return [
-				...generalLayerColumns(toggleName, balance, widths),
-				...additionalColumns,
-			];
 		case 'balances':
 			return [
 				...balancesLayerColumns(toggleName, balance, widths),
@@ -36,6 +32,12 @@ const columns = ({
 				...registerLayerColumns(toggleName, widths),
 				...additionalColumns,
 			];
+		case '2fa':
+			return [
+				...twofaLayerColumns(toggleName, widths),
+				...additionalColumns,
+			];
+		case 'general':
 		default:
 			return [
 				...generalLayerColumns(toggleName, balance, widths),
@@ -44,11 +46,77 @@ const columns = ({
 	}
 };
 
+const twofaLayerColumns = (toggleName = false, widths) => [
+	{
+		field: toggleName ? 'name' : 'id',
+		headerName: toggleName ? 'Name' : 'ID',
+		minWidth: 50,
+		maxWidth: 150,
+		width: toggleName ? widths['name'] : widths['id'] || 100,
+		editable: toggleName,
+		renderHeader: (params) => <ToggleNameHeader params={params} />,
+		renderCell: (params) => <NameCell params={params} />,
+	},
+	{
+		field: 'group_name',
+		headerName: 'Group',
+		editable: true,
+		width: widths.group_name || 240,
+		minWidth: 115,
+		maxWidth: 300,
+		renderCell: (params) =>
+			params.row.group_name || (
+				<Stack
+					height="100%"
+					justifyContent="center"
+				>
+					<Typography color="textSecondary.default">
+						No group
+					</Typography>
+				</Stack>
+			),
+		renderEditCell: (params) => <GroupEditCell params={params} />,
+	},
+	{
+		field: 'email',
+		headerName: 'Email',
+		hideable: false,
+		width: widths.email || 200,
+		minWidth: 115,
+		maxWidth: 280,
+		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
+		renderCell: (params) => (
+			<HidingCell
+				params={params}
+				hidingFn={obfuscateEmail}
+				context={ColumnVisibilityContext}
+			>
+				{params.value}
+			</HidingCell>
+		),
+	},
+	{
+		field: 'totp_secret',
+		headerName: 'TOTP',
+		width: widths.totp_secret || 200,
+		minWidth: 115,
+		maxWidth: 160,
+	},
+	{
+		field: 'totp_enabled',
+		headerName: 'Enabled',
+		width: widths.totp_enabled || 80,
+		minWidth: 50,
+		maxWidth: 100,
+		renderCell: (params) => <TotpEnabledCell params={params} />,
+	},
+];
+
 const registerLayerColumns = (toggleName = false, widths) => [
 	{
 		field: toggleName ? 'name' : 'id',
 		headerName: toggleName ? 'Name' : 'ID',
-		minWidth: 100,
+		minWidth: 50,
 		maxWidth: 150,
 		width: toggleName ? widths['name'] : widths['id'] || 100,
 		editable: toggleName,
@@ -116,7 +184,7 @@ const balancesLayerColumns = (toggleName = false, balance = 0, widths) => [
 		hideable: false,
 		field: toggleName ? 'name' : 'id',
 		headerName: toggleName ? 'Name' : 'ID',
-		minWidth: 100,
+		minWidth: 50,
 		maxWidth: 150,
 		width: toggleName ? widths['name'] : widths['id'] || 100,
 		resizable: false,
@@ -184,7 +252,7 @@ const generalLayerColumns = (toggleName = false, balance = 0, widths) => [
 	{
 		field: toggleName ? 'name' : 'id',
 		headerName: toggleName ? 'Name' : 'ID',
-		minWidth: 100,
+		minWidth: 50,
 		maxWidth: 150,
 		width: toggleName ? widths['name'] : widths['id'] || 100,
 		editable: toggleName,

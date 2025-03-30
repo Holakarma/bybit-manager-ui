@@ -8,6 +8,8 @@ const ENDPOINTS = {
 	register_account: '/private/register',
 	update_profile: '/private/profile',
 	finance_accounts: '/private/finance-accounts',
+	ebable_2fa: '/private/enable-2fa',
+	disable_2fa: '/private/disable-2fa',
 	finance_accounts_db: '/finance-accounts',
 };
 

@@ -11,6 +11,11 @@ const PROXY_ERRORS = {
 		label: 'Payment required',
 		icon: <AttachMoneyIcon fontSize="small" />,
 	},
+	// Иногда может быть просто true
+	[true]: {
+		label: 'Error',
+		icon: <LinkOffIcon fontSize="small" />,
+	},
 };
 
 const ProxyCell = ({ params }) => {
@@ -38,9 +43,9 @@ const ProxyCell = ({ params }) => {
 			<Typography variant="Body">{value.proxy.host}</Typography>
 
 			{value.error ? (
-				<Tooltip title={PROXY_ERRORS[value.error].label}>
+				<Tooltip title={PROXY_ERRORS[value.error]?.label}>
 					<Stack color="error.main">
-						{PROXY_ERRORS[value.error].icon}
+						{PROXY_ERRORS[value.error]?.icon}
 					</Stack>
 				</Tooltip>
 			) : null}

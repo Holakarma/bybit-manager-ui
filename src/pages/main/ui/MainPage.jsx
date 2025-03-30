@@ -9,31 +9,44 @@ import {
 	useTheme,
 } from '@mui/material';
 import { DefaultAccount } from 'entities/account';
+import { Disable2fa } from 'features/disable-2fa';
+import { Enable2fa } from 'features/enable-2fa';
+import { Login } from 'features/login';
 import { Logout } from 'features/logout';
+import { Refresh } from 'features/refresh-balances';
+import { Register } from 'features/register';
 import { UpdateProfile } from 'features/update-profile';
 import { DollarIcon } from 'shared/assets/icons/dollar';
 import { RegisterIcon } from 'shared/assets/icons/register';
+import { ShieldLockIcon } from 'shared/assets/icons/shield-lock';
 import { UsersIcon } from 'shared/assets/icons/users';
 import { Accounts, useLayer } from 'widgets/accounts-table';
 import { Filters } from 'widgets/filters';
-import { MainAction } from 'widgets/main-action';
 import { TaskDrawer } from 'widgets/tasks-drawer';
 
 const getActions = (layer) => {
 	switch (layer) {
 		case 'general':
-			return (
-				<Stack
-					direction="row"
-					gap={2}
-					sx={{ height: '100%' }}
-				>
-					<Logout />
-					<UpdateProfile />
-				</Stack>
-			);
+			return [<Logout key="logout" />, <UpdateProfile key="update" />];
+		case '2fa':
+			return [
+				<Enable2fa key="enable2fa" />,
+				<Disable2fa key="disable2fa" />,
+			];
 		default:
 			return null;
+	}
+};
+
+const getMainAction = (layer, props) => {
+	switch (layer) {
+		case 'balances':
+			return <Refresh {...props} />;
+		case 'register':
+			return <Register {...props} />;
+		case 'genereal':
+		default:
+			return <Login {...props} />;
 	}
 };
 
@@ -78,8 +91,10 @@ const MainPage = () => {
 					spacing={2}
 				>
 					{/* Main Action */}
-					<Grid2 size={'auto'}>
-						<MainAction sx={{ paddingInline: 8 }} />
+					<Grid2 size={2}>
+						{getMainAction(layer, {
+							sx: { paddingInline: 8, height: '100%' },
+						})}
 					</Grid2>
 
 					{/* Tables toggler */}
@@ -115,6 +130,7 @@ const MainPage = () => {
 									<DollarIcon />
 								</ToggleButton>
 							</Tooltip>
+
 							<Tooltip
 								enterDelay={500}
 								title="Register"
@@ -127,6 +143,19 @@ const MainPage = () => {
 									<RegisterIcon />
 								</ToggleButton>
 							</Tooltip>
+
+							<Tooltip
+								enterDelay={500}
+								title="2FA"
+								arrow
+							>
+								<ToggleButton
+									value="2fa"
+									aria-label="centered"
+								>
+									<ShieldLockIcon />
+								</ToggleButton>
+							</Tooltip>
 						</ToggleButtonGroup>
 					</Grid2>
 
@@ -135,7 +164,8 @@ const MainPage = () => {
 						<Stack
 							justifyContent="center"
 							height="100%"
-							gap={2}
+							gap={1}
+							direction={'row'}
 						>
 							{getActions(layer)}
 						</Stack>

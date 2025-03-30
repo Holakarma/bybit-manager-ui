@@ -1,4 +1,6 @@
 import { Box, Modal, Stack, Typography } from '@mui/material';
+import { Disable2faTaskResult } from 'features/disable-2fa';
+import { Enable2faTaskResult } from 'features/enable-2fa';
 import { LoginTaskResult } from 'features/login';
 import { LogoutTaskResult } from 'features/logout';
 import { RefreshTaskResult } from 'features/refresh-balances';
@@ -20,6 +22,10 @@ const taskResult = (task) => {
 			return <RegisterTaskResult task={task} />;
 		case 'update':
 			return <UpdateProfileTaskResult task={task} />;
+		case 'disable2fa':
+			return <Disable2faTaskResult task={task} />;
+		case 'enable2fa':
+			return <Enable2faTaskResult task={task} />;
 		default:
 			return null;
 	}

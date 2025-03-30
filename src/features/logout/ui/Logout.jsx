@@ -1,5 +1,5 @@
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Box, Button, Tooltip } from '@mui/material';
+import { IconButton, Stack, Tooltip } from '@mui/material';
 import { useSelectedAccounts } from 'entities/account';
 import { TaskModal } from 'entities/task';
 import { useState } from 'react';
@@ -38,19 +38,20 @@ const Logout = () => {
 	return (
 		<>
 			<Tooltip title="Logout">
-				<Box sx={{ height: '100%' }}>
-					<Button
-						sx={{ height: '100%' }}
-						variant="outlined"
-						color="secondary"
+				<Stack
+					sx={{ height: '100%' }}
+					justifyContent="center"
+					alignItems="center"
+				>
+					<IconButton
 						onClick={handleOpen}
 						disabled={
 							isLoading || isError || !selectedAccounts.length
 						}
 					>
 						<LogoutIcon />
-					</Button>
-				</Box>
+					</IconButton>
+				</Stack>
 			</Tooltip>
 			<TaskModal
 				open={open}

@@ -3,6 +3,7 @@ export { default as useSelectedAccounts } from './hooks/useSelectedAccounts';
 export { default as useUpdateAccountMutation } from './hooks/useUpdateAccountMutation';
 export { default as getAccountsById } from './lib/getAccountsById';
 export { default as transferAccountGeneral } from './lib/transferAccountGeneral';
+export { default as transferAccounts2fa } from './lib/transferAccounts2fa';
 export { default as transferAccountsRegister } from './lib/transferAccountsRegister';
 export { default as transferFinanceAccounts } from './lib/transferFinanceAccounts';
 export { default as useDefaultAccount } from './model/defaultAccountStore';

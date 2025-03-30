@@ -5,6 +5,7 @@ import {
 	IconButton,
 	Paper,
 	Stack,
+	Tooltip,
 	Typography,
 	useTheme,
 } from '@mui/material';
@@ -93,49 +94,71 @@ const Navigation = () => {
 					<Stack gap={1}>
 						{Object.entries(MENU).map(
 							([route, { icon, label }]) => (
-								<Button
+								<Tooltip
 									key={route}
-									to={route}
-									component={Link}
-									fullWidth
-									disableElevation
-									color="secondary"
-									sx={{
-										justifyContent: collapse
-											? 'center'
-											: 'start',
-									}}
-									variant={
-										pathname === route
-											? 'contained'
-											: 'outlined'
-									}
-									startIcon={collapse ? undefined : icon}
+									title={collapse ? label : undefined}
+									placement="right"
 								>
-									{collapse ? (
-										icon
-									) : (
-										<Typography
-											variant="body"
-											color={
+									<Box>
+										<Button
+											to={route}
+											component={Link}
+											fullWidth
+											disableElevation
+											color="secondary"
+											sx={{
+												justifyContent: collapse
+													? 'center'
+													: 'start',
+											}}
+											variant={
 												pathname === route
-													? theme.palette.primary.main
-													: ''
+													? 'contained'
+													: 'outlined'
+											}
+											startIcon={
+												collapse ? undefined : icon
 											}
 										>
-											{label}
-										</Typography>
-									)}
-								</Button>
+											{collapse ? (
+												icon
+											) : (
+												<Typography
+													variant="body"
+													color={
+														pathname === route
+															? theme.palette
+																	.primary
+																	.main
+															: ''
+													}
+												>
+													{label}
+												</Typography>
+											)}
+										</Button>
+									</Box>
+								</Tooltip>
 							),
 						)}
 					</Stack>
 				</Stack>
 
 				<Stack p={2}>
-					<AppSettings>
-						{collapse ? <SettingsApplicationsIcon /> : 'Settings'}
-					</AppSettings>
+					<Tooltip
+						title={collapse ? 'Settings' : undefined}
+						placement="right"
+					>
+						<Stack>
+							<AppSettings>
+								{collapse ? (
+									<SettingsApplicationsIcon />
+								) : (
+									'Settings'
+								)}
+							</AppSettings>
+						</Stack>
+					</Tooltip>
 				</Stack>
 			</Stack>
 		</Paper>

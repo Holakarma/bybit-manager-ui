@@ -59,6 +59,8 @@ const AppSettings = ({ children, ...props }) => {
 			<Button
 				{...props}
 				onClick={handleOpen}
+				variant="outlined"
+				color="secondary"
 			>
 				{children || 'Settings'}
 			</Button>
