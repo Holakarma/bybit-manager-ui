@@ -3,20 +3,20 @@ import { taskDB, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
-const loginAccount = (database_id, signal) => {
+const registerAccount = (database_id, signal) => {
 	const api = new Api();
-	return api.Post(ENDPOINTS.login_account, null, {
+	return api.Post(ENDPOINTS.register_account, null, {
 		signal,
 		params: { database_id },
 	});
 };
 
-export const useLoginAccountMutation = () => {
+export const useRegisterAccountMutation = () => {
 	const mutationFunction = ({ database_id, signal }) => {
 		return deduplicateRequests({
-			requestKey: ['login', database_id],
+			requestKey: ['register', database_id],
 			requestFn: async () => {
-				const result = await loginAccount(database_id, signal);
+				const result = await registerAccount(database_id, signal);
 				return { result, database_id };
 			},
 		});
@@ -24,17 +24,17 @@ export const useLoginAccountMutation = () => {
 
 	return useMutation({
 		mutationFn: mutationFunction,
-		mutationKey: ['login'],
+		mutationKey: ['register'],
 	});
 };
 
-const useLoginTask = () => {
+const useRegisterTask = () => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const successHandler = async ({ data: accounts, task }) => {
 		await taskDB.addTask({
-			type: 'login',
+			type: 'register',
 			status: 'completed',
 			data: accounts,
 			startedAt: task.startedAt,
@@ -45,7 +45,7 @@ const useLoginTask = () => {
 			queryKey: ['tasks'],
 		});
 
-		enqueueSnackbar('Login completed', {
+		enqueueSnackbar('register completed', {
 			variant: 'info',
 		});
 	};
@@ -86,7 +86,7 @@ const useLoginTask = () => {
 		}
 	};
 
-	const mutation = useLoginAccountMutation();
+	const mutation = useRegisterAccountMutation();
 
 	return useTask({
 		asyncMutation: mutation.mutateAsync,
@@ -94,8 +94,8 @@ const useLoginTask = () => {
 		onError: errorHandler,
 		onSettled: settleHandler,
 		onAccountProcessed: processedAccountHandler,
-		type: 'login',
+		type: 'register',
 	});
 };
 
-export default useLoginTask;
+export default useRegisterTask;

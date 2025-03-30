@@ -67,13 +67,13 @@ const useRefreshTask = () => {
 			}),
 	});
 
-	const successHandler = async ({ data: accounts, taskId }) => {
+	const successHandler = async ({ data: accounts, task }) => {
 		await taskDB.addTask({
 			type: 'finance accounts',
 			status: 'completed',
 			data: accounts,
-			taskId,
-			startedAt: Date.now(),
+			startedAt: task.startedAt,
+			taskId: task.id,
 		});
 
 		enqueueSnackbar('Refresh completed', {
@@ -120,11 +120,27 @@ const useRefreshTask = () => {
 		});
 	};
 
+	const processedAccountHandler = ({ id, error }) => {
+		if (error) {
+			enqueueSnackbar(
+				`${id} ${
+					error.bybit_response?.ret_msg ||
+					error.statusText ||
+					'Some error occured'
+				}`,
+				{
+					variant: 'error',
+				},
+			);
+		}
+	};
+
 	return useTask({
 		asyncMutation: mutation.mutateAsync,
 		onSuccess: successHandler,
 		onError: errorHandler,
 		onSettled: settleHandler,
+		onAccountProcessed: processedAccountHandler,
 		type: 'finance accounts',
 	});
 };

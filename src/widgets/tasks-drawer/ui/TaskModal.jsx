@@ -2,6 +2,8 @@ import { Box, Modal, Stack, Typography } from '@mui/material';
 import { LoginTaskResult } from 'features/login';
 import { LogoutTaskResult } from 'features/logout';
 import { RefreshTaskResult } from 'features/refresh-balances';
+import { RegisterTaskResult } from 'features/register';
+import { timeDifference } from 'shared/lib/formatDate';
 import { ModalBody } from 'shared/ui/modal-body';
 import taskTitle from '../model/taskTitles';
 
@@ -13,6 +15,8 @@ const taskResult = (task) => {
 			return <LogoutTaskResult task={task} />;
 		case 'finance accounts':
 			return <RefreshTaskResult task={task} />;
+		case 'register':
+			return <RegisterTaskResult task={task} />;
 		default:
 			return null;
 	}
@@ -33,10 +37,21 @@ const TaskModal = ({ task, open, handleClose }) => {
 					<Stack
 						direction="row"
 						gap={2}
-						alignItems="center"
+						alignItems="baseline"
+						justifyContent="space-between"
 					>
 						<Typography variant="H5">
 							{taskTitle[task.type]}
+						</Typography>
+						<Typography
+							variant="Body"
+							color="textSecondary"
+						>
+							{timeDifference(
+								task.startedAt,
+								task.timestamp,
+								'mm:ss',
+							)}
 						</Typography>
 					</Stack>
 					<Box

@@ -34,7 +34,7 @@ const processChunks = ({
 	asyncMutation,
 	settings,
 	signal,
-	onAccountProccessed,
+	onAccountProcessed,
 }) => {
 	const getRandomDelay = () => {
 		const min = settings.delay.min * 1000;
@@ -72,14 +72,14 @@ const processChunks = ({
 				chunk.map((id) =>
 					asyncMutation({ database_id: id, signal, settings })
 						.then((data) => {
-							if (onAccountProccessed) {
-								onAccountProccessed(id, data, null);
+							if (onAccountProcessed) {
+								onAccountProcessed(id, data, null);
 							}
 							return { data, id };
 						})
 						.catch((error) => {
-							if (onAccountProccessed) {
-								onAccountProccessed(id, null, error);
+							if (onAccountProcessed) {
+								onAccountProcessed(id, null, error);
 							}
 							throw Error(
 								JSON.stringify({

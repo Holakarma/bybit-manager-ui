@@ -11,6 +11,7 @@ import {
 import { DefaultAccount } from 'entities/account';
 import { Logout } from 'features/logout';
 import { DollarIcon } from 'shared/assets/icons/dollar';
+import { RegisterIcon } from 'shared/assets/icons/register';
 import { UsersIcon } from 'shared/assets/icons/users';
 import { Accounts, useLayer } from 'widgets/accounts-table';
 import { Filters } from 'widgets/filters';
@@ -20,14 +21,7 @@ import { TaskDrawer } from 'widgets/tasks-drawer';
 const getActions = (layer) => {
 	switch (layer) {
 		case 'general':
-			return (
-				<Stack
-					justifyContent="center"
-					height="100%"
-				>
-					<Logout />
-				</Stack>
-			);
+			return <Logout />;
 		default:
 			return null;
 	}
@@ -74,8 +68,8 @@ const MainPage = () => {
 					spacing={2}
 				>
 					{/* Main Action */}
-					<Grid2 size={2}>
-						<MainAction />
+					<Grid2 size={'auto'}>
+						<MainAction sx={{ paddingInline: 8 }} />
 					</Grid2>
 
 					{/* Tables toggler */}
@@ -111,11 +105,30 @@ const MainPage = () => {
 									<DollarIcon />
 								</ToggleButton>
 							</Tooltip>
+							<Tooltip
+								enterDelay={500}
+								title="Register"
+								arrow
+							>
+								<ToggleButton
+									value="register"
+									aria-label="centered"
+								>
+									<RegisterIcon />
+								</ToggleButton>
+							</Tooltip>
 						</ToggleButtonGroup>
 					</Grid2>
 
 					{/* Actions */}
-					<Grid2 size={'auto'}>{getActions(layer)}</Grid2>
+					<Grid2 size={'auto'}>
+						<Stack
+							justifyContent="center"
+							height="100%"
+						>
+							{getActions(layer)}
+						</Stack>
+					</Grid2>
 				</Grid2>
 			</Stack>
 			<Paper

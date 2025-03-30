@@ -5,12 +5,13 @@ import { usd } from 'shared/lib/balance-visualize';
 import { formatDate, timeDifference } from 'shared/lib/formatDate';
 import { obfuscateEmail } from 'shared/lib/obfuscate-email';
 import proxySortComparator from '../lib/proxySortComparator';
-import GroupEditCell from './table-parts/GroupEditCell';
-import HidingCell from './table-parts/HidingCell';
-import NameCell from './table-parts/NameCell';
-import ProxyCell from './table-parts/ProxyCell';
-import ToggleNameHeader from './table-parts/ToggleNameHeader';
-import VisibilityChangingHeader from './table-parts/VisibilityChangingHeader';
+import GroupEditCell from './cells/GroupEditCell';
+import HidingCell from './cells/HidingCell';
+import NameCell from './cells/NameCell';
+import ProxyCell from './cells/ProxyCell';
+import RegisteredCell from './cells/RegisteredCell';
+import ToggleNameHeader from './header-cells/ToggleNameHeader';
+import VisibilityChangingHeader from './header-cells/VisibilityChangingHeader';
 
 const columns = ({
 	toggleName,
@@ -30,8 +31,85 @@ const columns = ({
 				...balancesLayerColumns(toggleName, balance, widths),
 				...additionalColumns,
 			];
+		case 'register':
+			return [
+				...registerLayerColumns(toggleName, widths),
+				...additionalColumns,
+			];
+		default:
+			return [
+				...generalLayerColumns(toggleName, balance, widths),
+				...additionalColumns,
+			];
 	}
 };
+
+const registerLayerColumns = (toggleName = false, widths) => [
+	{
+		field: toggleName ? 'name' : 'id',
+		headerName: toggleName ? 'Name' : 'ID',
+		minWidth: 100,
+		maxWidth: 150,
+		width: toggleName ? widths['name'] : widths['id'] || 100,
+		editable: toggleName,
+		renderHeader: (params) => <ToggleNameHeader params={params} />,
+		renderCell: (params) => <NameCell params={params} />,
+	},
+	{
+		field: 'group_name',
+		headerName: 'Group',
+		editable: true,
+		width: widths.group_name || 240,
+		minWidth: 115,
+		maxWidth: 300,
+		renderCell: (params) =>
+			params.row.group_name || (
+				<Stack
+					height="100%"
+					justifyContent="center"
+				>
+					<Typography color="textSecondary.default">
+						No group
+					</Typography>
+				</Stack>
+			),
+		renderEditCell: (params) => <GroupEditCell params={params} />,
+	},
+	{
+		field: 'email',
+		headerName: 'Email',
+		hideable: false,
+		width: widths.email || 200,
+		minWidth: 115,
+		maxWidth: 280,
+		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
+		renderCell: (params) => (
+			<HidingCell
+				params={params}
+				hidingFn={obfuscateEmail}
+				context={ColumnVisibilityContext}
+			>
+				{params.value}
+			</HidingCell>
+		),
+	},
+	{
+		field: 'registered',
+		headerName: 'Registered',
+		hideable: false,
+		width: widths.registered || 110,
+		minWidth: 110,
+		maxWidth: 200,
+		renderCell: RegisteredCell,
+	},
+	{
+		field: 'ref_code',
+		headerName: 'Ref code',
+		width: widths.ref_code || 110,
+		minWidth: 110,
+		maxWidth: 200,
+	},
+];
 
 const balancesLayerColumns = (toggleName = false, balance = 0, widths) => [
 	{

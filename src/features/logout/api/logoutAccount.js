@@ -47,13 +47,13 @@ const useLogoutTask = () => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 
-	const successHandler = async ({ data: accounts, taskId }) => {
+	const successHandler = async ({ data: accounts, task }) => {
 		await taskDB.addTask({
 			type: 'logout',
 			status: 'completed',
 			data: accounts,
-			taskId,
-			startedAt: Date.now(),
+			startedAt: task.startedAt,
+			taskId: task.id,
 		});
 
 		queryClient.invalidateQueries({

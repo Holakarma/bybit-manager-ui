@@ -1,12 +1,11 @@
-import LogoutIcon from '@mui/icons-material/Logout';
-import { Box, Button, Tooltip } from '@mui/material';
+import { Button } from '@mui/material';
 import { useSelectedAccounts } from 'entities/account';
 import { TaskModal } from 'entities/task';
 import { useState } from 'react';
-import useLogoutTask from '../api/logoutAccount';
+import useRegisterTask from '../api/registerAccount';
 import Settings from './Settngs';
 
-const Logout = () => {
+const Register = ({ ...props }) => {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -17,7 +16,7 @@ const Logout = () => {
 		shuffle: false,
 	});
 
-	const mutation = useLogoutTask();
+	const mutation = useRegisterTask();
 
 	const startHandler = () => {
 		mutation.mutate({
@@ -37,26 +36,21 @@ const Logout = () => {
 
 	return (
 		<>
-			<Tooltip title="Logout">
-				<Box sx={{ height: '100%' }}>
-					<Button
-						sx={{ height: '100%' }}
-						variant="outlined"
-						color="secondary"
-						onClick={handleOpen}
-						disabled={
-							isLoading || isError || !selectedAccounts.length
-						}
-					>
-						<LogoutIcon />
-					</Button>
-				</Box>
-			</Tooltip>
+			<Button
+				{...props}
+				variant="contained"
+				fullWidth
+				disabled={isLoading || isError || !selectedAccounts.length}
+				loading={isLoading}
+				onClick={handleOpen}
+			>
+				Register
+			</Button>
 			<TaskModal
 				open={open}
 				onClose={handleClose}
-				taskTitle="Create logout task"
-				taskDescription="Are you sure you want to logout for following
+				taskTitle="Create register task"
+				taskDescription="Are you sure you want to register for following
 					accounts?"
 				accounts={selectedAccounts}
 				onStart={startHandler}
@@ -73,4 +67,4 @@ const Logout = () => {
 	);
 };
 
-export default Logout;
+export default Register;

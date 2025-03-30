@@ -16,6 +16,7 @@ const useTask = ({
 	onSuccess: onInitSuccess,
 	onError: onInitError,
 	onSettled: onInitSetteled,
+	onAccountProcessed,
 	type,
 }) => {
 	const deleteTask = usePendingTasks.use.deleteTask();
@@ -56,15 +57,19 @@ const useTask = ({
 				settings,
 				asyncMutation,
 				signal: abortController.signal,
-				onAccountProccessed: (id, data, error) => {
+				onAccountProcessed: (id, data, error) => {
+					console.log({ id, data, error });
+					if (onAccountProcessed) {
+						onAccountProcessed({ id, data, error });
+					}
 					processAccount(task.id, { accountId: id, data, error });
 				},
 			});
 			if (onSuccess) {
-				onSuccess({ data, taskId: task.id });
+				onSuccess({ data, task });
 			}
 			if (onInitSuccess) {
-				onInitSuccess({ data, taskId: task.id });
+				onInitSuccess({ data, task });
 			}
 		} catch (error) {
 			if (onError) {
@@ -75,10 +80,10 @@ const useTask = ({
 			}
 		} finally {
 			if (onSettled) {
-				onSettled({ data, taskId: task.id });
+				onSettled({ data, task });
 			}
 			if (onInitSetteled) {
-				onInitSetteled({ data, taskId: task.id });
+				onInitSetteled({ data, task });
 			}
 			deleteTask(task.id);
 		}
