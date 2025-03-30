@@ -97,7 +97,7 @@ const Settings = ({ settings, onSettingsChange }) => {
 
 		onSettingsChange((prev) => ({
 			...prev,
-			delay: { min: minDelay, max: maxDelay },
+			delay: { ...prev.delay, min: minDelay, max: maxDelay },
 		}));
 
 		setInputMinDelay(String(minDelay));

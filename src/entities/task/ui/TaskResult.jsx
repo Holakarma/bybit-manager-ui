@@ -89,9 +89,9 @@ const TaskResult = ({ task, tooltipText, ...props }) => {
 									title={
 										task.status === 'success'
 											? tooltipText
-											: task?.error?.bybit_response
+											: task.error?.bybit_response
 													?.ret_msg ||
-												task?.error ||
+												task.error?.detail ||
 												'Some error occured'
 									}
 								>
