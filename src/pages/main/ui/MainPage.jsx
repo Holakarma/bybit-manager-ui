@@ -9,6 +9,7 @@ import {
 	useTheme,
 } from '@mui/material';
 import { DefaultAccount } from 'entities/account';
+import { CustomRequest } from 'features/custom-request';
 import { Disable2fa } from 'features/disable-2fa';
 import { Enable2fa } from 'features/enable-2fa';
 import { Login } from 'features/login';
@@ -27,7 +28,11 @@ import { TaskDrawer } from 'widgets/tasks-drawer';
 const getActions = (layer) => {
 	switch (layer) {
 		case 'general':
-			return [<Logout key="logout" />, <UpdateProfile key="update" />];
+			return [
+				<Logout key="logout" />,
+				<UpdateProfile key="update" />,
+				<CustomRequest key="custom-request" />,
+			];
 		case '2fa':
 			return [
 				<Enable2fa key="enable2fa" />,
@@ -177,8 +182,6 @@ const MainPage = () => {
 					flexGrow: 1,
 					backgroundColor: theme.palette.secondary.dark,
 					backgroundImage: 'none',
-					// maxHeight: '100%',
-					// overflow: 'auto',
 				}}
 			>
 				<Stack

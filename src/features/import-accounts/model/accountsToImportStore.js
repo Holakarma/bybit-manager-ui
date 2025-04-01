@@ -1,6 +1,6 @@
+import { isEmptyValues } from 'shared/lib/isEmptyValues';
 import { createSelectors } from 'shared/zustand';
 import { create } from 'zustand';
-import isAccountEmpty from '../lib/isAccountEmpty';
 import { createAccountObject, createEmptyObject } from './accountObj';
 
 const useAccountsBase = create((set) => ({
@@ -25,7 +25,7 @@ const useAccountsBase = create((set) => ({
 	editAccount: (index, updatedAccount) =>
 		set((state) => {
 			const accounts = [...state.accounts];
-			const isEmpty = isAccountEmpty(updatedAccount);
+			const isEmpty = isEmptyValues(updatedAccount);
 
 			if (isEmpty && index < accounts.length - 1) {
 				accounts.splice(index, 1);

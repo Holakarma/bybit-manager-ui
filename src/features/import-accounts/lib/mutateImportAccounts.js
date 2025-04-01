@@ -1,6 +1,6 @@
+import { isEmptyValues } from 'shared/lib/isEmptyValues';
 import importAccount from '../api/importAccount';
 import AccountDTO from '../model/accountDTO';
-import isAccountEmpty from './isAccountEmpty';
 
 const mutateImportAccounts = ({ form, onError, onSuccess }) => {
 	const accounts = {};
@@ -14,7 +14,7 @@ const mutateImportAccounts = ({ form, onError, onSuccess }) => {
 	}
 
 	const accountList = Object.values(accounts).filter(
-		(account) => !isAccountEmpty(account),
+		(account) => !isEmptyValues(account),
 	);
 
 	const importAccountsSequentially = (index = 0, results = []) =>

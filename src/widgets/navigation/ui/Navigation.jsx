@@ -14,6 +14,7 @@ import { Link, useLocation } from 'react-router';
 import { ChecvronIcon } from 'shared/assets/icons/chevron';
 import { ExchangeIcon } from 'shared/assets/icons/exhange';
 import { ImportIcon } from 'shared/assets/icons/import';
+import { OverviewIcon } from 'shared/assets/icons/overview';
 import ROUTES from 'shared/config/routes';
 import useAside from '../model/asideStore';
 
@@ -25,6 +26,10 @@ const MENU = {
 	[ROUTES.MAIN]: {
 		icon: <ExchangeIcon />,
 		label: 'Accounts',
+	},
+	[ROUTES.REQUESTS]: {
+		icon: <OverviewIcon />,
+		label: 'Requests',
 	},
 };
 

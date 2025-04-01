@@ -1,6 +1,6 @@
 import { TableRow } from '@mui/material';
 import { useMemo, useState } from 'react';
-import isAccountEmpty from '../lib/isAccountEmpty';
+import { isEmptyValues } from 'shared/lib/isEmptyValues';
 import AccountCell from './AccountCell';
 
 const AccountRow = ({ account, onEdit, sx, ...props }) => {
@@ -20,7 +20,7 @@ const AccountRow = ({ account, onEdit, sx, ...props }) => {
 	};
 
 	const required = useMemo(() => {
-		if (!isAccountEmpty(account)) {
+		if (!isEmptyValues(account)) {
 			return true;
 		}
 

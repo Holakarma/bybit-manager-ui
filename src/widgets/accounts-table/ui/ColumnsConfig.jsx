@@ -101,6 +101,15 @@ const twofaLayerColumns = (toggleName = false, widths) => [
 		width: widths.totp_secret || 200,
 		minWidth: 115,
 		maxWidth: 160,
+		renderHeader: (params) => <VisibilityChangingHeader params={params} />,
+		renderCell: (params) => (
+			<HidingCell
+				params={params}
+				context={ColumnVisibilityContext}
+			>
+				{params.value}
+			</HidingCell>
+		),
 	},
 	{
 		field: 'totp_enabled',

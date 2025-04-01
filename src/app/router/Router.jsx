@@ -2,6 +2,7 @@ import { Layout } from 'app/layout';
 import { ImportPage } from 'pages/import';
 import { MainPage } from 'pages/main';
 import { NotFoundPage } from 'pages/not-found';
+import { RequestPage } from 'pages/requests';
 import { createHashRouter, RouterProvider } from 'react-router';
 import ROUTES from 'shared/config/routes';
 
@@ -18,6 +19,10 @@ const Router = () => {
 				{
 					path: ROUTES.IMPORT,
 					element: <ImportPage />,
+				},
+				{
+					path: ROUTES.REQUESTS,
+					element: <RequestPage />,
 				},
 				{
 					path: ROUTES.NOT_FOUND,
