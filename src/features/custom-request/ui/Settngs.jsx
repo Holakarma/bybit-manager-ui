@@ -1,6 +1,7 @@
 import AvTimerIcon from '@mui/icons-material/AvTimer';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import {
+	Box,
 	InputAdornment,
 	MenuItem,
 	Select,
@@ -203,13 +204,19 @@ const Settings = ({ settings, onSettingsChange }) => {
 			>
 				<MenuItem value="1">Request 1</MenuItem>
 				<MenuItem value="2">Request 2</MenuItem>
-				<MenuItem value="4">
-					<Link to={ROUTES.REQUESTS}>
+				<Box
+					paddingInline={2}
+					paddingBlock={1}
+				>
+					<Link
+						to={ROUTES.REQUESTS}
+						target="_blank"
+					>
 						<Typography color="textSecondary">
 							Create new request
 						</Typography>
 					</Link>
-				</MenuItem>
+				</Box>
 			</Select>
 		</Stack>
 	);
