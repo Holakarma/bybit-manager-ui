@@ -3,6 +3,7 @@ import { IconButton, Stack, Tooltip } from '@mui/material';
 import { useSelectedAccounts } from 'entities/account';
 import { TaskModal } from 'entities/task';
 import { useState } from 'react';
+import useCustomRequestTask from '../api/customRequest.js';
 import Settings from './Settngs.jsx';
 
 const CustomRequest = () => {
@@ -16,17 +17,19 @@ const CustomRequest = () => {
 		shuffle: false,
 	});
 
-	// const mutation = useDisable2faTask();
+	const [requestId, setRequestId] = useState('');
 
-	// const startHandler = () => {
-	// 	mutation.mutate({
-	// 		database_ids: selectedAccounts.map(
-	// 			(account) => account.database_id,
-	// 		),
-	// 		settings,
-	// 	});
-	// 	handleClose();
-	// };
+	const mutation = useCustomRequestTask(requestId);
+
+	const startHandler = () => {
+		mutation.mutate({
+			database_ids: selectedAccounts.map(
+				(account) => account.database_id,
+			),
+			settings,
+		});
+		handleClose();
+	};
 
 	const {
 		data: selectedAccounts,
@@ -55,16 +58,21 @@ const CustomRequest = () => {
 			<TaskModal
 				open={open}
 				onClose={handleClose}
-				taskTitle="Create custom request"
-				taskDescription="Your request for the following accounts"
+				taskTitle="Сustom request task"
+				// taskDescription="Your request for the following accounts"
 				accounts={selectedAccounts}
-				// onStart={startHandler}
+				startButtonProps={{ disabled: !requestId }}
+				onStart={startHandler}
 				settingsComponent={
 					<Settings
 						settings={settings}
 						onSettingsChange={(newSettings) =>
 							setSettings(newSettings)
 						}
+						onRequestChange={(newRequest) =>
+							setRequestId(newRequest)
+						}
+						requestId={requestId}
 					/>
 				}
 			/>

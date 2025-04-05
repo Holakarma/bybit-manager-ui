@@ -1,4 +1,5 @@
 import { Box, Modal, Stack, Typography } from '@mui/material';
+import { CustomRequestTaskResult } from 'features/custom-request';
 import { Disable2faTaskResult } from 'features/disable-2fa';
 import { Enable2faTaskResult } from 'features/enable-2fa';
 import { LoginTaskResult } from 'features/login';
@@ -26,6 +27,8 @@ const taskResult = (task) => {
 			return <Disable2faTaskResult task={task} />;
 		case 'enable2fa':
 			return <Enable2faTaskResult task={task} />;
+		case 'custom request':
+			return <CustomRequestTaskResult task={task} />;
 		default:
 			return null;
 	}

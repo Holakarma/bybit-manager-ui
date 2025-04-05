@@ -11,6 +11,7 @@ const ENDPOINTS = {
 	ebable_2fa: '/private/enable-2fa',
 	disable_2fa: '/private/disable-2fa',
 	finance_accounts_db: '/finance-accounts',
+	custom_request: '/public/custom-request',
 };
 
 export default ENDPOINTS;

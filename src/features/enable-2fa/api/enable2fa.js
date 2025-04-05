@@ -53,7 +53,7 @@ const useEnable2faTask = () => {
 			status: 'completed',
 			data: accounts,
 			startedAt: task.startedAt,
-			taskId: task.id,
+			id: task.id,
 		});
 
 		queryClient.invalidateQueries({

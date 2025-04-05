@@ -1,6 +1,6 @@
 import { usd } from 'shared/lib/balance-visualize';
 
-const createFinanceAccountsConfig = (accounts, widths) => {
+const createFinanceAccountsConfig = (accounts, widths = {}) => {
 	return financeColumnsConfig(widths).filter(
 		(column) =>
 			!accounts.every(

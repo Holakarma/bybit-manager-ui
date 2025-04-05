@@ -2,7 +2,10 @@ import AvTimerIcon from '@mui/icons-material/AvTimer';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import {
 	Box,
+	CircularProgress,
+	FormControl,
 	InputAdornment,
+	InputLabel,
 	MenuItem,
 	Select,
 	Stack,
@@ -11,6 +14,7 @@ import {
 	Tooltip,
 	Typography,
 } from '@mui/material';
+import { useCustomRequests } from 'entities/custom-request';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import ROUTES from 'shared/config/routes';
@@ -77,7 +81,12 @@ const DelaySettings = ({
 	</Stack>
 );
 
-const Settings = ({ settings, onSettingsChange }) => {
+const Settings = ({
+	settings,
+	onSettingsChange,
+	onRequestChange,
+	requestId,
+}) => {
 	const [inputMinDelay, setInputMinDelay] = useState(
 		String(settings.delay.min),
 	);
@@ -138,15 +147,48 @@ const Settings = ({ settings, onSettingsChange }) => {
 		}));
 	};
 
-	const [request, setRequest] = useState('1');
+	const { data: customRequests, isLoading, isError } = useCustomRequests();
+
+	if (isLoading) {
+		return (
+			<Stack
+				gap={2}
+				padding={2}
+				justifyContent="center"
+				alignItems="center"
+			>
+				<CircularProgress />
+			</Stack>
+		);
+	}
+
+	if (isError) {
+		return (
+			<Stack
+				gap={2}
+				padding={2}
+				justifyContent="center"
+				alignItems="center"
+			>
+				<Typography
+					variant="H5"
+					color="error"
+				>
+					IndexedDB error
+				</Typography>
+			</Stack>
+		);
+	}
 
 	return (
-		<Stack gap={2}>
+		<Stack
+			gap={4}
+			width="600px"
+		>
 			<Stack
 				alignItems="start"
 				gap={2}
 				width="100%"
-				minWidth="350px"
 				direction="row"
 				paddingTop={2}
 			>
@@ -196,28 +238,69 @@ const Settings = ({ settings, onSettingsChange }) => {
 				/>
 			</Stack>
 
-			<Select
-				value={request}
-				onChange={(e) => setRequest(e.target.value)}
-				variant="standard"
-				disableUnderline
-			>
-				<MenuItem value="1">Request 1</MenuItem>
-				<MenuItem value="2">Request 2</MenuItem>
-				<Box
-					paddingInline={2}
-					paddingBlock={1}
+			<FormControl fullWidth>
+				<InputLabel id="request-select-label">
+					Choose request
+				</InputLabel>
+				<Select
+					labelId="request-select-label"
+					value={requestId}
+					onChange={(e) => onRequestChange(e.target.value)}
+					variant="standard"
+					disableUnderline
 				>
-					<Link
-						to={ROUTES.REQUESTS}
-						target="_blank"
+					{customRequests.map((request) => (
+						<MenuItem
+							value={request.id}
+							key={request.id}
+						>
+							<Stack
+								direction="row"
+								gap={1}
+								alignItems="baseline"
+								maxWidth={'600px'}
+							>
+								<Typography
+									sx={{
+										whiteSpace: 'nowrap',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										flexGrow: 1,
+									}}
+									variant="body"
+								>
+									{request.title}
+								</Typography>
+								<Typography
+									sx={{
+										whiteSpace: 'nowrap',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										flexGrow: 1,
+									}}
+									variant="caption"
+									color="textSecondary"
+								>
+									{request.path}
+								</Typography>
+							</Stack>
+						</MenuItem>
+					))}
+					<Box
+						paddingInline={2}
+						paddingBlock={1}
 					>
-						<Typography color="textSecondary">
-							Create new request
-						</Typography>
-					</Link>
-				</Box>
-			</Select>
+						<Link
+							to={ROUTES.REQUESTS}
+							target="_blank"
+						>
+							<Typography color="textSecondary">
+								Create new request
+							</Typography>
+						</Link>
+					</Box>
+				</Select>
+			</FormControl>
 		</Stack>
 	);
 };

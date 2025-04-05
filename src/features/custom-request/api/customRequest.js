@@ -1,34 +1,28 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAccountsById, useGetAccountsQuery } from 'entities/account';
+import { useCustomRequests } from 'entities/custom-request';
 import { taskDB, usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
-const disable2fa = (database_id, signal) => {
+const customRequest = (database_id, signal, request) => {
+	console.log('request', request);
 	const api = new Api();
-	return api.Post(ENDPOINTS.disable_2fa, null, {
+	return api.Post(ENDPOINTS.custom_request, request, {
 		signal,
 		params: { database_id },
 	});
 };
 
-export const useDisable2faMutation = () => {
-	const accounts = useGetAccountsQuery();
-
+export const useCustomRequestMutation = (request) => {
 	const mutationFunction = ({ database_id, signal }) => {
 		return deduplicateRequests({
-			requestKey: ['disable2fa', database_id],
+			requestKey: ['custom request', database_id],
 			requestFn: async () => {
-				const account = getAccountsById(accounts.data, [
+				const result = await customRequest(
 					database_id,
-				])[0];
-
-				/* If account has totp disabled */
-				if (!account.totp_enabled) {
-					return { result: null, database_id };
-				}
-
-				const result = await disable2fa(database_id, signal);
+					signal,
+					request,
+				);
 				return { result, database_id };
 			},
 		});
@@ -36,31 +30,33 @@ export const useDisable2faMutation = () => {
 
 	return useMutation({
 		mutationFn: mutationFunction,
-		mutationKey: ['disable2fa'],
-		enabled: accounts.isSuccess,
+		mutationKey: ['custom request'],
 	});
 };
 
-const useDisable2faTask = () => {
+const useCustomRequestTask = (requestId) => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
 	const changeAccountDescription =
 		usePendingTasks.use.changeAccountDescription();
 
+	const requests = useCustomRequests();
+	const request = requests.data?.find((r) => r.id === requestId);
+
 	const successHandler = async ({ data: accounts, task }) => {
 		await taskDB.addTask({
-			type: 'disable2fa',
+			type: 'custom request',
 			status: 'completed',
-			data: accounts,
+			data: { accounts, request },
 			startedAt: task.startedAt,
-			taskId: task.id,
+			id: task.id,
 		});
 
 		queryClient.invalidateQueries({
 			queryKey: ['tasks'],
 		});
 
-		enqueueSnackbar('2fa disabled', {
+		enqueueSnackbar('custom request completed', {
 			variant: 'info',
 		});
 
@@ -101,9 +97,9 @@ const useDisable2faTask = () => {
 		});
 	};
 	const accountMutationHandler = (id, taskId) => {
-		changeAccountDescription(taskId, id, 'Disabling 2fa...');
+		changeAccountDescription(taskId, id, 'Processing...');
 	};
-	const mutation = useDisable2faMutation();
+	const mutation = useCustomRequestMutation(request);
 
 	return useTask({
 		asyncMutation: mutation.mutateAsync,
@@ -111,8 +107,8 @@ const useDisable2faTask = () => {
 		onError: errorHandler,
 		onSettled: settleHandler,
 		onAccountMutation: accountMutationHandler,
-		type: 'disable2fa',
+		type: 'custom request',
 	});
 };
 
-export default useDisable2faTask;
+export default useCustomRequestTask;

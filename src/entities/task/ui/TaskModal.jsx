@@ -19,6 +19,7 @@ const TaskModal = ({
 	accounts,
 	onStart,
 	settingsComponent,
+	startButtonProps,
 }) => {
 	return (
 		<Modal
@@ -84,6 +85,7 @@ const TaskModal = ({
 							</List>
 
 							<Button
+								{...startButtonProps}
 								sx={{
 									position: 'absolute',
 									bottom: 12,

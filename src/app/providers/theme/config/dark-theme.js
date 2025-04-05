@@ -53,6 +53,31 @@ const componentsStyles = {
 			},
 		},
 	},
+
+	MuiTooltip: {
+		defaultProps: {
+			PopperProps: {
+				modifiers: [
+					{
+						name: 'offset',
+						options: {
+							offset: [0, -14],
+						},
+					},
+				],
+			},
+		},
+		styleOverrides: {
+			// tooltip: {
+			// 	backgroundColor: '#333', // Пример стиля для Tooltip
+			// 	fontSize: '0.875rem', // Размер шрифта
+			// 	borderRadius: 8, // Закругление углов
+			// },
+			// arrow: {
+			// 	color: '#333', // Цвет стрелки Tooltip
+			// },
+		},
+	},
 };
 
 const paletteStyles = {

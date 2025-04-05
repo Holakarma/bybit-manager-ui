@@ -19,19 +19,6 @@ import PendingTaskModal from './PendingTaskModal';
 import TaskItem from './TaskItem';
 import TaskModal from './TaskModal';
 
-const tooltipSlotProps = {
-	popper: {
-		modifiers: [
-			{
-				name: 'offset',
-				options: {
-					offset: [0, -14],
-				},
-			},
-		],
-	},
-};
-
 const TaskList = ({ ...props }) => {
 	const pendingTasks = usePendingTasks.use.tasks();
 	const [pendingTask, setPendingTask] = useState(null);
@@ -46,7 +33,7 @@ const TaskList = ({ ...props }) => {
 	useEffect(() => {
 		if (pendingTask) {
 			const id = pendingTask.id;
-			const changingTask = tasks.find((task) => task.taskId === id);
+			const changingTask = tasks.find((task) => task.id === id);
 
 			if (changingTask) {
 				setPendingTask(null);
@@ -206,10 +193,7 @@ const TaskList = ({ ...props }) => {
 							padding={2}
 							gap={1}
 						>
-							<Tooltip
-								title="Clear history"
-								slotProps={tooltipSlotProps}
-							>
+							<Tooltip title="Clear history">
 								<IconButton
 									onClick={async () => {
 										await taskDB.clearTasks();
@@ -222,10 +206,7 @@ const TaskList = ({ ...props }) => {
 								</IconButton>
 							</Tooltip>
 
-							<Tooltip
-								title="Export tasks (soon)"
-								slotProps={tooltipSlotProps}
-							>
+							<Tooltip title="Export tasks (soon)">
 								<Box>
 									<IconButton disabled>
 										<FileUploadRoundedIcon />
@@ -233,10 +214,7 @@ const TaskList = ({ ...props }) => {
 								</Box>
 							</Tooltip>
 
-							<Tooltip
-								title="Import tasks (soon)"
-								slotProps={tooltipSlotProps}
-							>
+							<Tooltip title="Import tasks (soon)">
 								<Box>
 									<IconButton disabled>
 										<FileDownloadRoundedIcon />

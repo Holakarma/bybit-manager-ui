@@ -1,12 +1,8 @@
 import { TableCell, TableRow, TextField } from '@mui/material';
 import { useState } from 'react';
 
-const ParamRow = ({ onParamChange, param, ...props }) => {
+const ParamRow = ({ param, onChange, error, ...props }) => {
 	const [tmpParam, setTmpParam] = useState(param);
-
-	const handleParamChange = () => {
-		onParamChange(tmpParam);
-	};
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -14,6 +10,10 @@ const ParamRow = ({ onParamChange, param, ...props }) => {
 			...prev,
 			[name]: value,
 		}));
+	};
+
+	const handleParamChange = () => {
+		onChange(tmpParam);
 	};
 
 	return (
@@ -29,6 +29,7 @@ const ParamRow = ({ onParamChange, param, ...props }) => {
 					fullWidth
 					variant="standard"
 					slotProps={{ input: { disableUnderline: true } }}
+					error={error}
 				/>
 			</TableCell>
 			<TableCell>
@@ -42,6 +43,7 @@ const ParamRow = ({ onParamChange, param, ...props }) => {
 					fullWidth
 					variant="standard"
 					slotProps={{ input: { disableUnderline: true } }}
+					error={error}
 				/>
 			</TableCell>
 		</TableRow>

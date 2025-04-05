@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const usePersistState = (key, defaultReturned = {}) => {
+const usePersistState = (key, defaultReturned) => {
 	if (!key) {
 		throw Error('key is required to persist state');
 	}

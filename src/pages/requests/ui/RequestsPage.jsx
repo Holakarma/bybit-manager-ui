@@ -1,5 +1,6 @@
 import { Grid2, Paper, Stack, Typography } from '@mui/material';
 import { CustomRequest } from 'widgets/custom-request';
+import { CustomRequestsList } from 'widgets/custom-requests-list';
 
 const RequestPage = () => {
 	return (
@@ -18,9 +19,7 @@ const RequestPage = () => {
 			>
 				<Grid2 size={3}>
 					<Paper sx={{ height: '100%', padding: 2 }}>
-						<Stack gap={2}>
-							<Typography variant="H5">Your requests</Typography>
-						</Stack>
+						<CustomRequestsList />
 					</Paper>
 				</Grid2>
 				<Grid2 size="grow">
