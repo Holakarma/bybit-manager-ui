@@ -93,6 +93,7 @@ const CustomRequest = ({ ...props }) => {
 		} else {
 			reset(defaultCustomRequest);
 		}
+		return () => reset();
 	}, [customRequest, reset]);
 
 	const addMutatiom = useAddCustomRequest();
