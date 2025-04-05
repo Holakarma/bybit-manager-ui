@@ -6,7 +6,7 @@ class CustomRequestDTO {
 		this.title = customRequest.title;
 		this.path = customRequest.path;
 		this.params = parseParams(customRequest.params);
-		this.json = JSON.parse(customRequest.json) || {};
+		this.json = customRequest.json ? JSON.parse(customRequest.json) : {};
 		this.data = customRequest.data;
 		this.bodyType = customRequest.bodyType;
 		this.id = customRequest.id;

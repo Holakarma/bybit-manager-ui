@@ -69,7 +69,7 @@ const CustomRequest = ({ ...props }) => {
 	const {
 		control,
 		handleSubmit,
-		formState: { errors, isValid },
+		formState: { errors, isValid, isDirty },
 		setValue,
 		trigger,
 		reset,
@@ -170,7 +170,7 @@ const CustomRequest = ({ ...props }) => {
 		const rawValue = e.target.value;
 
 		try {
-			const parsedJson = JSON.parse(rawValue);
+			const parsedJson = JSON.parse(rawValue.trim());
 
 			const formattedJson = formatJson(parsedJson);
 
@@ -178,7 +178,7 @@ const CustomRequest = ({ ...props }) => {
 
 			await trigger('json');
 		} catch (_error) {
-			setValue('json', rawValue);
+			setValue('json', rawValue.trim());
 
 			await trigger('json');
 		}
@@ -408,7 +408,7 @@ const CustomRequest = ({ ...props }) => {
 					type="submit"
 					variant="contained"
 					sx={{ minWidth: '100px' }}
-					disabled={!isValid}
+					disabled={!isValid || !isDirty}
 					loading={addMutatiom.isPending || updateMutation.isPending}
 				>
 					{customRequest ? 'Update' : 'Save'}
