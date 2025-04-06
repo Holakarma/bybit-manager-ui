@@ -12,6 +12,7 @@ import { DefaultAccount } from 'entities/account';
 import { CustomRequest } from 'features/custom-request';
 import { Disable2fa } from 'features/disable-2fa';
 import { Enable2fa } from 'features/enable-2fa';
+import { ExportAccounts } from 'features/export-accounts';
 import { Login } from 'features/login';
 import { Logout } from 'features/logout';
 import { Refresh } from 'features/refresh-balances';
@@ -29,17 +30,19 @@ const getActions = (layer) => {
 	switch (layer) {
 		case 'general':
 			return [
+				<ExportAccounts key="export" />,
 				<Logout key="logout" />,
 				<UpdateProfile key="update" />,
 				<CustomRequest key="custom-request" />,
 			];
 		case '2fa':
 			return [
+				<ExportAccounts key="export" />,
 				<Enable2fa key="enable2fa" />,
 				<Disable2fa key="disable2fa" />,
 			];
 		default:
-			return null;
+			return [<ExportAccounts key="export" />];
 	}
 };
 

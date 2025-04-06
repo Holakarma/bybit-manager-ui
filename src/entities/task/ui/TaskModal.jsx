@@ -20,6 +20,7 @@ const TaskModal = ({
 	onStart,
 	settingsComponent,
 	startButtonProps,
+	startTitle,
 }) => {
 	return (
 		<Modal
@@ -35,7 +36,7 @@ const TaskModal = ({
 						direction="row"
 						gap={2}
 					>
-						<Stack>
+						<Stack width="100%">
 							<Typography variant="H5">{taskTitle}</Typography>
 
 							<Typography
@@ -93,7 +94,7 @@ const TaskModal = ({
 								}}
 								onClick={onStart}
 							>
-								Start task
+								{startTitle || 'Start task'}
 							</Button>
 						</Stack>
 					</Stack>

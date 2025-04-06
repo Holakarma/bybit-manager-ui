@@ -5,7 +5,6 @@ import useGetAccountsQuery from './useGetAccountsQuery';
 
 const useSelectedAccounts = () => {
 	// @FIXME: fix the situation when selected in LS accounts are removed from the db
-
 	const { data: accounts, ...rest } = useGetAccountsQuery([]);
 	const selectedAccountsId = useSelectedAccountsId.use.selectedAccountsId();
 
