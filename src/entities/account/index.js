@@ -13,3 +13,4 @@ export { default as ColumnVisibilityContext } from './model/visibilityContext';
 export { default as WARNINGS } from './model/warnings';
 export { default as AccountWarnings } from './ui/AccountWarnings';
 export { default as DefaultAccount } from './ui/DefaultAccount';
+export { default as SelectedAccounts } from './ui/SelectedAccounts';

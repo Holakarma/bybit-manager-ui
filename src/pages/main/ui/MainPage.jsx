@@ -8,7 +8,7 @@ import {
 	Typography,
 	useTheme,
 } from '@mui/material';
-import { DefaultAccount } from 'entities/account';
+import { DefaultAccount, SelectedAccounts } from 'entities/account';
 import { CustomRequest } from 'features/custom-request';
 import { Disable2fa } from 'features/disable-2fa';
 import { Enable2fa } from 'features/enable-2fa';
@@ -63,7 +63,7 @@ const MainPage = () => {
 
 	const layer = useLayer.use.layer();
 	const setLayer = useLayer.use.setLayer();
-	const handleLayer = (event, newLayer) => {
+	const handleLayer = (_event, newLayer) => {
 		if (newLayer !== null) {
 			setLayer(newLayer);
 		}
@@ -74,7 +74,6 @@ const MainPage = () => {
 			gap={4}
 			flexGrow={1}
 			maxWidth="100%"
-			// maxHeight="100%"
 		>
 			<Stack
 				direction="row"
@@ -85,8 +84,9 @@ const MainPage = () => {
 				<Stack
 					direction="row"
 					alignItems="center"
-					gap={1}
+					gap={2}
 				>
+					<SelectedAccounts />
 					<DefaultAccount />
 					<TaskDrawer />
 				</Stack>
