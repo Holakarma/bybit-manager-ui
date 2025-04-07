@@ -27,7 +27,7 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 			if (prev.find((item) => item === account.database_id)) {
 				return prev.filter((item) => item !== account.database_id);
 			}
-			return [...prev, account];
+			return [...prev, account.database_id];
 		});
 	};
 
