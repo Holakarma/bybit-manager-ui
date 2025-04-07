@@ -145,7 +145,7 @@ const AccountsTable = ({
 						disableRowSelectionOnClick
 						processRowUpdate={processRowUpdate}
 						onCellEditStop={(params) => setReason(params.reason)}
-						// keepNonExistentRowsSelected
+						keepNonExistentRowsSelected
 						onColumnVisibilityModelChange={(newModel) =>
 							setColumnVisibilityModel(newModel)
 						}

@@ -11,13 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { ModalBody } from 'shared/ui/modal-body';
 
-const SelectedAccountsModal = ({
-	onClose,
-	open,
-	selectedAccounts,
-	// unselect,
-}) => {
-
+const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 	const [selectedAccountsIdsTmp, setSelectedAccountsIdsTmp] = useState(
 		selectedAccounts.map((account) => account.database_id),
 	);
@@ -109,6 +103,7 @@ const SelectedAccountsModal = ({
 								<ListItemText
 									id={account.database_id}
 									primary={account.email.address}
+									secondary={`${account.group_name} ${account.database_id}`}
 								/>
 								{/* </ListItemButton> */}
 							</ListItem>

@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import { useSelectedAccounts } from 'entities/account';
 import { TaskModal } from 'entities/task';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import useRegisterTask from '../api/registerAccount';
 import Settings from './Settngs';
 
@@ -16,23 +16,28 @@ const Register = ({ ...props }) => {
 		shuffle: false,
 	});
 
-	const mutation = useRegisterTask();
-
-	const startHandler = () => {
-		mutation.mutate({
-			database_ids: selectedAccounts.map(
-				(account) => account.database_id,
-			),
-			settings,
-		});
-		handleClose();
-	};
-
 	const {
 		data: selectedAccounts,
 		isLoading,
 		isError,
 	} = useSelectedAccounts();
+
+	const legitAccounts = useMemo(() => {
+		if (selectedAccounts) {
+			return selectedAccounts.filter((account) => !account.registered);
+		}
+		return null;
+	}, [selectedAccounts]);
+
+	const mutation = useRegisterTask();
+
+	const startHandler = () => {
+		mutation.mutate({
+			database_ids: legitAccounts.map((account) => account.database_id),
+			settings,
+		});
+		handleClose();
+	};
 
 	return (
 		<>
@@ -40,7 +45,7 @@ const Register = ({ ...props }) => {
 				{...props}
 				variant="contained"
 				fullWidth
-				disabled={isLoading || isError || !selectedAccounts.length}
+				disabled={isLoading || isError || !legitAccounts?.length}
 				loading={isLoading}
 				onClick={handleOpen}
 			>
