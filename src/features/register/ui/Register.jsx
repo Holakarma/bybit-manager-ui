@@ -57,7 +57,7 @@ const Register = ({ ...props }) => {
 				taskTitle="Create register task"
 				taskDescription="Are you sure you want to register for following
 					accounts?"
-				accounts={selectedAccounts}
+				accounts={legitAccounts}
 				onStart={startHandler}
 				settingsComponent={
 					<Settings

@@ -26,8 +26,6 @@ const CustomRequestTaskResult = ({ task, ...props }) => {
 		}));
 	}, [accounts, task]);
 
-	console.log(task);
-
 	if (isLoading) {
 		return (
 			<Box {...props}>
