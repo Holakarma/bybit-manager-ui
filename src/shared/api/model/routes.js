@@ -12,6 +12,7 @@ const ENDPOINTS = {
 	disable_2fa: '/private/disable-2fa',
 	finance_accounts_db: '/finance-accounts',
 	custom_request: '/public/custom-request',
+	license: '/license',
 };
 
 export default ENDPOINTS;

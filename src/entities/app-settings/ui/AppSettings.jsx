@@ -1,4 +1,6 @@
-import { Box, Button, Modal, Stack, Typography } from '@mui/material';
+import { Box, Button, Divider, Modal, Stack, Typography } from '@mui/material';
+// eslint-disable-next-line no-restricted-imports
+import LicenseInfo from 'entities/license/@X/app-settings/LicenseInfo';
 import { useCallback, useState } from 'react';
 import { defaultConfig as defaultApiConfig } from 'shared/api';
 import { ModalBody } from 'shared/ui/modal-body';
@@ -75,7 +77,12 @@ const AppSettings = ({ children, ...props }) => {
 					>
 						App Settings
 					</Typography>
+
 					<Stack gap={2}>
+						<LicenseInfo />
+
+						<Divider />
+
 						<ApiSettings
 							onSettingsChange={handleApiSettingsChange}
 							defaultSettings={settings.apiConfig}
