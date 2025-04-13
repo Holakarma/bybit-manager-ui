@@ -8,13 +8,13 @@ import {
 	Tooltip,
 	Typography,
 } from '@mui/material';
-import { useGetAccountsQuery } from 'entities/account';
+import { useGetAccounts } from 'entities/account';
 import { color } from 'entities/task';
 import { useMemo } from 'react';
 import { Pulsing } from 'shared/ui/pulsing';
 
 const CustomRequestTaskResult = ({ task, ...props }) => {
-	const { data: accounts, isLoading, isError } = useGetAccountsQuery([]);
+	const { data: accounts, isLoading, isError } = useGetAccounts();
 
 	const taskAccounts = useMemo(() => {
 		if (!task || !accounts) return [];

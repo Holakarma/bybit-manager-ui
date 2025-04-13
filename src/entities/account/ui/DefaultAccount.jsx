@@ -2,13 +2,13 @@ import { Button, Tooltip } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { AccountIcon } from 'shared/assets/icons/account';
 import { NoAccountIcon } from 'shared/assets/icons/no-account';
-import useGetAccountsQuery from '../hooks/useGetAccountsQuery';
 import useDefaultAccount from '../model/defaultAccountStore';
+import useGetAccounts from '../api/getAccounts';
 
 const DefaultAccount = () => {
 	const defaultAccountId = useDefaultAccount.use.defaultAccountId();
 	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
-	const { data: accounts, isLoading, isError } = useGetAccountsQuery();
+	const { data: accounts, isLoading, isError } = useGetAccounts();
 
 	const defaultAccount = useMemo(() => {
 		if (accounts && defaultAccountId) {

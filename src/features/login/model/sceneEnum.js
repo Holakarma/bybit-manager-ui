@@ -1,0 +1,8 @@
+const SCENE = {
+	LOGIN: 31000,
+	REGISTER: 31004,
+	PASSWORD_RESET: 30001,
+	IDO: 30091,
+};
+
+export default SCENE;

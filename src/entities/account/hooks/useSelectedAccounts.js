@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
+import useGetAccounts from '../api/getAccounts';
 import getAccountsById from '../lib/getAccountsById';
 import useSelectedAccountsId from '../model/selectedAccountsIdStore';
-import useGetAccountsQuery from './useGetAccountsQuery';
 
 const useSelectedAccounts = () => {
 	// @FIXME: fix the situation when selected in LS accounts are removed from the db
-	const { data: accounts, ...rest } = useGetAccountsQuery([]);
+	const { data: accounts, ...rest } = useGetAccounts();
 	const selectedAccountsId = useSelectedAccountsId.use.selectedAccountsId();
 
 	const selectedAccounts = useMemo(() => {

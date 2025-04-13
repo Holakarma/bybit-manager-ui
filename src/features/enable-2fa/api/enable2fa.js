@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAccountsById, useGetAccountsQuery } from 'entities/account';
+import { getAccountsById, useGetAccounts } from 'entities/account';
 import { taskDB, usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
@@ -13,7 +13,7 @@ const enable2fa = (database_id, signal) => {
 };
 
 export const useEnable2faMutation = () => {
-	const accounts = useGetAccountsQuery();
+	const accounts = useGetAccounts();
 
 	const mutationFunction = ({ database_id, signal }) => {
 		return deduplicateRequests({

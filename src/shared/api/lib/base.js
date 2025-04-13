@@ -1,20 +1,21 @@
 import axios from 'axios';
+import { getApiConfig } from 'shared/model/app-config';
 
 export const defaultConfig = {
-	host: 'localhost',
+	host: 'http://localhost',
 	port: '8000',
 };
 
 const config = () => {
 	try {
-		return JSON.parse(localStorage.getItem('appConfig')).apiConfig;
+		return getApiConfig();
 	} catch (_e) {
 		return defaultConfig;
 	}
 };
 
 const instance = axios.create({
-	baseURL: `http://${config().host || 'localhost'}:${config().port || '8000'}/`,
+	baseURL: `${config().host || 'http://localhost'}:${config().port || '8000'}/`,
 });
 
 instance.interceptors.request.use((config) => {
@@ -51,7 +52,7 @@ class Api {
 					return resolve(response.data);
 				})
 				.catch((error) => {
-					return reject(error.response);
+					return reject(error.response?.data);
 				});
 		});
 
@@ -63,7 +64,7 @@ class Api {
 					resolve(response.data);
 				})
 				.catch((error) => {
-					reject(error.response);
+					reject(error.response?.data);
 				});
 		});
 
@@ -135,7 +136,7 @@ class Api {
 					return resolve(response.data);
 				})
 				.catch((error) => {
-					return reject(error.response);
+					return reject(error.response?.data);
 				});
 		});
 }

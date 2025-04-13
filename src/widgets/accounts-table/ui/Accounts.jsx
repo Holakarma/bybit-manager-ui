@@ -4,7 +4,7 @@ import {
 	transferAccounts2fa,
 	transferAccountsRegister,
 	transferFinanceAccounts,
-	useGetAccountsQuery,
+	useGetAccounts,
 } from 'entities/account';
 import {
 	createFinanceAccountsConfig,
@@ -28,7 +28,7 @@ const Accounts = () => {
 		error,
 		isLoading,
 		isError,
-	} = useGetAccountsQuery(groups);
+	} = useGetAccounts(groups.length ? { groups } : undefined);
 
 	const { data: financeAccounts, isLoading: isFinanceAccountsLoading } =
 		useGetFinanceAccountsDB(accounts?.map((account) => account.uid));

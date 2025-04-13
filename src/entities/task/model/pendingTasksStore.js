@@ -24,7 +24,7 @@ const usePendingTasksBase = create((set) => ({
 				tasks: state.tasks.filter((task) => task.id !== id),
 			};
 		}),
-	processAccount: (taskId, { accountId, data, error }) =>
+	processAccount: (taskId, { accountId, data, error, logs }) =>
 		set((state) => {
 			return {
 				tasks: state.tasks.map((task) => {
@@ -35,7 +35,7 @@ const usePendingTasksBase = create((set) => ({
 								...task.accounts,
 								processed: [
 									...task.accounts.processed,
-									{ id: accountId, data, error },
+									{ id: accountId, data, error, logs },
 								],
 							},
 						};
@@ -44,6 +44,7 @@ const usePendingTasksBase = create((set) => ({
 				}),
 			};
 		}),
+
 	changeAccountDescription: (taskId, accountId, newDescription) =>
 		set((state) => {
 			return {

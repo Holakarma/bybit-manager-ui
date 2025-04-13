@@ -8,14 +8,14 @@ import {
 	Stack,
 	Typography,
 } from '@mui/material';
-import { getAccountsById, useGetAccountsQuery } from 'entities/account';
+import { getAccountsById, useGetAccounts } from 'entities/account';
 import { useMemo } from 'react';
 import { ModalBody } from 'shared/ui/modal-body';
 import { Pulsing } from 'shared/ui/pulsing';
 import taskTitle from '../model/taskTitles';
 
 const PendingTaskModal = ({ task, open, handleClose }) => {
-	const { data: accounts, isLoading, isError } = useGetAccountsQuery([]);
+	const { data: accounts, isLoading, isError } = useGetAccounts();
 
 	const taskAccounts = useMemo(() => {
 		if (!task || !accounts) return [];

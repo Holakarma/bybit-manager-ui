@@ -13,6 +13,15 @@ const ENDPOINTS = {
 	finance_accounts_db: '/finance-accounts',
 	custom_request: '/public/custom-request',
 	license: '/license',
+	permission: '/public/permission',
+	login_name: '/private/login-name',
+	get_captcha: '/private/captcha/get',
+	recaptcha_v2_solve: '/private/captcha/recaptcha/v2/solve',
+	recaptcha_v2_verify: '/private/captcha/recaptcha/v2/verify',
+	verify_risk_token: '/private/risk/verify',
+	get_risk_components: '/private/risk/components',
+	send_email_code: '/private/risk/send-email-code',
+	imap_scanner: '/imap/scan',
 };
 
 export default ENDPOINTS;

@@ -1,76 +1,90 @@
-import { Box, Button, Divider, Modal, Stack, Typography } from '@mui/material';
+import { yupResolver } from '@hookform/resolvers/yup';
+import {
+	Box,
+	Button,
+	Divider,
+	Modal,
+	Stack,
+	Tooltip,
+	Typography,
+} from '@mui/material';
 // eslint-disable-next-line no-restricted-imports
 import LicenseInfo from 'entities/license/@X/app-settings/LicenseInfo';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { defaultConfig as defaultApiConfig } from 'shared/api';
+import { getAppConfig, setAppConfig } from 'shared/model/app-config';
+import { API_CONFIG_NAME } from 'shared/model/app-config/consts';
 import { ModalBody } from 'shared/ui/modal-body';
+import * as yup from 'yup';
 import ApiSettings from './ApiSettings';
+import CaptchaSelect from './CaptchaSelect';
+import VerifyingSettings from './VerifyingSettings';
 
-const AppSettings = ({ children, ...props }) => {
+const schema = yup.object({
+	[API_CONFIG_NAME]: yup.object({
+		host: yup.string().required('Host is required'),
+		port: yup
+			.number()
+			.typeError('Port must be a number')
+			.min(0, 'Port must be between 0 and 65535')
+			.max(65535, 'Port must be between 0 and 65535')
+			.required('Port is required'),
+	}),
+});
+
+const AppSettings = ({ children, tooltipTitle, ...props }) => {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
 
-	const defautlErrors = {
-		apiConfig: false,
-	};
 	const defaultConfig = {
-		apiConfig: defaultApiConfig,
+		[API_CONFIG_NAME]: defaultApiConfig,
 	};
 
-	/* Global Settings */
-	const [settings, setSettings] = useState(
-		JSON.parse(localStorage.getItem('appConfig')) || defaultConfig,
-	);
-	const resetHandle = () => {
-		setSettings(defaultConfig);
-	};
+	const {
+		control,
+		handleSubmit,
+		reset,
+		formState: { errors, isDirty },
+	} = useForm({
+		resolver: yupResolver(schema),
+		defaultValues: getAppConfig() || defaultConfig,
+		mode: 'onChange',
+	});
 
-	const compareSettings = () =>
-		JSON.stringify(settings) === localStorage.getItem('appConfig');
-	const saveHandle = () => {
-		localStorage.setItem('appConfig', JSON.stringify(settings));
-		setSettings(JSON.parse(localStorage.getItem('appConfig')));
+	const saveHandle = (data) => {
+		setAppConfig(data);
+		reset(data);
 		location.reload();
 	};
 
-	/* Errors */
-	const [errors, setErrors] = useState(defautlErrors);
-
-	const hasErrors = Object.values(errors).some((error) => error);
-	const handleApiError = (error) => {
-		setErrors((prev) => ({ ...prev, apiConfig: error }));
+	const resetHandle = () => {
+		setAppConfig(defaultConfig);
+		reset(defaultConfig);
+		location.reload();
 	};
-
-	/* API Settings */
-	const handleApiSettingsChange = useCallback((newApiConfig) => {
-		if (!newApiConfig) {
-			handleApiError(true);
-			return;
-		}
-		handleApiError(false);
-
-		setSettings((prev) => ({
-			...prev,
-			apiConfig: newApiConfig,
-		}));
-	}, []);
 
 	return (
 		<>
-			<Button
-				{...props}
-				onClick={handleOpen}
-				variant="outlined"
-				color="secondary"
+			<Tooltip
+				title={tooltipTitle}
+				placement="right"
 			>
-				{children || 'Settings'}
-			</Button>
+				<Button
+					{...props}
+					onClick={handleOpen}
+					variant="outlined"
+					color="secondary"
+				>
+					{children || 'Settings'}
+				</Button>
+			</Tooltip>
 			<Modal
 				open={open}
 				onClose={handleClose}
 			>
-				<ModalBody sx={{ minWidth: '600px' }}>
+				<ModalBody>
 					<Typography
 						variant="H5"
 						marginBottom={4}
@@ -78,26 +92,32 @@ const AppSettings = ({ children, ...props }) => {
 						App Settings
 					</Typography>
 
-					<Stack gap={2}>
-						<LicenseInfo />
+					<form onSubmit={handleSubmit(saveHandle)}>
+						<Stack gap={5}>
+							<LicenseInfo />
 
-						<Divider />
+							<Divider />
 
-						<ApiSettings
-							onSettingsChange={handleApiSettingsChange}
-							defaultSettings={settings.apiConfig}
-						/>
+							<CaptchaSelect />
 
-						<Box textAlign="end">
-							<Button onClick={resetHandle}>Reset</Button>
-							<Button
-								disabled={hasErrors || compareSettings()}
-								onClick={saveHandle}
-							>
-								Save & reload
-							</Button>
-						</Box>
-					</Stack>
+							<VerifyingSettings />
+
+							<ApiSettings
+								control={control}
+								errors={errors[API_CONFIG_NAME]}
+							/>
+
+							<Box textAlign="end">
+								<Button onClick={resetHandle}>Reset</Button>
+								<Button
+									type="submit"
+									disabled={!isDirty}
+								>
+									Save & Reload
+								</Button>
+							</Box>
+						</Stack>
+					</form>
 				</ModalBody>
 			</Modal>
 		</>

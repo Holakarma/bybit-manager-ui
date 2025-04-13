@@ -150,20 +150,15 @@ const Navigation = () => {
 				</Stack>
 
 				<Stack p={2}>
-					<Tooltip
-						title={collapse ? 'Settings' : undefined}
-						placement="right"
-					>
-						<Stack>
-							<AppSettings>
-								{collapse ? (
-									<SettingsApplicationsIcon />
-								) : (
-									'Settings'
-								)}
-							</AppSettings>
-						</Stack>
-					</Tooltip>
+					<Stack>
+						<AppSettings tooltipTitle={collapse ? 'Settings' : ''}>
+							{collapse ? (
+								<SettingsApplicationsIcon />
+							) : (
+								'Settings'
+							)}
+						</AppSettings>
+					</Stack>
 				</Stack>
 			</Stack>
 		</Paper>
