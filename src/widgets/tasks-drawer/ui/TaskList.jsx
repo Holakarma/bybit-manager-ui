@@ -16,6 +16,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { taskDB, useGetTasks, usePendingTasks } from 'entities/task';
 import { useEffect, useMemo, useState } from 'react';
+import AllTasksModal from './AllTasksModal';
 import PendingTaskItem from './PendingTaskItem';
 import PendingTaskModal from './PendingTaskModal';
 import TaskModal from './TaskModal';
@@ -25,6 +26,9 @@ const TaskList = ({ ...props }) => {
 	const pendingTasks = usePendingTasks.use.tasks();
 	const [pendingTask, setPendingTask] = useState(null);
 	const handleClosePendingModal = () => setPendingTask(null);
+
+	const [allTasks, setAllTasks] = useState(null);
+	const handleCloseAllTasksModal = () => setAllTasks(null);
 
 	const { data: tasks, isLoading, isError } = useGetTasks();
 	const [task, setTask] = useState(null);
@@ -125,7 +129,10 @@ const TaskList = ({ ...props }) => {
 							</Typography>
 
 							<Tooltip title="Logs">
-								<IconButton color="textSecondary">
+								<IconButton
+									color="textSecondary"
+									onClick={() => setAllTasks(true)}
+								>
 									<IntegrationInstructionsRoundedIcon />
 								</IconButton>
 							</Tooltip>
@@ -222,6 +229,10 @@ const TaskList = ({ ...props }) => {
 				task={task}
 				open={Boolean(task)}
 				handleClose={handleCloseTaskModal}
+			/>
+			<AllTasksModal
+				open={Boolean(allTasks)}
+				handleClose={handleCloseAllTasksModal}
 			/>
 		</>
 	);
