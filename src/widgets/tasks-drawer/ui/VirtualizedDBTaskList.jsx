@@ -97,17 +97,22 @@ const VirtualizedDBTaskList = ({ groupedTasks, onTaskClick }) => {
 						</FixedSizeList>
 					)}
 				</AutoSizer>
-			</Box>
+				{/* No tasks */}
 
-			{/* No tasks */}
-			{groupedTasks[pageDate].length === 0 && (
-				<Typography
-					variant="body2"
-					color="textSecondary"
-				>
-					No tasks today
-				</Typography>
-			)}
+				{groupedTasks[pageDate].length === 0 && (
+					<Stack
+						justifyContent="center"
+						alignItems="center"
+					>
+						<Typography
+							variant="body2"
+							color="textSecondary"
+						>
+							No tasks today
+						</Typography>
+					</Stack>
+				)}
+			</Box>
 		</Stack>
 	);
 };
