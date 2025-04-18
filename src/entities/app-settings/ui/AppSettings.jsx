@@ -13,7 +13,11 @@ import LicenseInfo from 'entities/license/@X/app-settings/LicenseInfo';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { defaultConfig as defaultApiConfig } from 'shared/api';
-import { getAppConfig, setAppConfig } from 'shared/model/app-config';
+import {
+	getAppConfig,
+	RECAPTCHA_TYPE,
+	setAppConfig,
+} from 'shared/model/app-config';
 import { API_CONFIG_NAME } from 'shared/model/app-config/consts';
 import { ModalBody } from 'shared/ui/modal-body';
 import * as yup from 'yup';
@@ -31,6 +35,20 @@ const schema = yup.object({
 			.max(65535, 'Port must be between 0 and 65535')
 			.required('Port is required'),
 	}),
+	captchaType: yup
+		.string()
+		.oneOf(['recaptcha', 'gee4captcha'])
+		.required('Captcha type is required'),
+	verifyAttempts: yup.object({
+		email: yup
+			.number()
+			.min(1, 'Email attempts must be at least 1')
+			.required('Email attempts are required'),
+		totp: yup
+			.number()
+			.min(1, 'TOTP attempts must be at least 1')
+			.required('TOTP attempts are required'),
+	}),
 });
 
 const AppSettings = ({ children, tooltipTitle, ...props }) => {
@@ -40,6 +58,11 @@ const AppSettings = ({ children, tooltipTitle, ...props }) => {
 
 	const defaultConfig = {
 		[API_CONFIG_NAME]: defaultApiConfig,
+		captchaType: RECAPTCHA_TYPE,
+		verifyAttempts: {
+			email: 3,
+			totp: 3,
+		},
 	};
 
 	const {
@@ -98,9 +121,24 @@ const AppSettings = ({ children, tooltipTitle, ...props }) => {
 
 							<Divider />
 
-							<CaptchaSelect />
+							<CaptchaSelect
+								control={control}
+								name="captchaType"
+								error={!!errors.captchaType}
+							/>
 
-							<VerifyingSettings />
+							<VerifyingSettings
+								control={control}
+								name="verifyAttempts"
+								emailError={!!errors.verifyAttempts?.email}
+								totpError={!!errors.verifyAttempts?.totp}
+								emailHelperText={
+									errors.verifyAttempts?.email?.message
+								}
+								totpHelperText={
+									errors.verifyAttempts?.totp?.message
+								}
+							/>
 
 							<ApiSettings
 								control={control}

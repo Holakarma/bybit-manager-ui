@@ -3,12 +3,14 @@ import { forwardRef } from 'react';
 
 const style = {
 	position: 'absolute',
-	top: '50%',
+	top: 0,
+	bottom: 0,
 	left: '50%',
-	transform: 'translate(-50%, -50%)',
+	transform: 'translateX(-50%)',
 	bgcolor: 'background.paper',
 	boxShadow: 24,
 	p: 4,
+	marginBlock: 2,
 };
 
 // eslint-disable-next-line react/display-name

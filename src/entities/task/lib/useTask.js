@@ -1,5 +1,9 @@
+import { useQueryClient } from '@tanstack/react-query';
+import { useSnackbar } from 'notistack';
 import { processChunks } from 'shared/api';
 import usePendingTasks, { createPendingTask } from '../model/pendingTasksStore';
+import taskTitle from '../model/taskTitles';
+import useSaveTask from './saveTask';
 
 /**
  * @typedef {Object} Settings
@@ -23,6 +27,10 @@ const useTask = ({
 	const deleteTask = usePendingTasks.use.deleteTask();
 	const addTask = usePendingTasks.use.addTask();
 	const processAccount = usePendingTasks.use.processAccount();
+
+	const { enqueueSnackbar } = useSnackbar();
+	const queryClient = useQueryClient();
+	const saveTaskMutation = useSaveTask();
 
 	let data = null;
 	let abortController = null;
@@ -85,6 +93,13 @@ const useTask = ({
 			if (onInitSuccess) {
 				onInitSuccess({ data, task });
 			}
+			queryClient.invalidateQueries({
+				queryKey: ['tasks'],
+			});
+			enqueueSnackbar(`${taskTitle[task.type]} completed`, {
+				variant: 'info',
+			});
+			await saveTaskMutation.mutateAsync(task);
 		} catch (error) {
 			if (onError) {
 				onError(error);
@@ -92,6 +107,9 @@ const useTask = ({
 			if (onInitError) {
 				onInitError(error);
 			}
+			enqueueSnackbar(`${taskTitle[task.type]} aborted`, {
+				variant: 'warning',
+			});
 		} finally {
 			if (onSettled) {
 				onSettled({ data, task });
@@ -99,6 +117,7 @@ const useTask = ({
 			if (onInitSetteled) {
 				onInitSetteled({ data, task });
 			}
+
 			deleteTask(task.id);
 		}
 	};

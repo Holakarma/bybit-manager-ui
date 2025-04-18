@@ -1,16 +1,15 @@
 import { Grid2, TextField } from '@mui/material';
 import { Controller } from 'react-hook-form';
 import { API_CONFIG_NAME } from 'shared/model/app-config/consts';
-import ApidocsLink from './ApidocsLink';
 
 const ApiSettings = ({ control, errors }) => {
 	return (
 		<Grid2
 			container
 			spacing={2}
-			columns={9}
+			columns={10}
 		>
-			<Grid2 size={4}>
+			<Grid2 size={5}>
 				<Controller
 					name={`${API_CONFIG_NAME}.host`}
 					control={control}
@@ -27,7 +26,7 @@ const ApiSettings = ({ control, errors }) => {
 					)}
 				/>
 			</Grid2>
-			<Grid2 size={3}>
+			<Grid2 size={5}>
 				<Controller
 					name={`${API_CONFIG_NAME}.port`}
 					control={control}
@@ -43,9 +42,6 @@ const ApiSettings = ({ control, errors }) => {
 						/>
 					)}
 				/>
-			</Grid2>
-			<Grid2 size={2}>
-				<ApidocsLink />
 			</Grid2>
 		</Grid2>
 	);

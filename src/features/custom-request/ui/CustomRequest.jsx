@@ -59,7 +59,6 @@ const CustomRequest = () => {
 				open={open}
 				onClose={handleClose}
 				taskTitle="Сustom request task"
-				// taskDescription="Your request for the following accounts"
 				accounts={selectedAccounts}
 				startButtonProps={{ disabled: !requestId }}
 				onStart={startHandler}

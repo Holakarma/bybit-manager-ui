@@ -1,14 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAccount } from 'entities/account';
 import { useLogs } from 'entities/log';
-import { taskDB, usePendingTasks, useTask } from 'entities/task';
+import { usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
+import { getExpireFromAllCookies } from 'shared/lib/session-cookies';
 import SCENE from '../model/sceneEnum';
 import useGetCaptcha from './getCaptcha';
 import useLoginName from './getLoginName';
 import usePermission from './getPermission';
 import useLogin from './login';
-import useSolveRecaptchav2 from './solveRecaptchav2';
-import useVerifyRecaptchav2 from './verifyRecaptchav2';
+import useSolveAndVerifyCaptcha from './solveAndVerifyCaptcha';
 import useVerifyRiskToken from './verifyRiskToken';
 
 export const useLoginAccountMutation = () => {
@@ -18,17 +19,29 @@ export const useLoginAccountMutation = () => {
 	const permissionMutation = usePermission();
 	const loginNameMutation = useLoginName();
 	const getCaptchaMutation = useGetCaptcha();
-	const solveRecaptchaMutation = useSolveRecaptchav2();
-	const verifyRecaptchaMutation = useVerifyRecaptchav2();
+	const solveAndVerifyCaptchaMutation = useSolveAndVerifyCaptcha();
 	const loginMutation = useLogin();
 	const verifyRiskTokenMutation = useVerifyRiskToken();
+	const accountMutation = useAccount();
 
 	const mutationFunction = async ({ database_id, signal, taskId }) => {
+		const account = await accountMutation.mutateAsync(database_id);
+
+		if (getExpireFromAllCookies(account.cookies) * 1000 > Date.now()) {
+			addSuccessLog({
+				group: taskId,
+				database_id,
+				message: 'already logged in',
+			});
+			return;
+		}
+
 		addInfoLog({
 			message: 'getting permission...',
 			group: taskId,
 			database_id,
 		});
+
 		let permission = null;
 		try {
 			permission = await permissionMutation.mutateAsync({
@@ -90,36 +103,18 @@ export const useLoginAccountMutation = () => {
 		addInfoLog({
 			group: taskId,
 			database_id,
-			message: 'solving captcha...',
-		});
-
-		let solvedCaptcha;
-		try {
-			solvedCaptcha = await solveRecaptchaMutation.mutateAsync({
-				database_id,
-				signal,
-				google_id: captcha.result.google_id,
-			});
-		} catch (error) {
-			addErrorLog({ error, group: taskId, database_id });
-			return;
-		}
-
-		addInfoLog({
-			group: taskId,
-			database_id,
-			message: 'verifying captcha...',
+			message: 'solving & verifying captcha...',
 		});
 
 		let solvedVerifyedCaptcha;
-
 		try {
-			solvedVerifyedCaptcha = await verifyRecaptchaMutation.mutateAsync({
-				database_id,
-				signal,
-				serial_no: captcha.result.serial_no,
-				g_recaptcha_response: solvedCaptcha.result.token,
-			});
+			solvedVerifyedCaptcha =
+				await solveAndVerifyCaptchaMutation.mutateAsync({
+					database_id,
+					signal,
+					captcha,
+					loginName: loginName.result,
+				});
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
 			return;
@@ -184,6 +179,7 @@ export const useLoginAccountMutation = () => {
 		}
 
 		addSuccessLog({
+			message: 'login completed',
 			group: taskId,
 			database_id,
 		});
@@ -201,27 +197,6 @@ const useLoginTask = () => {
 	const changeAccountDescription =
 		usePendingTasks.use.changeAccountDescription();
 
-	const logs = useLogs.use.logs();
-	console.log(logs);
-
-	const successHandler = async ({ data: accounts, task }) => {
-		await taskDB.addTask({
-			type: 'login',
-			status: 'completed',
-			data: accounts,
-			startedAt: task.startedAt,
-			id: task.id,
-		});
-
-		queryClient.invalidateQueries({
-			queryKey: ['tasks'],
-		});
-
-		enqueueSnackbar('Login completed', {
-			variant: 'info',
-		});
-	};
-
 	const errorHandler = (error) => {
 		if (error.message === 'Aborted') {
 			enqueueSnackbar('Task aborted', {
@@ -234,12 +209,9 @@ const useLoginTask = () => {
 		}
 	};
 
-	const settleHandler = () => {
+	const settleHandler = async () => {
 		queryClient.invalidateQueries({
 			queryKey: ['accounts'],
-		});
-		queryClient.invalidateQueries({
-			queryKey: ['tasks'],
 		});
 	};
 
@@ -257,6 +229,7 @@ const useLoginTask = () => {
 			);
 		}
 	};
+
 	const accountMutationHandler = (id, taskId) => {
 		changeAccountDescription(taskId, id, 'Signing in...');
 	};
@@ -265,7 +238,6 @@ const useLoginTask = () => {
 
 	return useTask({
 		asyncMutation: loginMutation.mutateAsync,
-		onSuccess: successHandler,
 		onError: errorHandler,
 		onSettled: settleHandler,
 		onAccountProcessed: processedAccountHandler,

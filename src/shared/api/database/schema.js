@@ -1,5 +1,5 @@
 export const DB_NAME = 'app_database';
-export const DB_VERSION = 2;
+export const DB_VERSION = 3;
 
 export const TASKS_STORE = 'tasks';
 export const CUSTOM_REQUESTS_STORE = 'custom_requests';
@@ -13,9 +13,8 @@ export const SCHEMA = {
 			keyPath: 'id',
 			indexes: [
 				{ name: 'timestamp', keyPath: 'timestamp' },
-				{ name: 'status', keyPath: 'status' },
 				{ name: 'type', keyPath: 'type' },
-				{ name: 'data', keyPath: 'data' },
+				{ name: 'logs', keyPath: 'logs' },
 				{ name: 'startedAt', keyPath: 'startedAt' },
 				// { name: 'taskId', keyPath: 'taskId' },
 			],

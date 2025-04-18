@@ -18,6 +18,8 @@ const ENDPOINTS = {
 	get_captcha: '/private/captcha/get',
 	recaptcha_v2_solve: '/private/captcha/recaptcha/v2/solve',
 	recaptcha_v2_verify: '/private/captcha/recaptcha/v2/verify',
+	geetest_v4_solve: '/private/captcha/geetest/v4/solve',
+	geetest_v4_verify: '/private/captcha/geetest/v4/verify',
 	verify_risk_token: '/private/risk/verify',
 	get_risk_components: '/private/risk/components',
 	send_email_code: '/private/risk/send-email-code',

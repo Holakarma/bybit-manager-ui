@@ -1,30 +1,31 @@
 import {
+	Accordion,
+	AccordionDetails,
+	AccordionSummary,
 	Box,
 	CircularProgress,
 	Grid2,
-	List,
-	ListItem,
 	Stack,
 	Tooltip,
 	Typography,
 } from '@mui/material';
-import { useGetAccounts } from 'entities/account';
+import { useAccounts } from 'entities/account';
+import { groupedLogs } from 'entities/log';
 import { color } from 'entities/task';
 import { useMemo } from 'react';
 import { Pulsing } from 'shared/ui/pulsing';
 
 const CustomRequestTaskResult = ({ task, ...props }) => {
-	const { data: accounts, isLoading, isError } = useGetAccounts();
+	const grouped = useMemo(() => groupedLogs(task.logs), [task.logs]);
+	const {
+		data: accounts,
+		isLoading,
+		isError,
+	} = useAccounts({ database_ids: Object.keys(grouped) });
 
-	const taskAccounts = useMemo(() => {
-		if (!task || !accounts) return [];
-
-		return task.data.accounts.map((account) => ({
-			status: account.status,
-			error: account.error,
-			account: { ...accounts.find((a) => a.database_id === account.id) },
-		}));
-	}, [accounts, task]);
+	const firstLog = useMemo(() => {
+		return task.logs[0];
+	}, [task.logs]);
 
 	if (isLoading) {
 		return (
@@ -56,58 +57,64 @@ const CustomRequestTaskResult = ({ task, ...props }) => {
 	}
 
 	return (
-		<List {...props}>
-			{taskAccounts.map((task) => (
-				<ListItem
-					key={task.account.database_id}
-					disablePadding
+		<Box {...props}>
+			{accounts.map((account) => (
+				<Accordion
+					sx={{ width: '100%' }}
+					key={account.database_id}
 				>
-					<Grid2
-						container
-						spacing={2}
-						width="100%"
-					>
-						<Grid2 size="auto">
-							<Typography
-								variant="Caption"
-								color="textSecondary"
-							>
-								{task.account.database_id}
-							</Typography>
-						</Grid2>
-
-						<Grid2 size="grow">
-							<Stack
-								direction="row"
-								justifyContent="space-between"
-								alignItems="center"
-							>
-								<Typography>
-									{task.account.email.address}
-								</Typography>
-								<Tooltip
-									title={
-										task.status === 'success'
-											? 'request processed'
-											: task.error?.bybit_response
-													?.ret_msg ||
-												task.error?.detail ||
-												'Some error occured'
-									}
+					<AccordionSummary>
+						<Grid2
+							container
+							spacing={2}
+							width="100%"
+						>
+							<Grid2 size="auto">
+								<Typography
+									variant="Caption"
+									color="textSecondary"
 								>
-									<Box component="span">
-										<Pulsing
-											animate={false}
-											color={`${color[task.status]}.main`}
-										/>
-									</Box>
-								</Tooltip>
-							</Stack>
+									{account.database_id}
+								</Typography>
+							</Grid2>
+
+							<Grid2 size="grow">
+								<Stack
+									direction="row"
+									justifyContent="space-between"
+									alignItems="center"
+								>
+									<Typography>
+										{account.email.address}
+									</Typography>
+									<Tooltip title={firstLog.message}>
+										<Box component="span">
+											<Pulsing
+												animate={false}
+												color={`${firstLog.type || 'warning'}.main`}
+											/>
+										</Box>
+									</Tooltip>
+								</Stack>
+							</Grid2>
 						</Grid2>
-					</Grid2>
-				</ListItem>
+					</AccordionSummary>
+					<AccordionDetails>
+						<Stack gap={1}>
+							{task.logs.map((log) => (
+								<Typography
+									variant="Caption"
+									key={log.message}
+									color={`${color[log.type]}.main`}
+								>
+									{log.message}
+								</Typography>
+							))}
+						</Stack>
+					</AccordionDetails>
+				</Accordion>
 			))}
-		</List>
+		</Box>
 	);
 };
 

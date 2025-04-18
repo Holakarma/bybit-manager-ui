@@ -1,38 +1,65 @@
-import { Grid2, Stack, TextField, Typography } from '@mui/material';
+import { Grid2, TextField, Typography } from '@mui/material';
+import { Controller } from 'react-hook-form';
 
-const VerifyingSettings = () => {
+const VerifyingSettings = ({
+	control,
+	name,
+	emailError,
+	totpError,
+	emailHelperText,
+	totpHelperText,
+}) => {
 	return (
-		<Grid2
-			container
-			spacing={2}
-		>
-			<Grid2 size={4}>
-				<Stack
-					height="100%"
-					justifyContent="center"
+		<Controller
+			name={name}
+			control={control}
+			render={({ field }) => (
+				<Grid2
+					container
+					spacing={2}
 				>
-					<Typography>Verify attempts</Typography>
-				</Stack>
-			</Grid2>
-			<Grid2 size={4}>
-				<TextField
-					type="number"
-					variant="outlined"
-					fullWidth
-					size="small"
-					label="Email"
-				/>
-			</Grid2>
-			<Grid2 size={4}>
-				<TextField
-					type="number"
-					variant="outlined"
-					size="small"
-					label="TOTP"
-					fullWidth
-				/>
-			</Grid2>
-		</Grid2>
+					<Grid2 size={4}>
+						<Typography>Verify attempts</Typography>
+					</Grid2>
+					<Grid2 size={4}>
+						<TextField
+							type="number"
+							variant="outlined"
+							fullWidth
+							size="small"
+							label="Email"
+							value={field.value.email}
+							onChange={(e) =>
+								field.onChange({
+									...field.value,
+									email: Number(e.target.value),
+								})
+							}
+							error={emailError}
+							helperText={emailHelperText}
+						/>
+					</Grid2>
+					<Grid2 size={4}>
+						<TextField
+							type="number"
+							variant="outlined"
+							size="small"
+							label="TOTP"
+							fullWidth
+							value={field.value.totp}
+							onChange={(e) =>
+								field.onChange({
+									...field.value,
+									totp: Number(e.target.value),
+								})
+							}
+							error={totpError}
+							helperText={totpHelperText}
+						/>
+					</Grid2>
+				</Grid2>
+			)}
+		/>
 	);
 };
 

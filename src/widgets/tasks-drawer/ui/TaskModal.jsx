@@ -1,4 +1,5 @@
 import { Box, Modal, Stack, Typography } from '@mui/material';
+import { taskTitle } from 'entities/task';
 import { CustomRequestTaskResult } from 'features/custom-request';
 import { Disable2faTaskResult } from 'features/disable-2fa';
 import { Enable2faTaskResult } from 'features/enable-2fa';
@@ -9,7 +10,6 @@ import { RegisterTaskResult } from 'features/register';
 import { UpdateProfileTaskResult } from 'features/update-profile';
 import { timeDifference } from 'shared/lib/formatDate';
 import { ModalBody } from 'shared/ui/modal-body';
-import taskTitle from '../model/taskTitles';
 
 const taskResult = (task) => {
 	switch (task.type) {
@@ -44,8 +44,11 @@ const TaskModal = ({ task, open, handleClose }) => {
 			open={open}
 			onClose={handleClose}
 		>
-			<Box>
-				<ModalBody minWidth="600px">
+			<ModalBody minWidth="600px">
+				<Stack
+					gap={1}
+					height="100%"
+				>
 					<Stack
 						direction="row"
 						gap={2}
@@ -66,17 +69,29 @@ const TaskModal = ({ task, open, handleClose }) => {
 							)}
 						</Typography>
 					</Stack>
+
 					<Box
 						sx={{
-							marginBlock: 1,
-							maxHeight: '300px',
-							overflow: 'auto',
+							flexGrow: 1,
+							position: 'relative',
 						}}
 					>
-						{taskResult(task)}
+						<Box
+							sx={{
+								height: '100%',
+								overflow: 'auto',
+								position: 'absolute',
+								top: 0,
+								bottom: 0,
+								left: 0,
+								right: 0,
+							}}
+						>
+							{taskResult(task)}
+						</Box>
 					</Box>
-				</ModalBody>
-			</Box>
+				</Stack>
+			</ModalBody>
 		</Modal>
 	);
 };

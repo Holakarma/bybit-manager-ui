@@ -4,7 +4,6 @@ const LoginTaskResult = ({ task, ...props }) => {
 	return (
 		<TaskResult
 			task={task}
-			tooltipText="Successfully logged in"
 			{...props}
 		/>
 	);

@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { taskDB, usePendingTasks, useTask } from 'entities/task';
+import { usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
+import { useLogs } from 'entities/log';
 // eslint-disable-next-line no-restricted-imports
 import { useLoginAccountMutation } from 'features/login/@X/pre-login';
 
@@ -73,46 +74,39 @@ const useRefreshTask = () => {
 				}
 			}),
 	});
+	const addInfoLog = useLogs.use.addInfoLog();
+	const addErrorLog = useLogs.use.addErrorLog();
+	const addSuccessLog = useLogs.use.addSuccessLog();
 
-	const successHandler = async ({ data: accounts, task }) => {
-		await taskDB.addTask({
-			type: 'finance accounts',
-			status: 'completed',
-			data: accounts,
-			startedAt: task.startedAt,
-			id: task.id,
+	const mutationFunction = async ({
+		database_id,
+		signal,
+		taskId,
+		settings,
+	}) => {
+		addInfoLog({
+			message: 'start refresh balance',
+			group: taskId,
+			database_id,
 		});
 
-		enqueueSnackbar('Refresh completed', {
-			variant: 'info',
-		});
-
-		/* Error accounts handling */
-		accounts.forEach((account) => {
-			if (account.error) {
-				enqueueSnackbar(
-					`${account.id} ${
-						account?.error?.bybit_response?.ret_msg ||
-						'Some error occured'
-					}`,
-					{
-						variant: 'error',
-					},
-				);
-			}
-		});
-	};
-
-	const errorHandler = (error) => {
-		if (error.message === 'Aborted') {
-			enqueueSnackbar('Task aborted', {
-				variant: 'warning',
+		try {
+			await mutation.mutateAsync({
+				database_id,
+				signal,
+				settings,
+				taskId,
 			});
-		} else {
-			enqueueSnackbar('Error occured: ' + error.message, {
-				variant: 'error',
-			});
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
 		}
+
+		addSuccessLog({
+			message: 'balance refreshed',
+			group: taskId,
+			database_id,
+		});
 	};
 
 	const settleHandler = () => {
@@ -121,9 +115,6 @@ const useRefreshTask = () => {
 		});
 		queryClient.invalidateQueries({
 			queryKey: ['accounts'],
-		});
-		queryClient.invalidateQueries({
-			queryKey: ['tasks'],
 		});
 	};
 
@@ -147,9 +138,7 @@ const useRefreshTask = () => {
 	};
 
 	return useTask({
-		asyncMutation: mutation.mutateAsync,
-		onSuccess: successHandler,
-		onError: errorHandler,
+		asyncMutation: mutationFunction,
 		onSettled: settleHandler,
 		onAccountProcessed: processedAccountHandler,
 		onAccountMutation: accountMutationHandler,

@@ -1,23 +1,68 @@
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import {
+	Box,
 	Button,
 	ListItemIcon,
 	ListItemText,
 	Menu,
 	MenuItem,
+	Skeleton,
 	Stack,
 	Typography,
 } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import { color, taskDB } from 'entities/task';
-import { useState } from 'react';
-import { formatDate } from 'shared/lib/formatDate';
-import { Pulsing } from 'shared/ui/pulsing';
-import taskTitle from '../model/taskTitles';
+import { useAccounts } from 'entities/account';
+import { groupedLogs } from 'entities/log';
+import { color, taskDB, taskTitle } from 'entities/task';
+import { useMemo, useState } from 'react';
+import { formatTime } from 'shared/lib/formatDate';
 
 const TaskItem = ({ onClick, task }) => {
 	const [contextMenu, setContextMenu] = useState(null);
 	const queryClient = useQueryClient();
+
+	const grouped = useMemo(() => {
+		if (task) {
+			return groupedLogs(task.logs);
+		}
+	}, [task]);
+
+	const {
+		data: accounts,
+		isLoading,
+		isError,
+	} = useAccounts({ database_ids: Object.keys(grouped) });
+
+	const groups = useMemo(() => {
+		if (accounts) {
+			const groupsObj = accounts.reduce((acc, account) => {
+				if (account.group_name) {
+					acc[account.group_name] = acc[account.group_name] || [];
+					acc[account.group_name].push(account);
+				}
+				return acc;
+			}, {});
+
+			const groupsArray = Object.keys(groupsObj);
+
+			if (groupsArray.length > 4) {
+				return groupsArray.slice(0, 4).join(', ') + '...';
+			}
+
+			return groupsArray.join(', ');
+		}
+
+		return '';
+	}, [accounts]);
+
+	if (isLoading) {
+		return (
+			<Skeleton
+				width="100%"
+				height="58px"
+			/>
+		);
+	}
 
 	const handleContextMenu = (event) => {
 		event.preventDefault();
@@ -55,15 +100,30 @@ const TaskItem = ({ onClick, task }) => {
 			>
 				<Stack
 					direction="row"
-					gap={1}
+					gap={2}
 					alignItems="baseline"
+					justifyContent="space-between"
+					width="100%"
 				>
 					<Typography>{taskTitle[task.type]}</Typography>
+
+					<Box
+						sx={{ flexGrow: 1 }}
+						textAlign="start"
+					>
+						<Typography
+							color="textSecondary"
+							variant="caption"
+						>
+							{isError ? '' : groups}
+						</Typography>
+					</Box>
+
 					<Typography
 						color="textSecondary"
 						variant="caption"
 					>
-						{formatDate(new Date(task.timestamp))}
+						{formatTime(new Date(task.timestamp))}
 					</Typography>
 				</Stack>
 				<Stack
@@ -77,11 +137,6 @@ const TaskItem = ({ onClick, task }) => {
 					>
 						{task.status}
 					</Typography>
-
-					<Pulsing
-						color={`${color[task.status]}.main`}
-						animate={!task.status}
-					/>
 				</Stack>
 			</Button>
 

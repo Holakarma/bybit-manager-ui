@@ -18,8 +18,8 @@ import { taskDB, useGetTasks, usePendingTasks } from 'entities/task';
 import { useEffect, useMemo, useState } from 'react';
 import PendingTaskItem from './PendingTaskItem';
 import PendingTaskModal from './PendingTaskModal';
-import TaskItem from './TaskItem';
 import TaskModal from './TaskModal';
+import VirtualizedDBTaskList from './VirtualizedDBTaskList';
 
 const TaskList = ({ ...props }) => {
 	const pendingTasks = usePendingTasks.use.tasks();
@@ -50,14 +50,17 @@ const TaskList = ({ ...props }) => {
 	);
 
 	const groupedTasks = useMemo(() => {
-		return sortedTasks?.reduce((acc, task) => {
-			const date = new Date(task.timestamp).toLocaleDateString();
-			if (!acc[date]) {
-				acc[date] = [];
-			}
-			acc[date].push(task);
-			return acc;
-		}, {});
+		return sortedTasks?.reduce(
+			(acc, task) => {
+				const date = new Date(task.timestamp).toLocaleDateString();
+				if (!acc[date]) {
+					acc[date] = [];
+				}
+				acc[date].push(task);
+				return acc;
+			},
+			{ [new Date().toLocaleDateString()]: [] },
+		);
 	}, [sortedTasks]);
 
 	if (isLoading) {
@@ -130,57 +133,31 @@ const TaskList = ({ ...props }) => {
 						<Divider />
 					</Box>
 
-					<Box sx={{ overflow: 'auto', flexGrow: 1 }}>
+					<Box sx={{ overflow: 'hidden', flexGrow: 1 }}>
 						{pendingTasks.length || tasks.length ? (
-							<List>
-								{pendingTasks.map((task) => (
-									<ListItem key={task.id}>
-										<PendingTaskItem
-											onClick={() => {
-												setPendingTask(task);
-											}}
-											task={task}
-										/>
-									</ListItem>
-								))}
+							<>
+								{pendingTasks.length ? (
+									<List>
+										{pendingTasks.map((task) => (
+											<ListItem key={task.id}>
+												<PendingTaskItem
+													onClick={() => {
+														setPendingTask(task);
+													}}
+													task={task}
+												/>
+											</ListItem>
+										))}
+									</List>
+								) : null}
 
-								{Object.entries(groupedTasks).map(
-									([date, tasks]) => (
-										<Box key={date}>
-											<Stack
-												direction="row"
-												justifyContent="space-between"
-												paddingInline={2}
-												paddingTop={1}
-											>
-												<Typography
-													variant="caption"
-													color="textSecondary"
-												>
-													{date}
-												</Typography>
-												<Typography
-													variant="caption"
-													color="textSecondary"
-												>
-													{tasks.length} completed
-												</Typography>
-											</Stack>
-
-											{tasks.map((task) => (
-												<ListItem key={task.id}>
-													<TaskItem
-														onClick={() => {
-															setTask(task);
-														}}
-														task={task}
-													/>
-												</ListItem>
-											))}
-										</Box>
-									),
-								)}
-							</List>
+								<VirtualizedDBTaskList
+									groupedTasks={groupedTasks}
+									onTaskClick={(task) => {
+										setTask(task);
+									}}
+								/>
+							</>
 						) : (
 							<Stack
 								justifyContent="center"

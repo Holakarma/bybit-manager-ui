@@ -9,7 +9,7 @@ import {
 	Typography,
 	useTheme,
 } from '@mui/material';
-import { AppSettings } from 'entities/app-settings';
+import { ApidocsLink, AppSettings } from 'entities/app-settings';
 import { Link, useLocation } from 'react-router';
 import { ChecvronIcon } from 'shared/assets/icons/chevron';
 import { ExchangeIcon } from 'shared/assets/icons/exhange';
@@ -150,7 +150,8 @@ const Navigation = () => {
 				</Stack>
 
 				<Stack p={2}>
-					<Stack>
+					<Stack gap={1}>
+						<ApidocsLink direction={collapse ? 'column' : 'row'} />
 						<AppSettings tooltipTitle={collapse ? 'Settings' : ''}>
 							{collapse ? (
 								<SettingsApplicationsIcon />

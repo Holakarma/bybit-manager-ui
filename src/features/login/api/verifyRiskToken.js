@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { useGetAccounts } from 'entities/account';
+import { useAccount } from 'entities/account';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 import RISKTOKETYPE from '../model/riskTokenEnum';
 import useGetEmailCode from './getEmailCode';
@@ -16,7 +16,7 @@ const verifyChallengeRiskToken = ({ database_id, signal, body }) => {
 const useVerifyChallengeRiskToken = () => {
 	const getRiskComponents = useGetRiskTokenComponents();
 	const getEmailCode = useGetEmailCode();
-	const { data: accounts } = useGetAccounts();
+	const accountMutation = useAccount();
 
 	const mutationFunction = ({
 		database_id,
@@ -28,8 +28,6 @@ const useVerifyChallengeRiskToken = () => {
 		return deduplicateRequests({
 			requestKey: ['verify challenge risk token', database_id],
 			requestFn: async () => {
-				console.log('verifying challenge risk token');
-
 				const riskTokenComponents = await getRiskComponents.mutateAsync(
 					{
 						database_id,
@@ -38,14 +36,10 @@ const useVerifyChallengeRiskToken = () => {
 					},
 				);
 
-				console.log(riskTokenComponents);
-
 				const riskTokenComponent = riskTokenComponents.result[0];
 				const logcExc = riskTokenComponents.result[3];
 
-				const account = accounts.find(
-					(account) => account.database_id === database_id,
-				);
+				const account = await accountMutation.mutateAsync(database_id);
 
 				if (
 					logcExc.required.includes('google2fa') &&

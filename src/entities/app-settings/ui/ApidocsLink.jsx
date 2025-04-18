@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import { defaultConfig } from 'shared/api';
 import { getApiConfig } from 'shared/model/app-config';
 
-const ApidocsLink = () => {
+const ApidocsLink = ({ direction }) => {
 	const [host, port] = useMemo(() => {
 		try {
 			const apiConfit = getApiConfig();
@@ -18,13 +18,15 @@ const ApidocsLink = () => {
 
 	return (
 		<Stack
-			direction="row"
-			justifyContent="end"
+			direction={direction || 'column'}
+			justifyContent="center"
+			alignItems="center"
 			gap={1}
 		>
 			<Tooltip
 				disableInteractive
 				title="swagger"
+				placement="right"
 			>
 				<IconButton
 					to={`${host}:${port}/docs`}
@@ -37,6 +39,7 @@ const ApidocsLink = () => {
 			<Tooltip
 				disableInteractive
 				title="redocly"
+				placement="right"
 			>
 				<IconButton
 					to={`${host}:${port}/redoc`}

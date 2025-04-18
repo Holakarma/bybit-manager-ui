@@ -36,6 +36,7 @@ const processChunks = ({
 	signal,
 	onAccountProcessed,
 	onAccountMutation,
+	onSettled,
 	taskId,
 }) => {
 	const getRandomDelay = () => {
@@ -65,6 +66,9 @@ const processChunks = ({
 
 			if (i >= idsToProcess.length) {
 				resolve(data);
+				if (onSettled) {
+					onSettled(data);
+				}
 				return;
 			}
 
@@ -138,6 +142,9 @@ const processChunks = ({
 						),
 					).then(() => processNextChunk());
 				} else {
+					if (onSettled) {
+						onSettled(data);
+					}
 					resolve(data);
 				}
 			});

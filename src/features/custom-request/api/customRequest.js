@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCustomRequests } from 'entities/custom-request';
-import { taskDB, usePendingTasks, useTask } from 'entities/task';
-import { useSnackbar } from 'notistack';
+import { useLogs } from 'entities/log';
+import { usePendingTasks, useTask } from 'entities/task';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
 const customRequest = (database_id, signal, request) => {
@@ -36,56 +36,16 @@ export const useCustomRequestMutation = (request) => {
 
 const useCustomRequestTask = (requestId) => {
 	const queryClient = useQueryClient();
-	const { enqueueSnackbar } = useSnackbar();
 	const changeAccountDescription =
 		usePendingTasks.use.changeAccountDescription();
 
 	const requests = useCustomRequests();
 	const request = requests.data?.find((r) => r.id === requestId);
 
-	const successHandler = async ({ data: accounts, task }) => {
-		await taskDB.addTask({
-			type: 'custom request',
-			status: 'completed',
-			data: { accounts, request },
-			startedAt: task.startedAt,
-			id: task.id,
-		});
-
+	const successHandler = () => {
 		queryClient.invalidateQueries({
-			queryKey: ['tasks'],
+			queryKey: ['accounts'],
 		});
-
-		enqueueSnackbar('custom request completed', {
-			variant: 'info',
-		});
-
-		/* Error accounts handling */
-		accounts.forEach((account) => {
-			if (account.error) {
-				enqueueSnackbar(
-					`${account.id} ${
-						account?.error?.bybit_response?.ret_msg ||
-						'Some error occured'
-					}`,
-					{
-						variant: 'error',
-					},
-				);
-			}
-		});
-	};
-
-	const errorHandler = (error) => {
-		if (error.message === 'Aborted') {
-			enqueueSnackbar('Task aborted', {
-				variant: 'warning',
-			});
-		} else {
-			enqueueSnackbar('Error occured: ' + error.message, {
-				variant: 'error',
-			});
-		}
 	};
 
 	const settleHandler = () => {
@@ -100,11 +60,34 @@ const useCustomRequestTask = (requestId) => {
 		changeAccountDescription(taskId, id, 'Processing...');
 	};
 	const mutation = useCustomRequestMutation(request);
+	const addInfoLog = useLogs.use.addInfoLog();
+	const addErrorLog = useLogs.use.addErrorLog();
+	const addSuccessLog = useLogs.use.addSuccessLog();
+
+	const mutationFunction = async ({ database_id, signal, taskId }) => {
+		addInfoLog({
+			message: `completing ${request.title}`,
+			group: taskId,
+			database_id,
+		});
+
+		try {
+			await mutation.mutateAsync({ database_id, signal });
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
+
+		addSuccessLog({
+			message: `${request.title} completed`,
+			group: taskId,
+			database_id,
+		});
+	};
 
 	return useTask({
-		asyncMutation: mutation.mutateAsync,
+		asyncMutation: mutationFunction,
 		onSuccess: successHandler,
-		onError: errorHandler,
 		onSettled: settleHandler,
 		onAccountMutation: accountMutationHandler,
 		type: 'custom request',

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAccountsById, useGetAccounts } from 'entities/account';
-import { taskDB, usePendingTasks, useTask } from 'entities/task';
-import { useSnackbar } from 'notistack';
+import { useAccount } from 'entities/account';
+import { useLogs } from 'entities/log';
+import { usePendingTasks, useTask } from 'entities/task';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
 const disable2fa = (database_id, signal) => {
@@ -13,15 +13,13 @@ const disable2fa = (database_id, signal) => {
 };
 
 export const useDisable2faMutation = () => {
-	const accounts = useGetAccounts();
+	const accountMutation = useAccount();
 
 	const mutationFunction = ({ database_id, signal }) => {
 		return deduplicateRequests({
 			requestKey: ['disable2fa', database_id],
 			requestFn: async () => {
-				const account = getAccountsById(accounts.data, [
-					database_id,
-				])[0];
+				const account = await accountMutation.mutateAsync(database_id);
 
 				/* If account has totp disabled */
 				if (!account.totp_enabled) {
@@ -37,78 +35,59 @@ export const useDisable2faMutation = () => {
 	return useMutation({
 		mutationFn: mutationFunction,
 		mutationKey: ['disable2fa'],
-		enabled: accounts.isSuccess,
 	});
 };
 
 const useDisable2faTask = () => {
 	const queryClient = useQueryClient();
-	const { enqueueSnackbar } = useSnackbar();
 	const changeAccountDescription =
 		usePendingTasks.use.changeAccountDescription();
 
-	const successHandler = async ({ data: accounts, task }) => {
-		await taskDB.addTask({
-			type: 'disable2fa',
-			status: 'completed',
-			data: accounts,
-			startedAt: task.startedAt,
-			id: task.id,
-		});
-
+	const successHandler = async () => {
 		queryClient.invalidateQueries({
 			queryKey: ['tasks'],
 		});
-
-		enqueueSnackbar('2fa disabled', {
-			variant: 'info',
-		});
-
-		/* Error accounts handling */
-		accounts.forEach((account) => {
-			if (account.error) {
-				enqueueSnackbar(
-					`${account.id} ${
-						account?.error?.bybit_response?.ret_msg ||
-						'Some error occured'
-					}`,
-					{
-						variant: 'error',
-					},
-				);
-			}
-		});
-	};
-
-	const errorHandler = (error) => {
-		if (error.message === 'Aborted') {
-			enqueueSnackbar('Task aborted', {
-				variant: 'warning',
-			});
-		} else {
-			enqueueSnackbar('Error occured: ' + error.message, {
-				variant: 'error',
-			});
-		}
 	};
 
 	const settleHandler = () => {
 		queryClient.invalidateQueries({
 			queryKey: ['accounts'],
 		});
-		queryClient.invalidateQueries({
-			queryKey: ['tasks'],
-		});
 	};
+
+	// @TODO: account description is unused now
 	const accountMutationHandler = (id, taskId) => {
 		changeAccountDescription(taskId, id, 'Disabling 2fa...');
 	};
 	const mutation = useDisable2faMutation();
+	const addInfoLog = useLogs.use.addInfoLog();
+	const addErrorLog = useLogs.use.addErrorLog();
+	const addSuccessLog = useLogs.use.addSuccessLog();
+
+	const mutationFunction = async ({ database_id, signal, taskId }) => {
+		addInfoLog({
+			message: 'disabling 2fa',
+			group: taskId,
+			database_id,
+		});
+
+		try {
+			await mutation.mutateAsync({ database_id, signal });
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
+
+		addSuccessLog({
+			message: '2fa disabled',
+			group: taskId,
+			database_id,
+		});
+	};
 
 	return useTask({
-		asyncMutation: mutation.mutateAsync,
+		asyncMutation: mutationFunction,
 		onSuccess: successHandler,
-		onError: errorHandler,
 		onSettled: settleHandler,
 		onAccountMutation: accountMutationHandler,
 		type: 'disable2fa',

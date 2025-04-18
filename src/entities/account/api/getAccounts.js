@@ -1,10 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Api, ENDPOINTS } from 'shared/api';
 
 const getAccounts = (body, page = 1, offset = 50) => {
 	const api = new Api();
 
-	// const body = groups.length ? { groups } : undefined;
 	const url = ENDPOINTS.accounts;
 
 	return api.PostAll(url, body, {
@@ -12,7 +11,7 @@ const getAccounts = (body, page = 1, offset = 50) => {
 	});
 };
 
-const useGetAccounts = (body) =>
+const useAccounts = (body) =>
 	useQuery({
 		queryFn: async () => await getAccounts(body),
 		queryKey: ['accounts', body],
@@ -20,4 +19,20 @@ const useGetAccounts = (body) =>
 		retry: false,
 	});
 
-export default useGetAccounts;
+export const useAccount = () => {
+	const accounts = useAccounts();
+
+	return useMutation({
+		mutationFn: async (database_id) => {
+			const result = await getAccounts({
+				database_ids: [database_id],
+			});
+
+			return result[0];
+		},
+		mutationKey: ['account'],
+		enabled: accounts.data !== undefined,
+	});
+};
+
+export default useAccounts;

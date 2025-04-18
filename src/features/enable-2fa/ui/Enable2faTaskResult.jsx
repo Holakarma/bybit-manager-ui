@@ -4,7 +4,6 @@ const Enable2faTaskResult = ({ task, ...props }) => {
 	return (
 		<TaskResult
 			task={task}
-			tooltipText="Enabled 2fa successfully"
 			{...props}
 		/>
 	);

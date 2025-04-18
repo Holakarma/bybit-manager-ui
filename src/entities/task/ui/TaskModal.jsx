@@ -35,8 +35,12 @@ const TaskModal = ({
 					<Stack
 						direction="row"
 						gap={2}
+						height="100%"
 					>
-						<Stack width="100%">
+						<Stack
+							width="100%"
+							flexGrow={1}
+						>
 							<Typography variant="H5">{taskTitle}</Typography>
 
 							<Typography
@@ -47,43 +51,53 @@ const TaskModal = ({
 							</Typography>
 
 							{settingsComponent || null}
+
 							<Divider sx={{ marginTop: 2 }} />
 
-							<List
-								sx={{
-									marginBlock: 2,
-									maxHeight: '300px',
-									overflow: 'auto',
-								}}
+							<Box
+								flexGrow={1}
+								position="relative"
+								marginBottom={2}
 							>
-								{(accounts || []).map((account) => (
-									<ListItem
-										key={account.database_id}
-										disablePadding
-									>
-										<Grid2
-											container
-											spacing={1}
-											width="100%"
+								<List
+									sx={{
+										position: 'absolute',
+										top: 0,
+										left: 0,
+										bottom: 0,
+										right: 0,
+										overflow: 'auto',
+									}}
+								>
+									{(accounts || []).map((account) => (
+										<ListItem
+											key={account.database_id}
+											disablePadding
 										>
-											<Grid2 size={1}>
-												<Typography
-													variant="Caption"
-													color="textSecondary"
-												>
-													{account.database_id}
-												</Typography>
-											</Grid2>
+											<Grid2
+												container
+												spacing={1}
+												width="100%"
+											>
+												<Grid2 size={1}>
+													<Typography
+														variant="Caption"
+														color="textSecondary"
+													>
+														{account.database_id}
+													</Typography>
+												</Grid2>
 
-											<Grid2 size="grow">
-												<Typography>
-													{account.email.address}
-												</Typography>
+												<Grid2 size="grow">
+													<Typography>
+														{account.email.address}
+													</Typography>
+												</Grid2>
 											</Grid2>
-										</Grid2>
-									</ListItem>
-								))}
-							</List>
+										</ListItem>
+									))}
+								</List>
+							</Box>
 
 							<Button
 								{...startButtonProps}

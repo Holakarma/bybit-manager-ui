@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { taskDB, usePendingTasks, useTask } from 'entities/task';
+import { useLogs } from 'entities/log';
+import { usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
@@ -34,36 +35,6 @@ const useRegisterTask = () => {
 	const changeAccountDescription =
 		usePendingTasks.use.changeAccountDescription();
 
-	const successHandler = async ({ data: accounts, task }) => {
-		await taskDB.addTask({
-			type: 'register',
-			status: 'completed',
-			data: accounts,
-			startedAt: task.startedAt,
-			id: task.id,
-		});
-
-		queryClient.invalidateQueries({
-			queryKey: ['tasks'],
-		});
-
-		enqueueSnackbar('register completed', {
-			variant: 'info',
-		});
-	};
-
-	const errorHandler = (error) => {
-		if (error.message === 'Aborted') {
-			enqueueSnackbar('Task aborted', {
-				variant: 'warning',
-			});
-		} else {
-			enqueueSnackbar('Error occured: ' + error.message, {
-				variant: 'error',
-			});
-		}
-	};
-
 	const settleHandler = () => {
 		queryClient.invalidateQueries({
 			queryKey: ['accounts'],
@@ -93,11 +64,33 @@ const useRegisterTask = () => {
 	};
 
 	const mutation = useRegisterAccountMutation();
+	const addInfoLog = useLogs.use.addInfoLog();
+	const addErrorLog = useLogs.use.addErrorLog();
+	const addSuccessLog = useLogs.use.addSuccessLog();
+
+	const mutationFunction = async ({ database_id, signal, taskId }) => {
+		addInfoLog({
+			message: 'registering',
+			group: taskId,
+			database_id,
+		});
+
+		try {
+			await mutation.mutateAsync({ database_id, signal });
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
+
+		addSuccessLog({
+			message: 'registered',
+			group: taskId,
+			database_id,
+		});
+	};
 
 	return useTask({
-		asyncMutation: mutation.mutateAsync,
-		onSuccess: successHandler,
-		onError: errorHandler,
+		asyncMutation: mutationFunction,
 		onSettled: settleHandler,
 		onAccountProcessed: processedAccountHandler,
 		onAccountMutation: accountMutationHandler,

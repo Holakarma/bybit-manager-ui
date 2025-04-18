@@ -8,10 +8,10 @@ import {
 	Stack,
 	Typography,
 } from '@mui/material';
+import { taskTitle } from 'entities/task';
 import { useEffect, useState } from 'react';
 import { formatSeconds, formatTime } from 'shared/lib/formatDate';
 import { CircularProgressWithLabel } from 'shared/ui/circular-progress-with-label';
-import taskTitle from '../model/taskTitles';
 
 const calculateElapsedTime = (startedAt) => {
 	const nowDatw = new Date();

@@ -4,7 +4,6 @@ const RegisterTaskResult = ({ task, ...props }) => {
 	return (
 		<TaskResult
 			task={task}
-			tooltipText="Successfully registered"
 			{...props}
 		/>
 	);
