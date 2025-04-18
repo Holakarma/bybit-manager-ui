@@ -89,9 +89,20 @@ const TaskModal = ({
 												</Grid2>
 
 												<Grid2 size="grow">
-													<Typography>
-														{account.email.address}
-													</Typography>
+													<Stack
+														direction="row"
+														justifyContent="space-between"
+													>
+														<Typography>
+															{
+																account.email
+																	.address
+															}
+														</Typography>
+														<Typography>
+															{account.group_name}
+														</Typography>
+													</Stack>
 												</Grid2>
 											</Grid2>
 										</ListItem>

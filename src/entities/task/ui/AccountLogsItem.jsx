@@ -77,6 +77,7 @@ const AccountLogsItem = ({ logs, database_id }) => {
 							alignItems="center"
 						>
 							<Typography>{account.email.address}</Typography>
+							<Typography>{account.group_name}</Typography>
 						</Stack>
 					</Grid2>
 

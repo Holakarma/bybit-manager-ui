@@ -65,7 +65,16 @@ const PendingTaskAccountItem = ({ database_id, logs }) => {
 					</Grid2>
 
 					<Grid2 size="grow">
-						<Typography>{account[0].email.address}</Typography>
+						<Stack
+							direction="row"
+							gap={1}
+							justifyContent="space-between"
+						>
+							<Typography>{account[0].email.address}</Typography>
+							<Typography color="textSecondary">
+								{account[0].group_name}
+							</Typography>
+						</Stack>
 					</Grid2>
 
 					<Grid2 size={'auto'}>
