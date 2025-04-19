@@ -8,18 +8,20 @@ import useDefaultAccount from '../model/defaultAccountStore';
 const DefaultAccount = () => {
 	const defaultAccountId = useDefaultAccount.use.defaultAccountId();
 	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
-	const { data: accounts, isLoading, isError } = useAccounts();
+	const { data: defaultAccountData, isLoading } = useAccounts(
+		defaultAccountId && {
+			database_ids: [defaultAccountId],
+		},
+	);
 
 	const defaultAccount = useMemo(() => {
-		if (accounts && defaultAccountId) {
-			const account = accounts.find(
-				(account) => account.database_id === defaultAccountId,
-			);
-
-			return account;
+		if (!defaultAccountId) {
+			return undefined;
 		}
-		return null;
-	}, [accounts, defaultAccountId]);
+		if (defaultAccountData) {
+			return defaultAccountData[0];
+		}
+	}, [defaultAccountData, defaultAccountId]);
 
 	const [open, setOpen] = useState(false);
 
@@ -31,7 +33,25 @@ const DefaultAccount = () => {
 		setOpen(true);
 	};
 
-	if (!defaultAccount || isError || isLoading) {
+	if (isLoading) {
+		return (
+			<Button
+				variant="contained"
+				color="secondary"
+				loading={isLoading}
+				loadingPosition="start"
+				sx={{
+					fill: (theme) => theme.palette.error.main,
+					color: (theme) => theme.palette.error.main,
+				}}
+				startIcon={<NoAccountIcon fill="inherit" />}
+			>
+				Loading
+			</Button>
+		);
+	}
+
+	if (!defaultAccount) {
 		return (
 			<Tooltip
 				onClose={handleTooltipClose}
@@ -48,7 +68,6 @@ const DefaultAccount = () => {
 					variant="contained"
 					color="secondary"
 					onClick={handleTooltipOpen}
-					loading={isLoading}
 					loadingPosition="start"
 					sx={{
 						fill: (theme) => theme.palette.error.main,
@@ -56,7 +75,7 @@ const DefaultAccount = () => {
 					}}
 					startIcon={<NoAccountIcon fill="inherit" />}
 				>
-					{isError ? 'Error' : 'No default account'}
+					No default account
 				</Button>
 			</Tooltip>
 		);

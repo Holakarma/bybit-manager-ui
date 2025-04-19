@@ -1,182 +1,56 @@
-import { TableRow } from '@mui/material';
-import { useMemo, useState } from 'react';
-import { isEmptyValues } from 'shared/lib/isEmptyValues';
 import AccountCell from './AccountCell';
 
-const AccountRow = ({ account, onEdit, sx, ...props }) => {
-	const [tempAccount, setTempAccount] = useState(account);
+const fields = [
+	{ key: 'note', placeholder: 'Note' },
+	{ key: 'group', placeholder: 'Group name', required: true },
+	{ key: 'name', placeholder: 'Account name' },
+	{ key: 'ref_code', placeholder: "Inviter's code" },
+	{
+		key: 'bybit_email',
+		placeholder: 'example@gmail.com',
+		type: 'email',
+		required: true,
+	},
+	{ key: 'imap_address', placeholder: 'IMAP address', type: 'email' },
+	{ key: 'imap_password', placeholder: 'IMAP password' },
+	{ key: 'bybit_password', placeholder: 'Bybit password' },
+	{ key: 'bybit_totp', placeholder: 'TOTP secret' },
+	{ key: 'web3_mnemonic_phrase', placeholder: 'W3 Mnemonic Phase' },
+	{ key: 'bybit_proxy', placeholder: 'Bybit proxy' },
+	{ key: 'email_proxy', placeholder: 'Email proxy' },
+	{ key: 'country_code', placeholder: 'Country code' },
+	{ key: 'cookies', placeholder: 'Cookies' },
+];
 
-	const handleChange = (e) => {
-		const { name: inputName, value } = e.target;
-		const [, , name] = inputName.match(/^accounts\[(\d+-\d+)\]\[(\w+)\]$/);
-		setTempAccount((prev) => ({
-			...prev,
-			[name]: value,
-		}));
+const AccountRowCell = ({ columnIndex, account, cellSx, onEdit }) => {
+	const field = fields[columnIndex];
+
+	const handleBlur = (event) => {
+		const { value } = event.target;
+		onEdit({ ...account, [field.key]: value });
 	};
 
-	const handleBlur = () => {
-		onEdit(tempAccount);
-	};
+	// const isEmpty = useMemo(() => {
+	// 	const { id: _id, ...withoutId } = account;
 
-	const required = useMemo(() => {
-		if (!isEmptyValues(account)) {
-			return true;
-		}
-
-		return false;
-	}, [account]);
+	// 	return !Object.values(withoutId).some((value) => value);
+	// }, [account]);
 
 	return (
-		<TableRow
-			{...props}
-			sx={{
-				'& td, & th': {
-					border: 0,
-				},
-				...sx,
+		<AccountCell
+			sx={cellSx}
+			inputProps={{
+				name: `accounts[${account.id}][${field.key}]`,
+				defaultValue: account[field.key],
+				// value: _account[field.key],
+				type: field.type,
+				placeholder: field.placeholder,
+				// required: !isEmpty && field.required,
+				// onChange: handleChange,
+				onBlur: handleBlur,
 			}}
-		>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][note]`,
-					value: tempAccount.note,
-					placeholder: 'Note',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					required,
-					name: `accounts[${account.id}][group]`,
-					value: tempAccount.group,
-					placeholder: 'Group name',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][name]`,
-					value: tempAccount.name,
-					placeholder: 'Account name',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][ref_code]`,
-					value: tempAccount.ref_code,
-					placeholder: "Inviter's code",
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					required,
-					name: `accounts[${account.id}][bybit_email]`,
-					type: 'email',
-					value: tempAccount.bybit_email,
-					placeholder: 'example@gmail.com',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][imap_address]`,
-					value: tempAccount.imap_address,
-					type: 'email',
-					placeholder: 'IMAP address',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][imap_password]`,
-					value: tempAccount.imap_password,
-					placeholder: 'IMAP password',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][bybit_password]`,
-					value: tempAccount.bybit_password,
-					placeholder: 'Bybit password',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][bybit_totp]`,
-					value: tempAccount.bybit_totp,
-					placeholder: 'TOTP secret',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][web3_mnemonic_phrase]`,
-					value: tempAccount.web3_mnemonic_phrase,
-					placeholder: 'W3 Mnemonic Phase',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][bybit_proxy]`,
-					value: tempAccount.bybit_proxy,
-					placeholder: 'Bybit proxy',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][email_proxy]`,
-					value: tempAccount.email_proxy,
-					placeholder: 'Email proxy',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][country_code]`,
-					value: tempAccount.country_code,
-					placeholder: 'Country code',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][cookies]`,
-					value: tempAccount.cookies,
-					placeholder: 'Cookies',
-					onChange: handleChange,
-					onBlur: handleBlur,
-				}}
-			/>
-			<AccountCell
-				inputProps={{
-					name: `accounts[${account.id}][id]`,
-					value: tempAccount.id,
-					type: 'hidden',
-				}}
-			/>
-		</TableRow>
+		/>
 	);
 };
 
-export default AccountRow;
+export default AccountRowCell;

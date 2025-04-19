@@ -17,6 +17,7 @@ const ImportPage = () => {
 	const queryClient = useQueryClient();
 
 	const handleError = (account, error) => {
+		console.log(error);
 		enqueueSnackbar(`Import ${account.bybit_email} failed`, {
 			variant: 'error',
 
@@ -62,13 +63,12 @@ const ImportPage = () => {
 			>
 				<ModalBody>
 					<Typography variant="H6">
-						Error while import account{' '}
-						{account?.email.address || ''}
+						Error while import account {account?.bybit_email || ''}
 					</Typography>
 					<Typography sx={{ mt: 2 }}>
 						{!error
 							? 'Cannot reach the server. It looks like you forgot to turn on the API server.'
-							: ERRORS[error.data.error] || error.data.detail}
+							: ERRORS[error.error] || error.detail}
 					</Typography>
 				</ModalBody>
 			</Modal>

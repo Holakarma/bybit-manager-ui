@@ -11,17 +11,34 @@ const getAccounts = (body, page = 1, offset = 50) => {
 	});
 };
 
+const getPaginatedAccounts = (body, page = 1, offset = 50) => {
+	const api = new Api();
+
+	const url = ENDPOINTS.accounts;
+
+	return api.Post(url, body, {
+		params: { page, offset },
+	});
+};
+
+export const usePaginatedAccounts = ({ body, page, offset }) =>
+	useQuery({
+		queryFn: async () => await getPaginatedAccounts(body, page, offset),
+		queryKey: ['accounts', body, page, offset],
+		staleTime: 5 * 1000 * 60,
+		retry: false,
+	});
+
 const useAccounts = (body) =>
 	useQuery({
 		queryFn: async () => await getAccounts(body),
 		queryKey: ['accounts', body],
 		staleTime: 5 * 1000 * 60,
 		retry: false,
+		enabled: body !== undefined,
 	});
 
 export const useAccount = () => {
-	const accounts = useAccounts();
-
 	return useMutation({
 		mutationFn: async (database_id) => {
 			const result = await getAccounts({
@@ -31,7 +48,6 @@ export const useAccount = () => {
 			return result[0];
 		},
 		mutationKey: ['account'],
-		enabled: accounts.data !== undefined,
 	});
 };
 

@@ -187,13 +187,7 @@ const MainPage = () => {
 					backgroundImage: 'none',
 				}}
 			>
-				<Stack
-					overflow="auto"
-					maxWidth="100%"
-					height="100%"
-				>
-					<Accounts />
-				</Stack>
+				<Accounts />
 			</Paper>
 		</Stack>
 	);

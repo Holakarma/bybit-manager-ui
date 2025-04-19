@@ -1,3 +1,4 @@
+import { Stack, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -7,27 +8,52 @@ import {
 	useSelectedAccountsId,
 	useUpdateAccountMutation,
 } from 'entities/account';
+import { createFinanceAccountsConfig } from 'entities/finance-account';
 import { useFilter } from 'features/filter-accounts';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
 	getVisibilityModel,
 	setColumnVisibilityModel,
 } from '../lib/visibilityModel';
+import useRows from '../model/useRows';
 import columns from './ColumnsConfig';
 import tableSx from './tableStyles';
 
-const paginationModel = { page: 0, pageSize: 10 };
-
 const AccountsTable = ({
-	initialRows,
 	layer,
-	additionalColumns,
-	balance,
 	onSuccess,
 	onError,
 	columnWidthModel,
 	onColumnWidthChange,
+	paginationModel,
+	onPaginationModelChange,
 }) => {
+	const { rows, rowCount, isLoading, isError } = useRows({
+		paginationModel,
+		layer,
+	});
+
+	const rowsRef = useRef(rows);
+	const savedRows = useMemo(() => {
+		if (rows) {
+			rowsRef.current = rows;
+		}
+		return rowsRef.current;
+	}, [rows]);
+
+	const balance = useMemo(() => {
+		if (rows) {
+			return rows.reduce((acc, account) => acc + account.balance || 0, 0);
+		}
+
+		return 0;
+	}, [rows]);
+	const additionalColumns = useMemo(() => {
+		if (layer === 'balances' && rows) {
+			return createFinanceAccountsConfig(rows, columnWidthModel);
+		}
+		return [];
+	}, [layer, rows, columnWidthModel]);
 	const addGroup = useFilter.use.addGroup();
 	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
 	const setSelectedAccountsId =
@@ -120,11 +146,20 @@ const AccountsTable = ({
 	);
 
 	return (
-		<>
-			<ColumnVisibilityContext.Provider value={[visible, setVisible]}>
-				<ToggleNameContext.Provider value={[toggleName, setToggleName]}>
+		<ColumnVisibilityContext.Provider value={[visible, setVisible]}>
+			<ToggleNameContext.Provider value={[toggleName, setToggleName]}>
+				{isError ? (
+					<Stack
+						width="100%"
+						height="100%"
+						alignItems="center"
+						justifyContent="center"
+					>
+						<Typography>Error while getting accounts</Typography>
+					</Stack>
+				) : (
 					<DataGrid
-						rows={initialRows}
+						rows={savedRows}
 						columns={memoColumns}
 						initialState={{
 							pagination: { paginationModel },
@@ -132,6 +167,9 @@ const AccountsTable = ({
 								columnVisibilityModel: getVisibilityModel(),
 							},
 						}}
+						paginationMode="server"
+						onPaginationModelChange={onPaginationModelChange}
+						rowCount={rowCount}
 						slotProps={{
 							row: {
 								onContextMenu: handleRowContextMenu,
@@ -140,7 +178,7 @@ const AccountsTable = ({
 						}}
 						pageSizeOptions={[5, 10, 50, 100]}
 						sx={tableSx}
-						loading={isPending}
+						loading={isPending || isLoading}
 						checkboxSelection
 						disableRowSelectionOnClick
 						processRowUpdate={processRowUpdate}
@@ -155,9 +193,9 @@ const AccountsTable = ({
 						rowSelectionModel={selectedAccountsId}
 						onColumnWidthChange={onColumnWidthChange}
 					/>
-				</ToggleNameContext.Provider>
-			</ColumnVisibilityContext.Provider>
-		</>
+				)}
+			</ToggleNameContext.Provider>
+		</ColumnVisibilityContext.Provider>
 	);
 };
 

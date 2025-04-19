@@ -1,8 +1,8 @@
 import { Paper, Stack } from '@mui/material';
 import { ImportFile } from 'widgets/import-account';
 import useImportAccountsMutation from '../hooks/useImportAccountsMutation';
-import ImportAccountTable from './ImportAccountTable';
 import ImportAccountsButton from './ImportAccountsButton';
+import ImportAccountTable from './ImportAccountTable';
 
 const ImportAccountForm = ({ onSuccess, onError }) => {
 	const { mutate: importAccounts, isPending } = useImportAccountsMutation();
@@ -14,7 +14,7 @@ const ImportAccountForm = ({ onSuccess, onError }) => {
 			onSubmit={(e) => {
 				e.preventDefault();
 				importAccounts({
-					form: new FormData(e.target),
+					// form: new FormData(e.target),
 					onError,
 					onSuccess,
 				});

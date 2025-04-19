@@ -1,36 +1,24 @@
-import { TableCell, TableHead, TableRow } from '@mui/material';
+import { Box } from '@mui/material';
 
-const AccountHeader = () => {
-	return (
-		<TableHead
-			sx={{
-				'& th': {
-					borderWidth: '2px',
-					borderColor: 'secondary.main',
-				},
-			}}
-		>
-			<TableRow>
-				<TableCell sx={{ padding: '4px' }}>Note</TableCell>
-				<TableCell sx={{ padding: '4px' }}>Group name*</TableCell>
-				<TableCell sx={{ padding: '4px' }}>Name</TableCell>
-				<TableCell sx={{ padding: '4px' }}>Inviter ref code</TableCell>
-				<TableCell sx={{ padding: '4px' }}>Bybit address*</TableCell>
-				<TableCell sx={{ padding: '4px' }}>IMAP address</TableCell>
-				<TableCell sx={{ padding: '4px' }}>IMAP password</TableCell>
-				<TableCell sx={{ padding: '4px' }}>Bybit password</TableCell>
-				<TableCell sx={{ padding: '4px' }}>TOTP Secret</TableCell>
-				<TableCell sx={{ padding: '4px' }}>
-					WEB3 Mnemonic Phase
-				</TableCell>
-				{/* <TableCell sx={{ padding: '4px' }}>Payment password</TableCell> */}
-				<TableCell sx={{ padding: '4px' }}>Bybit proxy</TableCell>
-				<TableCell sx={{ padding: '4px' }}>Email proxy</TableCell>
-				<TableCell sx={{ padding: '4px' }}>Country code</TableCell>
-				<TableCell sx={{ padding: '4px' }}>Cookies</TableCell>
-			</TableRow>
-		</TableHead>
-	);
+const headers = [
+	'Note',
+	'Group name*',
+	'Name',
+	'Inviter ref code',
+	'Bybit address*',
+	'IMAP address',
+	'IMAP password',
+	'Bybit password',
+	'TOTP Secret',
+	'WEB3 Mnemonic Phase',
+	'Bybit proxy',
+	'Email proxy',
+	'Country code',
+	'Cookies',
+];
+
+const AccountHeaderCell = ({ columnIndex, cellSx }) => {
+	return <Box sx={cellSx}>{headers[columnIndex]}</Box>;
 };
 
-export default AccountHeader;
+export default AccountHeaderCell;
