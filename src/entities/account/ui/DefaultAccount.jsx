@@ -1,57 +1,23 @@
 import { Button, Tooltip } from '@mui/material';
-import { useMemo, useState } from 'react';
-import { AccountIcon } from 'shared/assets/icons/account';
+import { useState } from 'react';
 import { NoAccountIcon } from 'shared/assets/icons/no-account';
-import useAccounts from '../api/getAccounts';
 import useDefaultAccount from '../model/defaultAccountStore';
+import DefaultAccountButton from './DefaultAccountButton';
 
 const DefaultAccount = () => {
-	const defaultAccountId = useDefaultAccount.use.defaultAccountId();
 	const setDefaultAccountId = useDefaultAccount.use.setDefaultAccountId();
-	const { data: defaultAccountData, isLoading } = useAccounts(
-		defaultAccountId && {
-			database_ids: [defaultAccountId],
-		},
-	);
-
-	const defaultAccount = useMemo(() => {
-		if (!defaultAccountId) {
-			return undefined;
-		}
-		if (defaultAccountData) {
-			return defaultAccountData[0];
-		}
-	}, [defaultAccountData, defaultAccountId]);
+	const defaultAccountId = useDefaultAccount.use.defaultAccountId();
 
 	const [open, setOpen] = useState(false);
 
 	const handleTooltipClose = () => {
 		setOpen(false);
 	};
-
 	const handleTooltipOpen = () => {
 		setOpen(true);
 	};
 
-	if (isLoading) {
-		return (
-			<Button
-				variant="contained"
-				color="secondary"
-				loading={isLoading}
-				loadingPosition="start"
-				sx={{
-					fill: (theme) => theme.palette.error.main,
-					color: (theme) => theme.palette.error.main,
-				}}
-				startIcon={<NoAccountIcon fill="inherit" />}
-			>
-				Loading
-			</Button>
-		);
-	}
-
-	if (!defaultAccount) {
+	if (!defaultAccountId) {
 		return (
 			<Tooltip
 				onClose={handleTooltipClose}
@@ -81,22 +47,12 @@ const DefaultAccount = () => {
 		);
 	}
 
-	if (defaultAccount) {
-		return (
-			<Button
-				variant="contained"
-				color="secondary"
-				onClick={() => setDefaultAccountId(null)}
-				sx={{
-					fill: (theme) => theme.palette.textPrimary.default,
-					color: (theme) => theme.palette.textPrimary.default,
-				}}
-				startIcon={<AccountIcon fill="inherit" />}
-			>
-				{defaultAccount.email.address}
-			</Button>
-		);
-	}
+	return (
+		<DefaultAccountButton
+			defaultAccountId={defaultAccountId}
+			onClick={() => setDefaultAccountId(null)}
+		/>
+	);
 };
 
 export default DefaultAccount;
