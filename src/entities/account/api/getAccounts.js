@@ -35,7 +35,6 @@ const useAccounts = (body) =>
 		queryKey: ['accounts', body],
 		staleTime: 5 * 1000 * 60,
 		retry: false,
-		enabled: body !== undefined,
 	});
 
 export const useAccount = () => {

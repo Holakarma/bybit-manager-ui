@@ -13,13 +13,21 @@ const useRows = ({ paginationModel, layer }) => {
 	const groups = useFilter.use.groups();
 	const search = useFilter.use.search();
 
+	const queryBody = {};
+	if (groups.length) {
+		queryBody.groups = groups;
+	}
+	if (layer === 'register') {
+		queryBody.registered = null;
+	}
+
 	const {
 		data: paginatedAccounts,
 		error,
 		isLoading,
 		isError,
 	} = usePaginatedAccounts({
-		body: groups.length ? { groups } : undefined,
+		body: queryBody,
 		page: paginationModel.page + 1,
 		offset: paginationModel.pageSize,
 	});
@@ -51,9 +59,7 @@ const useRows = ({ paginationModel, layer }) => {
 						),
 					);
 				case 'register':
-					return accounts
-						.filter((account) => !account.registered)
-						.map(transferAccountsRegister);
+					return accounts.map(transferAccountsRegister);
 				case '2fa':
 					return accounts.map(transferAccounts2fa);
 				default:
