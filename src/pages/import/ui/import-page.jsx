@@ -17,8 +17,7 @@ const ImportPage = () => {
 	const queryClient = useQueryClient();
 
 	const handleError = (account, error) => {
-		console.log(error);
-		enqueueSnackbar(`Import ${account.bybit_email} failed`, {
+		enqueueSnackbar(`Import ${account?.bybit_email} failed`, {
 			variant: 'error',
 
 			action: () => (

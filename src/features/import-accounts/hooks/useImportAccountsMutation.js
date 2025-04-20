@@ -6,11 +6,11 @@ import useAccounts from '../model/accountsToImportStore';
 const useImportAccountsMutation = () => {
 	const accounts = useAccounts.use.accounts();
 
-	const mutationFn = ({ onSuccess, onError }) => {
-		accounts.slice(0, -1).forEach(async (account) => {
+	const mutationFn = async ({ onSuccess, onError }) => {
+		for (const account of accounts.slice(0, -1)) {
 			if (!account.bybit_email || !account.group) {
 				onError(account, { detail: 'email & group are required' });
-				return;
+				continue;
 			}
 
 			const accountDTO = new AccountDTO(account);
@@ -21,14 +21,12 @@ const useImportAccountsMutation = () => {
 			} catch (error) {
 				onError(account, error);
 			}
-		});
+		}
 	};
 
 	return useMutation({
 		mutationFn,
 		mutationKey: ['import-accounts'],
-		// mutationFn: ({ form, onSuccess, onError }) =>
-		// 	mutateImportAccounts({ form, onSuccess, onError }),
 	});
 };
 

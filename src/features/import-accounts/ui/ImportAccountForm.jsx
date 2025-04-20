@@ -14,7 +14,6 @@ const ImportAccountForm = ({ onSuccess, onError }) => {
 			onSubmit={(e) => {
 				e.preventDefault();
 				importAccounts({
-					// form: new FormData(e.target),
 					onError,
 					onSuccess,
 				});
