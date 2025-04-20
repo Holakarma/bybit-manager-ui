@@ -8,7 +8,7 @@ const LogsList = () => {
 	const logs = useLogs.use.logs();
 
 	const allLogs = useMemo(() => {
-		return Object.values(logs).flat().reverse();
+		return Object.values(logs).reverse().flat();
 	}, [logs]);
 
 	const Row = ({ index, style }) => {

@@ -97,8 +97,8 @@ const VirtualizedDBTaskList = ({ groupedTasks, onTaskClick }) => {
 						</FixedSizeList>
 					)}
 				</AutoSizer>
-				{/* No tasks */}
 
+				{/* No tasks */}
 				{groupedTasks[pageDate].length === 0 && (
 					<Stack
 						justifyContent="center"

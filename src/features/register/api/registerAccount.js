@@ -37,9 +37,6 @@ const useRegisterTask = () => {
 
 	const settleHandler = () => {
 		queryClient.invalidateQueries({
-			queryKey: ['accounts'],
-		});
-		queryClient.invalidateQueries({
 			queryKey: ['tasks'],
 		});
 	};

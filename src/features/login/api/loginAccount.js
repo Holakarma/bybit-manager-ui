@@ -197,11 +197,7 @@ const useLoginTask = () => {
 		usePendingTasks.use.changeAccountDescription();
 
 	const errorHandler = (error) => {
-		if (error.message === 'Aborted') {
-			enqueueSnackbar('Task aborted', {
-				variant: 'warning',
-			});
-		} else {
+		if (error.message !== 'Aborted') {
 			enqueueSnackbar('Error occured: ' + error.message, {
 				variant: 'error',
 			});
