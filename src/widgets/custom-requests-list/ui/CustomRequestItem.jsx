@@ -18,6 +18,8 @@ import { useState } from 'react';
 
 const CustomRequestItem = ({ request }) => {
 	const setRequest = useSelectedRequest.use.setRequest();
+	const selected = useSelectedRequest.use.request();
+
 	const unsetRequest = useSelectedRequest.use.unsetRequest();
 	const mutation = useDeleteCustomRequest();
 
@@ -56,6 +58,7 @@ const CustomRequestItem = ({ request }) => {
 					disableInteractive
 				>
 					<ListItemButton
+						selected={request.id === selected?.id}
 						onClick={() => {
 							setRequest(request);
 						}}
