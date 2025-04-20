@@ -22,7 +22,7 @@ const ExportAccounts = () => {
 				>
 					<CreateTask
 						handleStart={mutation.mutate}
-						task="enable 2fa"
+						task="export"
 						pages={[
 							{
 								title: 'Accounts',
