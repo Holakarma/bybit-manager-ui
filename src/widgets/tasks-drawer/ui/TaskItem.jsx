@@ -58,6 +58,7 @@ const TaskItem = ({ onClick, task }) => {
 	if (isLoading) {
 		return (
 			<Skeleton
+				variant="rounded"
 				width="100%"
 				height="58px"
 			/>

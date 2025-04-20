@@ -38,7 +38,11 @@ const AccountLogsItem = ({ logs, database_id }) => {
 				key={logs.database_id}
 				disablePadding
 			>
-				<Skeleton width="100%" />
+				<Skeleton
+					width="100%"
+					height="48px"
+					variant="rounded"
+				/>
 			</ListItem>
 		);
 	}
