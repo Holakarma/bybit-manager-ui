@@ -18,7 +18,7 @@ const useRows = ({ paginationModel, layer }) => {
 		queryBody.groups = groups;
 	}
 	if (layer === 'register') {
-		queryBody.registered = null;
+		queryBody.registered = [null, false];
 	}
 
 	const {

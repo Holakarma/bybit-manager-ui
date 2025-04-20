@@ -1,5 +1,5 @@
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePersistState } from 'shared/lib/react';
 import useLayer from '../model/layerStore';
 import AccountsTable from './AccountsTable';
@@ -20,6 +20,13 @@ const Accounts = () => {
 	});
 	const [columnWidthModel, setColumnWidthModel] =
 		usePersistState('columnWidths');
+
+	useEffect(() => {
+		setPaginationModel((prev) => ({
+			...prev,
+			page: 0,
+		}));
+	}, [layer]);
 
 	return (
 		<div

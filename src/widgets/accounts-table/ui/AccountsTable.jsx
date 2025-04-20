@@ -169,7 +169,7 @@ const AccountsTable = ({
 						}}
 						paginationMode="server"
 						onPaginationModelChange={onPaginationModelChange}
-						rowCount={rowCount}
+						rowCount={rowCount || 0}
 						slotProps={{
 							row: {
 								onContextMenu: handleRowContextMenu,
