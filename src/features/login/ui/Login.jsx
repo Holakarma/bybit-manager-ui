@@ -50,8 +50,6 @@ const Login = ({ ...props }) => {
 				open={open}
 				onClose={handleClose}
 				taskTitle="Create login task"
-				taskDescription="Are you sure you want to login for following
-							accounts?"
 				accounts={selectedAccounts}
 				onStart={startHandler}
 				settingsComponent={

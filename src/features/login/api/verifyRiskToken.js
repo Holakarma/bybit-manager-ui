@@ -36,19 +36,20 @@ const useVerifyChallengeRiskToken = () => {
 					},
 				);
 
-				const riskTokenComponent = riskTokenComponents.result[0];
-				const logcExc = riskTokenComponents.result[3];
+				const riskTokenComponent =
+					riskTokenComponents.result.risk_token;
+				const logcExt = riskTokenComponents.result.logc_ext;
 
 				const account = await accountMutation.mutateAsync(database_id);
 
 				if (
-					logcExc.required.includes('google2fa') &&
+					logcExt.required.includes('google2fa') &&
 					!account.totp_secret
 				) {
 					throw Error('TOTP secret required');
 				}
 				if (
-					logcExc.required.includes('payment_password_verify') &&
+					logcExt.required.includes('payment_password_verify') &&
 					!account.payment_password
 				) {
 					throw Error('Payment password required');
@@ -60,7 +61,7 @@ const useVerifyChallengeRiskToken = () => {
 					const verifyBody = {
 						risk_token: riskTokenComponent,
 					};
-					if (logcExc.required.includes('email_verify')) {
+					if (logcExt.required.includes('email_verify')) {
 						emailCode = await getEmailCode.mutateAsync({
 							database_id,
 							signal,
@@ -72,17 +73,17 @@ const useVerifyChallengeRiskToken = () => {
 						});
 					}
 
-					if (logcExc.required.includes('google2fa')) {
+					if (logcExt.required.includes('google2fa')) {
 						Object.assign(verifyBody, {
 							totp_code: true,
 						});
 					}
-					if (logcExc.required.includes('member_login_pwd_verify')) {
+					if (logcExt.required.includes('member_login_pwd_verify')) {
 						Object.assign(verifyBody, {
 							account_password: true,
 						});
 					}
-					if (logcExc.required.includes('payment_password_verify')) {
+					if (logcExt.required.includes('payment_password_verify')) {
 						Object.assign(verifyBody, {
 							payment_password: true,
 						});

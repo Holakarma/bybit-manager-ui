@@ -134,8 +134,8 @@ export const useLoginAccountMutation = () => {
 				signal,
 				verifiedCaptchaToken: solvedVerifyedCaptcha.result.token,
 			});
-			riskToken = risk.result[0];
-			riskTokenType = risk.result[1];
+			riskToken = risk.result.risk_token;
+			riskTokenType = risk.result.risk_token_type;
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
 			return;
@@ -155,7 +155,6 @@ export const useLoginAccountMutation = () => {
 				riskTokenType,
 			});
 		} catch (error) {
-			console.error(error);
 			addErrorLog({ error, group: taskId, database_id });
 			return;
 		}
