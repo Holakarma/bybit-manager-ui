@@ -9,5 +9,10 @@ export {
 export { default as color } from './model/taskColors';
 export { default as taskTitle } from './model/taskTitles';
 export { TaskStatus, TaskType } from './model/types';
+export { default as CreateTask } from './ui/CreateTask';
+export { default as TaskAccountsPage } from './ui/TaskAccountsPage';
 export { default as TaskModal } from './ui/TaskModal';
 export { default as TaskResult } from './ui/TaskResult';
+export { default as TaskSettingsBase } from './ui/TaskSettingsBase';
+export { default as TaskSettingsPage } from './ui/TaskSettingsPage';
+export { default as TaskSettingsPrelogin } from './ui/TaskSettingsPrelogin';

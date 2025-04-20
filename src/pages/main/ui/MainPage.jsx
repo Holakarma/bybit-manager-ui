@@ -101,7 +101,7 @@ const MainPage = () => {
 					{/* Main Action */}
 					<Grid2 size={2}>
 						{getMainAction(layer, {
-							sx: { paddingInline: 8, height: '100%' },
+							sx: { height: '100%' },
 						})}
 					</Grid2>
 

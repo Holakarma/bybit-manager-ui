@@ -1,16 +1,25 @@
-import AvTimerIcon from '@mui/icons-material/AvTimer';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
+import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
 import {
+	FormControlLabel,
+	FormGroup,
 	InputAdornment,
 	Stack,
+	Switch,
 	TextField,
-	ToggleButton,
 	Tooltip,
 	Typography,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 
-const NumberField = ({ label, value, onChange, onBlur, unit, ...props }) => (
+const NumberField = ({
+	label,
+	value,
+	onChange,
+	onBlur,
+	unit,
+	sx,
+	...props
+}) => (
 	<TextField
 		{...props}
 		slotProps={{
@@ -20,9 +29,10 @@ const NumberField = ({ label, value, onChange, onBlur, unit, ...props }) => (
 				),
 			},
 		}}
-		sx={{ maxWidth: '75px' }}
+		sx={{ maxWidth: '120px', ...sx }}
 		label={label}
-		variant="standard"
+		type="number"
+		variant="outlined"
 		size="small"
 		value={value}
 		onChange={onChange}
@@ -54,25 +64,27 @@ const DelaySettings = ({
 			sx={{ maxWidth: '100%' }}
 		>
 			<NumberField
-				disabled={disabled}
 				value={minDelay}
 				onChange={onMinChange}
 				onBlur={onMinBlur}
 				unit="sec"
+				disabled={disabled}
+				sx={{ maxWidth: '160px' }}
 			/>
 			-
 			<NumberField
-				disabled={disabled}
 				value={maxDelay}
 				onChange={onMaxChange}
 				onBlur={onMaxBlur}
 				unit="sec"
+				disabled={disabled}
+				sx={{ maxWidth: '160px' }}
 			/>
 		</Stack>
 	</Stack>
 );
 
-const Settings = ({ settings, onSettingsChange }) => {
+const TaskSettingsPrelogin = ({ settings, onSettingsChange }) => {
 	const [inputMinDelay, setInputMinDelay] = useState(
 		String(settings.delay.min),
 	);
@@ -82,6 +94,7 @@ const Settings = ({ settings, onSettingsChange }) => {
 	const [inputThreads, setInputThreads] = useState(String(settings.threads));
 
 	const shuffle = useMemo(() => settings.shuffle, [settings]);
+	const prelogin = useMemo(() => settings.prelogin, [settings]);
 	const delay = useMemo(() => settings.delay.enabled, [settings]);
 
 	const handleInputChange = (setter) => (event) => setter(event.target.value);
@@ -126,6 +139,10 @@ const Settings = ({ settings, onSettingsChange }) => {
 	const handleShuffleChange = (_event) => {
 		onSettingsChange((prev) => ({ ...prev, shuffle: !prev.shuffle }));
 	};
+
+	const handlePreloginChange = (_event) => {
+		onSettingsChange((prev) => ({ ...prev, prelogin: !prev.prelogin }));
+	};
 	const handleDelayChange = (_event) => {
 		onSettingsChange((prev) => ({
 			...prev,
@@ -135,59 +152,86 @@ const Settings = ({ settings, onSettingsChange }) => {
 
 	return (
 		<Stack
-			alignItems="start"
-			gap={2}
+			justifyContent="center"
+			gap={3}
 			width="100%"
-			minWidth="350px"
-			direction="row"
 			paddingTop={2}
 		>
 			<Stack
 				direction="row"
 				gap={2}
-				justifyContent="space-between"
+				alignItems="center"
 			>
 				<NumberField
-					label="Threads"
 					value={inputThreads}
 					onChange={handleInputChange(setInputThreads)}
 					onBlur={handleThreadsBlur}
 				/>
-
-				<Tooltip title="Shuffle accounts">
-					<ToggleButton
-						size="small"
-						value="shuffle"
-						selected={shuffle}
-						onChange={handleShuffleChange}
-					>
-						<ShuffleIcon />
-					</ToggleButton>
-				</Tooltip>
-
-				<Tooltip title="Enable delay">
-					<ToggleButton
-						size="small"
-						value="delay"
-						selected={delay}
-						onChange={handleDelayChange}
-					>
-						<AvTimerIcon />
-					</ToggleButton>
-				</Tooltip>
+				<Typography>Threads</Typography>
 			</Stack>
 
-			<DelaySettings
-				minDelay={inputMinDelay}
-				maxDelay={inputMaxDelay}
-				onMinChange={handleInputChange(setInputMinDelay)}
-				onMaxChange={handleInputChange(setInputMaxDelay)}
-				onMinBlur={handleMinDelayBlur}
-				onMaxBlur={handleMaxDelayBlur}
-				disabled={!delay}
-			/>
+			<FormGroup>
+				<FormControlLabel
+					control={
+						<Switch
+							checked={shuffle}
+							onChange={handleShuffleChange}
+							value="shuffle"
+						/>
+					}
+					label="Shuffle accounts"
+				/>
+			</FormGroup>
+
+			<FormGroup>
+				<FormControlLabel
+					control={
+						<Switch
+							checked={prelogin}
+							onChange={handlePreloginChange}
+							value="prelogin"
+						/>
+					}
+					label="Prelogin"
+				/>
+			</FormGroup>
+
+			<Stack gap={1}>
+				<Stack
+					direction="row"
+					alignItems="center"
+				>
+					<FormGroup>
+						<FormControlLabel
+							control={
+								<Switch
+									checked={delay}
+									onChange={handleDelayChange}
+									value="delay"
+								/>
+							}
+							label="Enable delay"
+						/>
+					</FormGroup>
+					<Tooltip title="Generate random delay between accounts">
+						<HelpOutlineRoundedIcon color="textSecondary" />
+					</Tooltip>
+				</Stack>
+
+				{delay && (
+					<DelaySettings
+						minDelay={inputMinDelay}
+						maxDelay={inputMaxDelay}
+						onMinChange={handleInputChange(setInputMinDelay)}
+						onMaxChange={handleInputChange(setInputMaxDelay)}
+						onMinBlur={handleMinDelayBlur}
+						onMaxBlur={handleMaxDelayBlur}
+						disabled={!delay}
+					/>
+				)}
+			</Stack>
 		</Stack>
 	);
 };
 
-export default Settings;
+export default TaskSettingsPrelogin;

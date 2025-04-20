@@ -1,81 +1,80 @@
 import SmartButtonRoundedIcon from '@mui/icons-material/SmartButtonRounded';
 import { IconButton, Stack, Tooltip } from '@mui/material';
-import { useSelectedAccounts } from 'entities/account';
-import { TaskModal } from 'entities/task';
+import {
+	CreateTask,
+	TaskAccountsPage,
+	TaskSettingsPage,
+	TaskSettingsPrelogin,
+} from 'entities/task';
 import { useState } from 'react';
 import useCustomRequestTask from '../api/customRequest.js';
-import Settings from './Settngs.jsx';
+import RequestSelect from './RequestSelect.jsx';
 
 const CustomRequest = () => {
-	const [open, setOpen] = useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
-
 	const [settings, setSettings] = useState({
 		threads: 1,
 		delay: { min: 60, max: 90, enabled: true },
 		shuffle: false,
+		prelogin: false,
 	});
+	const [tooltipOpen, setTooltipOpen] = useState(false);
 
 	const [requestId, setRequestId] = useState('');
-
 	const mutation = useCustomRequestTask(requestId);
 
-	const startHandler = () => {
-		mutation.mutate({
-			database_ids: selectedAccounts.map(
-				(account) => account.database_id,
-			),
-			settings,
-		});
-		handleClose();
-	};
-
-	const {
-		data: selectedAccounts,
-		isLoading,
-		isError,
-	} = useSelectedAccounts();
-
 	return (
-		<>
-			<Tooltip title="Custom request">
-				<Stack
-					sx={{ height: '100%' }}
-					justifyContent="center"
-					alignItems="center"
+		<Tooltip
+			title="Custom request"
+			open={tooltipOpen}
+		>
+			<Stack
+				sx={{ height: '100%' }}
+				justifyContent="center"
+				alignItems="center"
+			>
+				<CreateTask
+					handleStart={mutation.mutate}
+					task="custom request"
+					settings={settings}
+					errorText={requestId === '' ? 'Request is required' : ''}
+					pages={[
+						{
+							title: 'Settings',
+							component: (
+								<TaskSettingsPage key="settings">
+									<Stack gap={3}>
+										<TaskSettingsPrelogin
+											settings={settings}
+											onSettingsChange={(newSettings) =>
+												setSettings(newSettings)
+											}
+										/>
+
+										<RequestSelect
+											onRequestChange={(newRequest) =>
+												setRequestId(newRequest)
+											}
+											requestId={requestId}
+										/>
+									</Stack>
+								</TaskSettingsPage>
+							),
+						},
+						{
+							title: 'Accounts',
+							component: <TaskAccountsPage key="accounts" />,
+						},
+					]}
 				>
 					<IconButton
-						onClick={handleOpen}
-						disabled={
-							isLoading || isError || !selectedAccounts.length
-						}
+						onMouseEnter={() => setTooltipOpen(true)}
+						onMouseLeave={() => setTooltipOpen(false)}
 					>
 						<SmartButtonRoundedIcon />
 					</IconButton>
-				</Stack>
-			</Tooltip>
-			<TaskModal
-				open={open}
-				onClose={handleClose}
-				taskTitle="Сustom request task"
-				accounts={selectedAccounts}
-				startButtonProps={{ disabled: !requestId }}
-				onStart={startHandler}
-				settingsComponent={
-					<Settings
-						settings={settings}
-						onSettingsChange={(newSettings) =>
-							setSettings(newSettings)
-						}
-						onRequestChange={(newRequest) =>
-							setRequestId(newRequest)
-						}
-						requestId={requestId}
-					/>
-				}
-			/>
-		</>
+				</CreateTask>
+			</Stack>
+		</Tooltip>
 	);
 };
 

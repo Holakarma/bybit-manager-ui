@@ -1,69 +1,44 @@
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import { IconButton, Stack, Tooltip } from '@mui/material';
-import { useSelectedAccounts } from 'entities/account';
-import { TaskModal } from 'entities/task';
+import { CreateTask, TaskAccountsPage } from 'entities/task';
 import { useState } from 'react';
-import exportAccounts from '../lib/exportAccounts';
+import { default as useExportAccounts } from '../lib/exportAccounts';
 
 const ExportAccounts = () => {
-	const [open, setOpen] = useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
+	const mutation = useExportAccounts();
 
-	const {
-		data: selectedAccounts,
-		isLoading,
-		isError,
-	} = useSelectedAccounts();
-
-	// const mutation = useLoginTask();
-
-	// const [settings, setSettings] = useState({
-	// 	threads: 1,
-	// 	delay: { min: 60, max: 90, enabled: true },
-	// 	shuffle: false,
-	// });
-
-	const startHandler = () => {
-		exportAccounts(selectedAccounts);
-		handleClose();
-	};
+	const [tooltipOpen, setTooltipOpen] = useState(false);
 
 	return (
 		<>
-			<Tooltip title="Export to xlsx">
+			<Tooltip
+				title="Export to xlsx"
+				open={tooltipOpen}
+			>
 				<Stack
 					sx={{ height: '100%' }}
 					justifyContent="center"
 					alignItems="center"
 				>
-					<IconButton
-						onClick={handleOpen}
-						disabled={
-							isLoading || isError || !selectedAccounts.length
-						}
+					<CreateTask
+						handleStart={mutation.mutate}
+						task="enable 2fa"
+						pages={[
+							{
+								title: 'Accounts',
+								component: <TaskAccountsPage key="accounts" />,
+							},
+						]}
 					>
-						<FileUploadRoundedIcon />
-					</IconButton>
+						<IconButton
+							onMouseEnter={() => setTooltipOpen(true)}
+							onMouseLeave={() => setTooltipOpen(false)}
+						>
+							<FileUploadRoundedIcon />
+						</IconButton>
+					</CreateTask>
 				</Stack>
 			</Tooltip>
-			<TaskModal
-				open={open}
-				onClose={handleClose}
-				taskTitle="Export accounts"
-				taskDescription="Export accounts to xlsx"
-				accounts={selectedAccounts}
-				startTitle="Export"
-				onStart={startHandler}
-				// settingsComponent={
-				// 	<Settings
-				// 		settings={settings}
-				// 		onSettingsChange={(newSettings) =>
-				// 			setSettings(newSettings)
-				// 		}
-				// 	/>
-				// }
-			/>
 		</>
 	);
 };

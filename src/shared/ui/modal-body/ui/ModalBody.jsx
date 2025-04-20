@@ -10,7 +10,7 @@ const style = {
 	bgcolor: 'background.paper',
 	boxShadow: 24,
 	p: 4,
-	marginBlock: 2,
+	marginBlock: 3,
 };
 
 // eslint-disable-next-line react/display-name

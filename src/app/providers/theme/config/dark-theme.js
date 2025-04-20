@@ -56,6 +56,7 @@ const componentsStyles = {
 
 	MuiTooltip: {
 		defaultProps: {
+			disableInteractive: true,
 			PopperProps: {
 				modifiers: [
 					{

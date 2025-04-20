@@ -1,35 +1,35 @@
-import {
-	Box,
-	Button,
-	Divider,
-	Grid2,
-	List,
-	ListItem,
-	Modal,
-	Stack,
-	Typography,
-} from '@mui/material';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import { Box, Button, Modal, Stack, Typography } from '@mui/material';
+
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import { useState } from 'react';
 import { ModalBody } from 'shared/ui/modal-body';
 
 const TaskModal = ({
 	open,
 	onClose,
 	taskTitle,
-	taskDescription,
-	accounts,
 	onStart,
-	settingsComponent,
+	pages,
 	startButtonProps,
 	startTitle,
+	errorText,
 }) => {
+	const [page, setPage] = useState(0);
+
+	const handleClose = () => {
+		onClose();
+		setPage(0);
+	};
+
 	return (
 		<Modal
 			open={open}
-			onClose={onClose}
+			onClose={handleClose}
 		>
 			<Box>
 				<ModalBody
-					sx={{ minWidth: '400px' }}
+					sx={{ minWidth: '500px' }}
 					position="relative"
 				>
 					<Stack
@@ -44,83 +44,56 @@ const TaskModal = ({
 							<Typography variant="H5">{taskTitle}</Typography>
 
 							<Typography
-								variant="Body"
+								variant="Title"
+								marginTop={2}
 								color="textSecondary"
 							>
-								{taskDescription}
+								{pages?.[page].title}
 							</Typography>
-
-							{settingsComponent || null}
-
-							<Divider sx={{ marginTop: 2 }} />
 
 							<Box
 								flexGrow={1}
-								position="relative"
-								marginBottom={2}
+								paddingBlock={2}
 							>
-								<List
-									sx={{
-										position: 'absolute',
-										top: 0,
-										left: 0,
-										bottom: 0,
-										right: 0,
-										overflow: 'auto',
-									}}
-								>
-									{(accounts || []).map((account) => (
-										<ListItem
-											key={account.database_id}
-											disablePadding
-										>
-											<Grid2
-												container
-												spacing={1}
-												width="100%"
-											>
-												<Grid2 size={1}>
-													<Typography
-														variant="Caption"
-														color="textSecondary"
-													>
-														{account.database_id}
-													</Typography>
-												</Grid2>
-
-												<Grid2 size="grow">
-													<Stack
-														direction="row"
-														justifyContent="space-between"
-													>
-														<Typography>
-															{
-																account.email
-																	.address
-															}
-														</Typography>
-														<Typography>
-															{account.group_name}
-														</Typography>
-													</Stack>
-												</Grid2>
-											</Grid2>
-										</ListItem>
-									))}
-								</List>
+								{pages?.[page].component || null}
 							</Box>
 
-							<Button
-								{...startButtonProps}
-								sx={{
-									position: 'absolute',
-									bottom: 12,
-									right: 12,
-								}}
-								onClick={onStart}
+							<Stack
+								direction="row"
+								justifyContent="space-between"
 							>
-								{startTitle || 'Start task'}
-							</Button>
+								{page !== 0 ? (
+									<Button
+										onClick={() => setPage(page - 1)}
+										startIcon={<ArrowBackRoundedIcon />}
+									>
+										{pages?.[page - 1].title}
+									</Button>
+								) : null}
+
+								{page !== pages?.length - 1 ? (
+									<Button
+										onClick={() => setPage(page + 1)}
+										sx={{ marginLeft: 'auto' }}
+										endIcon={<ArrowForwardRoundedIcon />}
+									>
+										{pages?.[page + 1].title}
+									</Button>
+								) : null}
+
+								{page === pages?.length - 1 && (
+									<Button
+										onClick={onStart}
+										variant={'contained'}
+										sx={{ marginLeft: 'auto' }}
+										{...startButtonProps}
+									>
+										{errorText ||
+											startTitle ||
+											'Start task'}
+									</Button>
+								)}
+							</Stack>
 						</Stack>
 					</Stack>
 				</ModalBody>

@@ -1,20 +1,14 @@
 import { Button } from '@mui/material';
-import { useSelectedAccounts } from 'entities/account';
-import { TaskModal } from 'entities/task';
+import {
+	CreateTask,
+	TaskAccountsPage,
+	TaskSettingsPage,
+	TaskSettingsPrelogin,
+} from 'entities/task';
 import { useState } from 'react';
 import useRefreshTask from '../api/refreshBalances';
-import Settings from './Settngs';
 
 const Refresh = ({ ...props }) => {
-	const {
-		data: selectedAccounts,
-		isLoading,
-		isError,
-	} = useSelectedAccounts();
-	const [open, setOpen] = useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
-
 	const mutation = useRefreshTask();
 
 	const [settings, setSettings] = useState({
@@ -24,46 +18,39 @@ const Refresh = ({ ...props }) => {
 		shuffle: false,
 	});
 
-	const startHandler = () => {
-		mutation.mutate({
-			database_ids: selectedAccounts.map(
-				(account) => account.database_id,
-			),
-			settings,
-		});
-		handleClose();
-	};
-
 	return (
-		<>
+		<CreateTask
+			handleStart={mutation.mutate}
+			task="refresh balances"
+			settings={settings}
+			pages={[
+				{
+					title: 'Settings',
+					component: (
+						<TaskSettingsPage key="settings">
+							<TaskSettingsPrelogin
+								settings={settings}
+								onSettingsChange={(newSettings) =>
+									setSettings(newSettings)
+								}
+							/>
+						</TaskSettingsPage>
+					),
+				},
+				{
+					title: 'Accounts',
+					component: <TaskAccountsPage key="accounts" />,
+				},
+			]}
+		>
 			<Button
 				{...props}
-				disabled={isLoading || isError || !selectedAccounts.length}
-				loading={isLoading}
-				variant="contained"
 				fullWidth
-				onClick={handleOpen}
+				variant="contained"
 			>
 				Refresh
 			</Button>
-			<TaskModal
-				open={open}
-				onClose={handleClose}
-				taskTitle="Create refresh balances task"
-				taskDescription="Are you sure you want to refresh for following
-								accounts?"
-				accounts={selectedAccounts}
-				onStart={startHandler}
-				settingsComponent={
-					<Settings
-						settings={settings}
-						onSettingsChange={(newSettings) =>
-							setSettings(newSettings)
-						}
-					/>
-				}
-			/>
-		</>
+		</CreateTask>
 	);
 };
 

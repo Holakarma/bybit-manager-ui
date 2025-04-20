@@ -94,7 +94,7 @@ const useTask = ({
 				onInitSuccess({ data, task });
 			}
 			queryClient.invalidateQueries({
-				queryKey: ['tasks'],
+				queryKey: ['accounts'],
 			});
 			enqueueSnackbar(`${taskTitle[task.type]} completed`, {
 				variant: 'info',

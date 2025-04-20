@@ -100,7 +100,12 @@ const useUpdateProfileTask = ({ onPrelogin, onPreloginError } = {}) => {
 	const addErrorLog = useLogs.use.addErrorLog();
 	const addSuccessLog = useLogs.use.addSuccessLog();
 
-	const mutationFunction = async ({ database_id, signal, taskId }) => {
+	const mutationFunction = async ({
+		database_id,
+		signal,
+		taskId,
+		settings,
+	}) => {
 		addInfoLog({
 			message: 'updating profile',
 			group: taskId,
@@ -108,7 +113,7 @@ const useUpdateProfileTask = ({ onPrelogin, onPreloginError } = {}) => {
 		});
 
 		try {
-			await mutation.mutateAsync({ database_id, signal });
+			await mutation.mutateAsync({ database_id, signal, settings });
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
 			return;

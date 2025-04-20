@@ -80,21 +80,28 @@ const CustomRequest = ({ ...props }) => {
 		mode: 'onChange',
 	});
 
+	const {
+		fields: paramsFields,
+		append,
+		remove,
+	} = useFieldArray({
+		control,
+		name: 'params',
+	});
+
 	useEffect(() => {
 		if (customRequest) {
 			reset({
 				...customRequest,
 				json: formatJson(customRequest.json),
-				params: [
-					...exportParams(customRequest.params),
-					{ key: '', value: '' },
-				],
+				params: [...exportParams(customRequest.params)],
 			});
+			append({ key: '', value: '' });
 		} else {
 			reset(defaultCustomRequest);
 		}
 		return () => reset();
-	}, [customRequest, reset]);
+	}, [customRequest, reset, append]);
 
 	const addMutatiom = useAddCustomRequest();
 	const updateMutation = useUpdateCustomRequest();
@@ -134,15 +141,6 @@ const CustomRequest = ({ ...props }) => {
 		setValue(`params.${index}`, newParam);
 		trigger(`params.${index}`);
 	};
-
-	const {
-		fields: paramsFields,
-		append,
-		remove,
-	} = useFieldArray({
-		control,
-		name: 'params',
-	});
 
 	const [tab, setTab] = useState(0);
 

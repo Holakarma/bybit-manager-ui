@@ -1,5 +1,28 @@
+import { useMutation } from '@tanstack/react-query';
+import { useAccount } from 'entities/account';
 import templateImportAccount from 'shared/assets/templates/template-import-accounts';
 import * as XLSX from 'xlsx';
+
+const useExportAccounts = () => {
+	const getAccountMutation = useAccount();
+
+	const mutationFn = async ({ database_ids }) => {
+		const accounts = [];
+
+		for (let database_id of database_ids) {
+			const account = await getAccountMutation.mutateAsync(database_id);
+
+			accounts.push(account);
+		}
+
+		return exportAccounts(accounts);
+	};
+
+	return useMutation({
+		mutationFn,
+		mutaitoinKey: ['export-accounts'],
+	});
+};
 
 const exportAccounts = (accounts) => {
 	const data = accounts.map((account) => [
@@ -49,4 +72,4 @@ const exportAccounts = (accounts) => {
 	URL.revokeObjectURL(url);
 };
 
-export default exportAccounts;
+export default useExportAccounts;

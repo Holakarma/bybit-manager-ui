@@ -5,7 +5,6 @@ import { usePendingTasks, useTask } from 'entities/task';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
 const customRequest = (database_id, signal, request) => {
-	console.log('request', request);
 	const api = new Api();
 	return api.Post(ENDPOINTS.custom_request, request, {
 		signal,
