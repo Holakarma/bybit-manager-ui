@@ -9,6 +9,7 @@ const CreateTask = ({
 	settings,
 	filterAccounts,
 	errorText,
+	startTitle,
 	children,
 	...props
 }) => {
@@ -73,6 +74,7 @@ const CreateTask = ({
 				startButtonProps={{
 					disabled: checkedIds.length === 0 || errorText,
 				}}
+				startTitle={startTitle}
 				errorText={errorText}
 				pages={pages.map((page) => ({
 					...page,

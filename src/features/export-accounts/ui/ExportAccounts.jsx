@@ -29,6 +29,7 @@ const ExportAccounts = () => {
 								component: <TaskAccountsPage key="accounts" />,
 							},
 						]}
+						startTitle="Export"
 					>
 						<IconButton
 							onMouseEnter={() => setTooltipOpen(true)}
