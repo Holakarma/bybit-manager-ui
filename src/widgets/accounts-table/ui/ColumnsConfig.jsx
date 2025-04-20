@@ -418,7 +418,7 @@ const generalLayerColumns = (toggleName = false, balance = 0, widths) => [
 		renderCell: (params) => {
 			const date = params.row.session;
 			const now = new Date();
-			if (date === null) return 'No cookies';
+			if (!date) return 'No cookies';
 			return now > date ? (
 				'Expired'
 			) : (

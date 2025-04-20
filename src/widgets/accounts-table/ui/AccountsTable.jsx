@@ -33,6 +33,14 @@ const AccountsTable = ({
 		layer,
 	});
 
+	const rowCountRef = useRef(rowCount);
+	const savedRowCount = useMemo(() => {
+		if (rowCount) {
+			rowCountRef.current = rowCount;
+		}
+		return rowCountRef.current;
+	}, [rowCount]);
+
 	const rowsRef = useRef(rows);
 	const savedRows = useMemo(() => {
 		if (rows) {
@@ -169,7 +177,7 @@ const AccountsTable = ({
 						}}
 						paginationMode="server"
 						onPaginationModelChange={onPaginationModelChange}
-						rowCount={rowCount || 0}
+						rowCount={savedRowCount || 0}
 						slotProps={{
 							row: {
 								onContextMenu: handleRowContextMenu,
