@@ -5,9 +5,9 @@ const errorLog = (error, database_id) => ({
 	type: 'error',
 	database_id,
 	message:
-		error.error === 'BYBIT_JSON_ERROR'
+		error?.error === 'BYBIT_JSON_ERROR'
 			? error.bybit_response.ret_msg
-			: error.detail?.msg || `${error.message}`,
+			: error?.detail?.msg || `${error?.message || 'unknown error'}`,
 	time: Date.now(),
 });
 
