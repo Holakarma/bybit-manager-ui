@@ -23,7 +23,7 @@ import {
 } from 'entities/custom-request';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { parseCurl } from 'shared/lib/curl-parser';
+import parseCurl from 'shared/lib/curl-parser';
 import { formatJson } from 'shared/lib/format-json';
 import { uniqueId } from 'shared/lib/generateUniqueId';
 import { isEmptyValues } from 'shared/lib/isEmptyValues';
@@ -48,6 +48,7 @@ const MethodSelect = forwardRef(({ value, onChange, ...props }, ref) => (
 		<MenuItem value="POST">POST</MenuItem>
 		<MenuItem value="PATCH">PATCH</MenuItem>
 		<MenuItem value="DELETE">DELETE</MenuItem>
+		<MenuItem value="OPTIONS">OPTIONS</MenuItem>
 	</Select>
 ));
 
@@ -186,22 +187,23 @@ const CustomRequest = ({ ...props }) => {
 	const handlePaste = (e) => {
 		e.preventDefault();
 
-		const curlCmd = e.clipboardData.getData('text');
+		const pastedText = e.clipboardData.getData('text').trim();
+
+		let parsedUrl;
 
 		try {
-			const parsedCurl = parseCurl(curlCmd);
-
-			if (!parsedCurl.url) {
-				setValue('path', curlCmd);
-				return;
-			}
-
-			setValue('method', parsedCurl.method || 'GET');
-			trigger('method');
-			setValue('path', parsedCurl.url);
+			/* try to parse url */
+			parsedUrl = new URL(pastedText);
+			setValue('path', parsedUrl.pathname.substring(1));
 			trigger('path');
 
-			const paramsArray = Object.entries(parsedCurl.params).map(
+			const queryParams = {};
+
+			for (const [key, value] of parsedUrl.searchParams.entries()) {
+				queryParams[key] = value;
+			}
+
+			const paramsArray = Object.entries(queryParams).map(
 				([key, value]) => ({
 					key,
 					value,
@@ -213,24 +215,52 @@ const CustomRequest = ({ ...props }) => {
 				append([...paramsArray]);
 			}
 			append([{ key: '', value: '' }]);
+		} catch (_e) {
+			/* try to parse curl */
+			try {
+				const parsedCurl = parseCurl(pastedText);
 
-			resetField('body');
-			resetField('data');
-			resetField('bodyType');
-			// JSON
-			if (parsedCurl.body) {
-				setValue('bodyType', 'JSON');
-				setValue('json', formatJson(parsedCurl.body));
-			}
+				setValue('method', parsedCurl.method || 'GET');
+				trigger('method');
+				const parsedUrl = new URL(parsedCurl.url);
+				setValue('path', parsedUrl.pathname.substring(1));
+				trigger('path');
 
-			// form-data / x-www-form-urlencoded
-			if (parsedCurl.data) {
-				setValue('bodyType', 'x-www-form-urlencoded');
-				setValue('data', parsedCurl.data);
-				trigger('bodyType');
+				const queryParams = {};
+				for (const [key, value] of parsedUrl.searchParams.entries()) {
+					queryParams[key] = value;
+				}
+				const paramsArray = Object.entries(queryParams).map(
+					([key, value]) => ({
+						key,
+						value,
+					}),
+				);
+				remove();
+				if (paramsArray.length > 0) {
+					append([...paramsArray]);
+				}
+				append([{ key: '', value: '' }]);
+
+				resetField('body');
+				resetField('data');
+				resetField('bodyType');
+				// JSON
+				if (parsedCurl.body) {
+					setValue('bodyType', 'JSON');
+					setValue('json', formatJson(parsedCurl.body));
+				}
+
+				// form-data / x-www-form-urlencoded
+				if (parsedCurl.data) {
+					setValue('bodyType', 'x-www-form-urlencoded');
+					setValue('data', parsedCurl.data.join('&'));
+					trigger('bodyType');
+				}
+			} catch (_e) {
+				/* do not parse */
+				setValue('path', pastedText);
 			}
-		} catch (error) {
-			console.error('Failed to parse curl command:', error);
 		}
 	};
 
@@ -292,7 +322,7 @@ const CustomRequest = ({ ...props }) => {
 												/>
 											</InputAdornment>
 										),
-										placeholder: 'https://your-request.com',
+										placeholder: 'your/request/path',
 									},
 								}}
 								error={!!errors.path}

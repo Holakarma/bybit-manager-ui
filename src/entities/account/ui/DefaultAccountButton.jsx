@@ -5,7 +5,11 @@ import { useMemo } from 'react';
 import useAccounts from '../api/getAccounts';
 
 const DefaultAccountButton = ({ defaultAccountId, onClick }) => {
-	const { data: defaultAccountData, isLoading } = useAccounts({
+	const {
+		data: defaultAccountData,
+		isLoading,
+		isError,
+	} = useAccounts({
 		database_ids: [defaultAccountId],
 	});
 
@@ -32,6 +36,17 @@ const DefaultAccountButton = ({ defaultAccountId, onClick }) => {
 				startIcon={<NoAccountsRoundedIcon fill="inherit" />}
 			>
 				Loading
+			</Button>
+		);
+	}
+	if (isError) {
+		return (
+			<Button
+				variant="contained"
+				disabled
+				startIcon={<NoAccountsRoundedIcon fill="inherit" />}
+			>
+				Error
 			</Button>
 		);
 	}
