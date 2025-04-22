@@ -25,6 +25,7 @@ const useExportAccounts = () => {
 };
 
 const exportAccounts = (accounts) => {
+	console.log(accounts);
 	const data = accounts.map((account) => [
 		account.note || '', // [bybit] Note
 		account.group_name || '', // [bybit] Group
@@ -36,8 +37,8 @@ const exportAccounts = (accounts) => {
 		account.password || '', // [bybit] Password
 		account.totp_secret || '', // [bybit] TOTP secret
 		account.web3_mnemonic_phrase || '', // [bybit] Mnemonic phrase
-		account.proxy || '', // [bybit] Proxy
-		account.email.proxy || '', // [email] Proxy
+		JSON.stringify(account.proxy || ''), // [bybit] Proxy
+		JSON.stringify(account.email.proxy || ''), // [email] Proxy
 		account.country || '', // [bybit] Country code
 		JSON.stringify(account.cookies), // [bybit] Cookies
 	]);

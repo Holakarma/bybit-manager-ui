@@ -72,7 +72,7 @@ const CreateTask = ({
 				accounts={selectedAccounts}
 				onStart={startHandler}
 				startButtonProps={{
-					disabled: checkedIds.length === 0 || errorText,
+					disabled: checkedIds.length === 0 || Boolean(errorText),
 				}}
 				startTitle={startTitle}
 				errorText={errorText}
