@@ -38,6 +38,7 @@ const useTask = ({
 	const mutate = async ({
 		database_ids,
 		settings,
+		taskData,
 		onSuccess,
 		onSettled,
 		onError,
@@ -49,7 +50,7 @@ const useTask = ({
 			: database_ids;
 
 		const task = createPendingTask({
-			data: idsToProcess,
+			data: taskData || idsToProcess,
 			accounts: {
 				toProcess: idsToProcess.map((id) => ({
 					id,

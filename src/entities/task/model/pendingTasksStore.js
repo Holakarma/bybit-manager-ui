@@ -9,7 +9,7 @@ export const createPendingTask = ({ type, ...properties }) => ({
 	...properties,
 });
 
-const usePendingTasksBase = create((set) => ({
+const usePendingTasksBase = create((set, get) => ({
 	tasks: [],
 
 	addTask: (newTask) =>
@@ -24,6 +24,10 @@ const usePendingTasksBase = create((set) => ({
 				tasks: state.tasks.filter((task) => task.id !== id),
 			};
 		}),
+	getTask: (id) => {
+		const tasks = get().tasks;
+		return tasks.find((task) => task.id === id);
+	},
 	processAccount: (taskId, { accountId, data, error, logs }) =>
 		set((state) => {
 			return {

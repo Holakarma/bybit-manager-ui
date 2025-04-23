@@ -22,6 +22,11 @@ const TaskModal = ({
 		setPage(0);
 	};
 
+	const handleStart = () => {
+		onStart();
+		setPage(0);
+	};
+
 	return (
 		<Modal
 			open={open}
@@ -29,7 +34,7 @@ const TaskModal = ({
 		>
 			<Box>
 				<ModalBody
-					sx={{ minWidth: '500px' }}
+					sx={{ minWidth: '600px' }}
 					position="relative"
 				>
 					<Stack
@@ -83,7 +88,7 @@ const TaskModal = ({
 
 								{page === pages?.length - 1 && (
 									<Button
-										onClick={onStart}
+										onClick={handleStart}
 										variant={'contained'}
 										sx={{ marginLeft: 'auto' }}
 										{...startButtonProps}

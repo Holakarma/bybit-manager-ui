@@ -11,6 +11,7 @@ const CreateTask = ({
 	errorText,
 	startTitle,
 	children,
+	onCheckedIdsChange,
 	...props
 }) => {
 	const [open, setOpen] = useState(false);
@@ -32,6 +33,12 @@ const CreateTask = ({
 	};
 
 	const [checkedIds, setCheckedIds] = useState([]);
+
+	useEffect(() => {
+		if (onCheckedIdsChange) {
+			onCheckedIdsChange(checkedIds);
+		}
+	}, [checkedIds, onCheckedIdsChange]);
 
 	useEffect(() => {
 		if (selectedAccounts) {

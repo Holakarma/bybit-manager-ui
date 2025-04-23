@@ -46,6 +46,7 @@ export const waitForCode = async ({
 }) => {
 	const currentTime = Date.now();
 	const endTime = currentTime + timeout * 1000;
+
 	if (!since) {
 		const time15SecondsAgo = currentTime - 15000;
 		since = new Date(time15SecondsAgo);

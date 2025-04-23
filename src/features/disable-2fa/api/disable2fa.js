@@ -1,32 +1,30 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAccount } from 'entities/account';
+import { useRiskToken } from 'entities/account';
 import { useLogs } from 'entities/log';
 import { usePendingTasks, useTask } from 'entities/task';
+import { SENCE, useVerifyRiskToken } from 'features/login';
+// eslint-disable-next-line no-restricted-imports
+import { useUpdateProfileMutation } from 'features/update-profile/api/updateProfile';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
-const disable2fa = (database_id, signal) => {
+const disable2fa = ({ database_id, signal, riskToken }) => {
 	const api = new Api();
-	return api.Post(ENDPOINTS.disable_2fa, null, {
+	return api.Post(ENDPOINTS.disable_2fa, riskToken, {
 		signal,
 		params: { database_id },
 	});
 };
 
-export const useDisable2faMutation = () => {
-	const accountMutation = useAccount();
-
-	const mutationFunction = ({ database_id, signal }) => {
+const useDisable2faMutationApi = () => {
+	const mutationFunction = ({ database_id, signal, riskToken }) => {
 		return deduplicateRequests({
 			requestKey: ['disable2fa', database_id],
 			requestFn: async () => {
-				const account = await accountMutation.mutateAsync(database_id);
-
-				/* If account has totp disabled */
-				if (!account.totp_enabled) {
-					return { result: null, database_id };
-				}
-
-				const result = await disable2fa(database_id, signal);
+				const result = await disable2fa({
+					database_id,
+					signal,
+					riskToken,
+				});
 				return { result, database_id };
 			},
 		});
@@ -34,6 +32,132 @@ export const useDisable2faMutation = () => {
 
 	return useMutation({
 		mutationFn: mutationFunction,
+		mutationKey: ['disable2fa'],
+	});
+};
+
+export const useDisable2faMutation = () => {
+	const disable2fa = useDisable2faMutationApi();
+	const addInfoLog = useLogs.use.addInfoLog();
+	const addErrorLog = useLogs.use.addErrorLog();
+	const addSuccessLog = useLogs.use.addSuccessLog();
+	const riskTokenMutation = useRiskToken();
+	const veifyRiskTokenMutation = useVerifyRiskToken();
+	const updateProfileMutation = useUpdateProfileMutation();
+
+	const mutationFn = async ({ database_id, signal, taskId, settings }) => {
+		let profile;
+
+		try {
+			profile = await updateProfileMutation.mutateAsync({
+				database_id,
+				signal,
+				taskId,
+				settings,
+			});
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
+
+		if (profile?.result.totp_enabled === false) {
+			addSuccessLog({
+				message: '2fa already disabled',
+				group: taskId,
+				database_id,
+			});
+			return;
+		}
+
+		addInfoLog({
+			message: 'get risk token',
+			group: taskId,
+			database_id,
+		});
+
+		let riskToken, riskTokenType;
+
+		try {
+			const result = await riskTokenMutation.mutateAsync({
+				database_id,
+				signal,
+				sence: SENCE.DISABLE_2FA,
+			});
+
+			riskToken = result.risk_token;
+			riskTokenType = result.risk_token_type;
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
+
+		addInfoLog({
+			message: 'verify risk token',
+			group: taskId,
+			database_id,
+		});
+
+		try {
+			await veifyRiskTokenMutation.mutateAsync({
+				database_id,
+				signal,
+				riskToken,
+				riskTokenType,
+				taskId,
+			});
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
+
+		addInfoLog({
+			message: 'disabling totp',
+			group: taskId,
+			database_id,
+		});
+
+		try {
+			await disable2fa.mutateAsync({ database_id, signal, riskToken });
+		} catch (error) {
+			addInfoLog({
+				message: 'updating profile',
+				group: taskId,
+				database_id,
+			});
+
+			await updateProfileMutation.mutateAsync({
+				database_id,
+				signal,
+				taskId,
+				settings,
+			});
+
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
+
+		addInfoLog({
+			message: 'updating profile',
+			group: taskId,
+			database_id,
+		});
+
+		await updateProfileMutation.mutateAsync({
+			database_id,
+			signal,
+			taskId,
+			settings,
+		});
+
+		addSuccessLog({
+			message: '2fa disabled',
+			group: taskId,
+			database_id,
+		});
+	};
+
+	return useMutation({
+		mutationFn,
 		mutationKey: ['disable2fa'],
 	});
 };
@@ -49,46 +173,15 @@ const useDisable2faTask = () => {
 		});
 	};
 
-	const settleHandler = () => {
-		queryClient.invalidateQueries({
-			queryKey: ['accounts'],
-		});
-	};
-
 	// @TODO: account description is unused now
 	const accountMutationHandler = (id, taskId) => {
 		changeAccountDescription(taskId, id, 'Disabling 2fa...');
 	};
 	const mutation = useDisable2faMutation();
-	const addInfoLog = useLogs.use.addInfoLog();
-	const addErrorLog = useLogs.use.addErrorLog();
-	const addSuccessLog = useLogs.use.addSuccessLog();
-
-	const mutationFunction = async ({ database_id, signal, taskId }) => {
-		addInfoLog({
-			message: 'disabling 2fa',
-			group: taskId,
-			database_id,
-		});
-
-		try {
-			await mutation.mutateAsync({ database_id, signal });
-		} catch (error) {
-			addErrorLog({ error, group: taskId, database_id });
-			return;
-		}
-
-		addSuccessLog({
-			message: '2fa disabled',
-			group: taskId,
-			database_id,
-		});
-	};
 
 	return useTask({
-		asyncMutation: mutationFunction,
+		asyncMutation: mutation.mutateAsync,
 		onSuccess: successHandler,
-		onSettled: settleHandler,
 		onAccountMutation: accountMutationHandler,
 		type: 'disable2fa',
 	});

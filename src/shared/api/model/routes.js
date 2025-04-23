@@ -8,7 +8,7 @@ const ENDPOINTS = {
 	register_account: '/private/register',
 	update_profile: '/private/profile',
 	finance_accounts: '/private/finance-accounts',
-	ebable_2fa: '/private/enable-2fa',
+	enable_2fa: '/private/enable-2fa',
 	disable_2fa: '/private/disable-2fa',
 	finance_accounts_db: '/finance-accounts',
 	custom_request: '/public/custom-request',
@@ -21,9 +21,11 @@ const ENDPOINTS = {
 	geetest_v4_solve: '/private/captcha/geetest/v4/solve',
 	geetest_v4_verify: '/private/captcha/geetest/v4/verify',
 	verify_risk_token: '/private/risk/verify',
+	risk_token: '/private/risk/token',
 	get_risk_components: '/private/risk/components',
 	send_email_code: '/private/risk/send-email-code',
 	imap_scanner: '/imap/scan',
+	withdraw_addresses: '/private/withdraw/addresses',
 };
 
 export default ENDPOINTS;

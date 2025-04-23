@@ -1,6 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { useAccount } from 'entities/account';
+import { useLogs } from 'entities/log';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
+import { getVerifyAttemptsConfig } from 'shared/model/app-config';
 import RISKTOKETYPE from '../model/riskTokenEnum';
 import useGetEmailCode from './getEmailCode';
 import useGetRiskTokenComponents from './getRiskComponents';
@@ -17,11 +19,13 @@ const useVerifyChallengeRiskToken = () => {
 	const getRiskComponents = useGetRiskTokenComponents();
 	const getEmailCode = useGetEmailCode();
 	const accountMutation = useAccount();
+	const addInfoLog = useLogs.use.addInfoLog();
 
 	const mutationFunction = ({
 		database_id,
 		signal,
 		riskToken,
+		taskId,
 		emailVerifyAttempts = 2,
 		totpVerifyAttmepts = 3,
 	}) => {
@@ -56,20 +60,28 @@ const useVerifyChallengeRiskToken = () => {
 				}
 
 				for (let i = 0; i < emailVerifyAttempts; i++) {
-					let emailCode;
+					let emailCodeResult;
 
 					const verifyBody = {
 						risk_token: riskTokenComponent,
 					};
 					if (logcExt.required.includes('email_verify')) {
-						emailCode = await getEmailCode.mutateAsync({
+						addInfoLog({
+							message: `waiting for email code, attempt ${i + 1} / ${emailVerifyAttempts}`,
+							group: taskId,
+							database_id,
+						});
+						emailCodeResult = await getEmailCode.mutateAsync({
 							database_id,
 							signal,
 							riskToken,
+							taskId,
 						});
 
 						Object.assign(verifyBody, {
-							email_code: emailCode,
+							email_code: Object.values(
+								emailCodeResult.result,
+							)[0],
 						});
 					}
 
@@ -90,6 +102,12 @@ const useVerifyChallengeRiskToken = () => {
 					}
 
 					for (let j = 0; j < totpVerifyAttmepts; j++) {
+						addInfoLog({
+							message: `verifying challenge risk token, attempt ${j + 1} / ${totpVerifyAttmepts}`,
+							group: taskId,
+							database_id,
+						});
+
 						try {
 							await verifyChallengeRiskToken({
 								database_id,
@@ -135,11 +153,14 @@ const useVerifyRiskToken = () => {
 				)
 					return;
 
+				const verifyAttemptsConfig = getVerifyAttemptsConfig();
 				if (riskTokenType === RISKTOKETYPE.CHALLENGE) {
 					await verifyChallengeRiskToken.mutateAsync({
 						database_id,
 						signal,
 						riskToken,
+						emailVerifyAttempts: verifyAttemptsConfig?.email,
+						totpVerifyAttmepts: verifyAttemptsConfig?.totp,
 					});
 					return;
 				}

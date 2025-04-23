@@ -18,6 +18,7 @@ import { Logout } from 'features/logout';
 import { Refresh } from 'features/refresh-balances';
 import { Register } from 'features/register';
 import { UpdateProfile } from 'features/update-profile';
+import { Whitelist } from 'features/whitelist';
 import { DollarIcon } from 'shared/assets/icons/dollar';
 import { RegisterIcon } from 'shared/assets/icons/register';
 import { ShieldLockIcon } from 'shared/assets/icons/shield-lock';
@@ -34,6 +35,7 @@ const getActions = (layer) => {
 				<Logout key="logout" />,
 				<UpdateProfile key="update" />,
 				<CustomRequest key="custom-request" />,
+				<Whitelist key="whitelist" />,
 			];
 		case '2fa':
 			return [

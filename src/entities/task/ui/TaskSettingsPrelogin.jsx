@@ -49,15 +49,13 @@ const DelaySettings = ({
 	onMaxBlur,
 	disabled,
 }) => (
-	<Stack>
-		<Tooltip title="Generate random delay between actions">
-			<Typography
-				variant="Caption"
-				color="text.secondary"
-			>
-				Delay interval
-			</Typography>
-		</Tooltip>
+	<Stack gap={1}>
+		<Typography
+			variant="Caption"
+			color="text.secondary"
+		>
+			Delay interval
+		</Typography>
 		<Stack
 			direction="row"
 			gap={2}
@@ -179,7 +177,7 @@ const TaskSettingsPrelogin = ({ settings, onSettingsChange }) => {
 							value="shuffle"
 						/>
 					}
-					label="Shuffle accounts"
+					label="Shuffle"
 				/>
 			</FormGroup>
 
@@ -210,7 +208,7 @@ const TaskSettingsPrelogin = ({ settings, onSettingsChange }) => {
 									value="delay"
 								/>
 							}
-							label="Enable delay"
+							label="Delay"
 						/>
 					</FormGroup>
 					<Tooltip title="Generate random delay between accounts">

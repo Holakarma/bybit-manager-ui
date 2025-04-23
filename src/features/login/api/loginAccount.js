@@ -153,6 +153,7 @@ export const useLoginAccountMutation = () => {
 				signal,
 				riskToken,
 				riskTokenType,
+				taskId,
 			});
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });

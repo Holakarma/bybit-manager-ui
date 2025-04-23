@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLogs } from 'entities/log';
 import { usePendingTasks, useTask } from 'entities/task';
+// eslint-disable-next-line no-restricted-imports
+import { useLoginAccountMutation } from 'features/login/api/loginAccount';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
-// eslint-disable-next-line no-restricted-imports
-import { useLoginAccountMutation } from 'features/login/@X/pre-login';
 
 const updateProfile = (database_id, signal) => {
 	const api = new Api();
@@ -14,7 +14,7 @@ const updateProfile = (database_id, signal) => {
 	});
 };
 
-export const useUpdateProfileMutation = (props) => {
+const useUpdateProfileMutationApi = (props) => {
 	const mutationFunction = ({ database_id, signal }) => {
 		return deduplicateRequests({
 			requestKey: ['update', database_id],
@@ -32,10 +32,70 @@ export const useUpdateProfileMutation = (props) => {
 	});
 };
 
-const useUpdateProfileTask = ({ onPrelogin, onPreloginError } = {}) => {
+export const useUpdateProfileMutation = () => {
+	const updateProfileApi = useUpdateProfileMutationApi();
+	const loginAccountMutation = useLoginAccountMutation();
+	const addInfoLog = useLogs.use.addInfoLog();
+	const addErrorLog = useLogs.use.addErrorLog();
+	const addSuccessLog = useLogs.use.addSuccessLog();
+
+	const mutationFn = async ({ database_id, signal, taskId, settings }) => {
+		if (settings.prelogin) {
+			addInfoLog({
+				message: 'prelogin account',
+				group: taskId,
+				database_id,
+			});
+			try {
+				await loginAccountMutation.mutateAsync({
+					database_id,
+					signal,
+					taskId,
+					settings,
+				});
+			} catch (error) {
+				addErrorLog({ error, group: taskId, database_id });
+				return;
+			}
+		}
+
+		addInfoLog({
+			message: 'updating profile',
+			group: taskId,
+			database_id,
+		});
+
+		let result;
+
+		try {
+			result = await updateProfileApi.mutateAsync({
+				database_id,
+				signal,
+				settings,
+			});
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
+
+		addSuccessLog({
+			message: 'profile updated',
+			group: taskId,
+			database_id,
+		});
+
+		return result;
+	};
+
+	return useMutation({
+		mutationFn,
+		mutationKey: ['update profile'],
+	});
+};
+
+const useUpdateProfileTask = () => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
-	const loginMutation = useLoginAccountMutation();
 	const changeAccountDescription =
 		usePendingTasks.use.changeAccountDescription();
 
@@ -66,68 +126,10 @@ const useUpdateProfileTask = ({ onPrelogin, onPreloginError } = {}) => {
 		changeAccountDescription(taskId, id, 'Updating profile...');
 	};
 
-	const mutation = useUpdateProfileMutation({
-		onMutate: (variables) => {
-			return new Promise((resolve, reject) => {
-				if (variables.settings.prelogin) {
-					changeAccountDescription(
-						variables.taskId,
-						variables.database_id,
-						'Logging in...',
-					);
-
-					loginMutation
-						.mutateAsync(variables)
-						.then((result) => {
-							if (onPrelogin) {
-								onPrelogin(result);
-							}
-							resolve(result);
-						})
-						.catch((error) => {
-							if (onPreloginError) {
-								onPreloginError(error);
-							}
-							reject(error);
-						});
-				} else {
-					resolve();
-				}
-			});
-		},
-	});
-	const addInfoLog = useLogs.use.addInfoLog();
-	const addErrorLog = useLogs.use.addErrorLog();
-	const addSuccessLog = useLogs.use.addSuccessLog();
-
-	const mutationFunction = async ({
-		database_id,
-		signal,
-		taskId,
-		settings,
-	}) => {
-		addInfoLog({
-			message: 'updating profile',
-			group: taskId,
-			database_id,
-		});
-
-		try {
-			await mutation.mutateAsync({ database_id, signal, settings });
-		} catch (error) {
-			addErrorLog({ error, group: taskId, database_id });
-			return;
-		}
-
-		addSuccessLog({
-			message: 'profile updated',
-			group: taskId,
-			database_id,
-		});
-	};
+	const mutation = useUpdateProfileMutation();
 
 	return useTask({
-		asyncMutation: mutationFunction,
+		asyncMutation: mutation.mutateAsync,
 		onSettled: settleHandler,
 		onAccountMutation: accountMutationHandler,
 		onAccountProcessed: processedAccountHandler,

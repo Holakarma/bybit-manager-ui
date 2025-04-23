@@ -1,7 +1,9 @@
 export {
 	useAccount,
-	default as useAccounts, usePaginatedAccounts
+	default as useAccounts,
+	usePaginatedAccounts
 } from './api/getAccounts';
+export { default as useRiskToken } from './api/riskToken';
 export { default as useSelectedAccounts } from './hooks/useSelectedAccounts';
 export { default as useUpdateAccountMutation } from './hooks/useUpdateAccountMutation';
 export { default as getAccountsById } from './lib/getAccountsById';

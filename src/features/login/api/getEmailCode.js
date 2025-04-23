@@ -38,6 +38,7 @@ const useGetEmailCode = () => {
 		signal,
 		riskToken,
 		componentId,
+		taskId,
 	}) => {
 		return deduplicateRequests({
 			requestKey: ['get email code', database_id],
@@ -52,6 +53,7 @@ const useGetEmailCode = () => {
 				const result = await waitForCode({
 					database_id,
 					signal,
+					taskId,
 				});
 
 				return { result, database_id };

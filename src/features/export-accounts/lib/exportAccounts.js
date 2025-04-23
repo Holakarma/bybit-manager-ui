@@ -25,7 +25,6 @@ const useExportAccounts = () => {
 };
 
 const exportAccounts = (accounts) => {
-	console.log(accounts);
 	const data = accounts.map((account) => [
 		account.note || '', // [bybit] Note
 		account.group_name || '', // [bybit] Group

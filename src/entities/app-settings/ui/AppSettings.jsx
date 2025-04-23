@@ -18,7 +18,10 @@ import {
 	RECAPTCHA_TYPE,
 	setAppConfig,
 } from 'shared/model/app-config';
-import { API_CONFIG_NAME } from 'shared/model/app-config/consts';
+import {
+	API_CONFIG_NAME,
+	VERIFY_ATTEMPTS_CONFIG_NAME,
+} from 'shared/model/app-config/consts';
 import { ModalBody } from 'shared/ui/modal-body';
 import * as yup from 'yup';
 import ApiSettings from './ApiSettings';
@@ -39,7 +42,7 @@ const schema = yup.object({
 		.string()
 		.oneOf(['recaptcha', 'gee4captcha'])
 		.required('Captcha type is required'),
-	verifyAttempts: yup.object({
+	[VERIFY_ATTEMPTS_CONFIG_NAME]: yup.object({
 		email: yup
 			.number()
 			.min(1, 'Email attempts must be at least 1')
@@ -59,7 +62,7 @@ const AppSettings = ({ children, tooltipTitle, ...props }) => {
 	const defaultConfig = {
 		[API_CONFIG_NAME]: defaultApiConfig,
 		captchaType: RECAPTCHA_TYPE,
-		verifyAttempts: {
+		[VERIFY_ATTEMPTS_CONFIG_NAME]: {
 			email: 3,
 			totp: 3,
 		},
@@ -129,7 +132,7 @@ const AppSettings = ({ children, tooltipTitle, ...props }) => {
 
 							<VerifyingSettings
 								control={control}
-								name="verifyAttempts"
+								name={VERIFY_ATTEMPTS_CONFIG_NAME}
 								emailError={!!errors.verifyAttempts?.email}
 								totpError={!!errors.verifyAttempts?.totp}
 								emailHelperText={

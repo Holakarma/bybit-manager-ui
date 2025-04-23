@@ -3,8 +3,8 @@ import { IconButton, Stack, Tooltip } from '@mui/material';
 import {
 	CreateTask,
 	TaskAccountsPage,
-	TaskSettingsBase,
 	TaskSettingsPage,
+	TaskSettingsPrelogin,
 } from 'entities/task';
 import { useState } from 'react';
 import useEnable2faTask from '../api/enable2fa.js';
@@ -14,6 +14,7 @@ const Enable2fa = () => {
 		threads: 1,
 		delay: { min: 60, max: 90, enabled: true },
 		shuffle: false,
+		prelogin: true,
 	});
 
 	const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -39,7 +40,7 @@ const Enable2fa = () => {
 							title: 'Settings',
 							component: (
 								<TaskSettingsPage key="settings">
-									<TaskSettingsBase
+									<TaskSettingsPrelogin
 										settings={settings}
 										onSettingsChange={(newSettings) =>
 											setSettings(newSettings)
