@@ -23,4 +23,4 @@ npm run deploy
 - Файл MainPage.jsx: добавить таск в один из слоев
 - Файл widgets/task-drawer/ui/TaskModal добавить TaskResult
 
-Пример: (commit)
+[Коммит с примером](https://github.com/Holakarma/bybit-manager-ui/commit/8b8827aff25d23852dea1f72be5ece7192529120)
