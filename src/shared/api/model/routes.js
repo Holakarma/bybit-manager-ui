@@ -26,6 +26,7 @@ const ENDPOINTS = {
 	send_email_code: '/private/risk/send-email-code',
 	imap_scanner: '/imap/scan',
 	withdraw_addresses: '/private/withdraw/addresses',
+	set_preferences: '/private/set-preferences',
 };
 
 export default ENDPOINTS;

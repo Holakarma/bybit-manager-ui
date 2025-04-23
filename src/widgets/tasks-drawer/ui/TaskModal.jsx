@@ -7,6 +7,7 @@ import { LoginTaskResult } from 'features/login';
 import { LogoutTaskResult } from 'features/logout';
 import { RefreshTaskResult } from 'features/refresh-balances';
 import { RegisterTaskResult } from 'features/register';
+import { SetPreferencesTaskResult } from 'features/set-preference';
 import { UpdateProfileTaskResult } from 'features/update-profile';
 import { timeDifference } from 'shared/lib/formatDate';
 import { ModalBody } from 'shared/ui/modal-body';
@@ -23,6 +24,8 @@ const taskResult = (task) => {
 			return <RegisterTaskResult task={task} />;
 		case 'update':
 			return <UpdateProfileTaskResult task={task} />;
+		case 'set_preferences':
+			return <SetPreferencesTaskResult task={task} />;
 		case 'disable2fa':
 			return <Disable2faTaskResult task={task} />;
 		case 'enable2fa':

@@ -17,6 +17,7 @@ import { Login } from 'features/login';
 import { Logout } from 'features/logout';
 import { Refresh } from 'features/refresh-balances';
 import { Register } from 'features/register';
+import { SetPreferences } from 'features/set-preference';
 import { UpdateProfile } from 'features/update-profile';
 import { Whitelist } from 'features/whitelist';
 import { DollarIcon } from 'shared/assets/icons/dollar';
@@ -36,6 +37,7 @@ const getActions = (layer) => {
 				<UpdateProfile key="update" />,
 				<CustomRequest key="custom-request" />,
 				<Whitelist key="whitelist" />,
+				<SetPreferences key="set_preferences" />,
 			];
 		case '2fa':
 			return [
