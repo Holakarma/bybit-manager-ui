@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLogs } from 'entities/log';
 import { usePendingTasks, useTask } from 'entities/task';
 // eslint-disable-next-line no-restricted-imports
-import { useLoginAccountMutation } from 'features/login/api/loginAccount';
+import { usePreloginAttempt } from 'features/login/@X/pre-login';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
@@ -34,29 +34,22 @@ const useUpdateProfileMutationApi = (props) => {
 
 export const useUpdateProfileMutation = () => {
 	const updateProfileApi = useUpdateProfileMutationApi();
-	const loginAccountMutation = useLoginAccountMutation();
 	const addInfoLog = useLogs.use.addInfoLog();
 	const addErrorLog = useLogs.use.addErrorLog();
 	const addSuccessLog = useLogs.use.addSuccessLog();
+	const preloginAttempMutation = usePreloginAttempt();
 
 	const mutationFn = async ({ database_id, signal, taskId, settings }) => {
-		if (settings.prelogin) {
-			addInfoLog({
-				message: 'prelogin account',
-				group: taskId,
+		try {
+			await preloginAttempMutation.mutateAsync({
 				database_id,
+				signal,
+				taskId,
+				settings,
 			});
-			try {
-				await loginAccountMutation.mutateAsync({
-					database_id,
-					signal,
-					taskId,
-					settings,
-				});
-			} catch (error) {
-				addErrorLog({ error, group: taskId, database_id });
-				return;
-			}
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
 		}
 
 		addInfoLog({

@@ -30,7 +30,10 @@ const PendingTaskModal = ({ task, open, handleClose }) => {
 			onClose={handleClose}
 		>
 			<Box>
-				<ModalBody minWidth="600px">
+				<ModalBody
+					minWidth="600px"
+					sx={{ p: 4 }}
+				>
 					<Stack
 						gap={1}
 						height="100%"

@@ -24,6 +24,13 @@ const useExportAccounts = () => {
 	});
 };
 
+const proxyToUrl = (proxy) =>
+	proxy
+		? proxy.refresh_url
+			? `${proxy.protocol}://${proxy.login}:${proxy.password}@${proxy.host}:${proxy.port}[${proxy.refresh_url}]`
+			: `${proxy.protocol}://${proxy.login}:${proxy.password}@${proxy.host}:${proxy.port}`
+		: null;
+
 const exportAccounts = (accounts) => {
 	const data = accounts.map((account) => [
 		account.note || '', // [bybit] Note
@@ -36,8 +43,8 @@ const exportAccounts = (accounts) => {
 		account.password || '', // [bybit] Password
 		account.totp_secret || '', // [bybit] TOTP secret
 		account.web3_mnemonic_phrase || '', // [bybit] Mnemonic phrase
-		JSON.stringify(account.proxy || ''), // [bybit] Proxy
-		JSON.stringify(account.email.proxy || ''), // [email] Proxy
+		proxyToUrl(account.proxy) || '', // [bybit] Proxy : '', // [bybit] Proxy
+		proxyToUrl(account.email.proxy) || '', // [email] Proxy
 		account.country || '', // [bybit] Country code
 		JSON.stringify(account.cookies), // [bybit] Cookies
 	]);

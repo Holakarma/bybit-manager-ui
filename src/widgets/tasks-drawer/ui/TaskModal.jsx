@@ -47,7 +47,10 @@ const TaskModal = ({ task, open, handleClose }) => {
 			open={open}
 			onClose={handleClose}
 		>
-			<ModalBody minWidth="600px">
+			<ModalBody
+				minWidth="600px"
+				sx={{ p: 4 }}
+			>
 				<Stack
 					gap={1}
 					height="100%"

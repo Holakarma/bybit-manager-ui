@@ -9,7 +9,6 @@ const style = {
 	transform: 'translateX(-50%)',
 	bgcolor: 'background.paper',
 	boxShadow: 24,
-	p: 4,
 	marginBlock: 3,
 };
 

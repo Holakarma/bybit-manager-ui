@@ -1,11 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLogs } from 'entities/log';
 import { usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
-
-import { useLogs } from 'entities/log';
 // eslint-disable-next-line no-restricted-imports
-import { useLoginAccountMutation } from 'features/login/@X/pre-login';
+import { usePreloginAttempt } from 'features/login/@X/pre-login';
 
 const getFinanceAccounts = (database_id, signal) => {
 	const api = new Api();
@@ -47,33 +46,11 @@ const useRefreshFinancesAccounts = (props) => {
 const useRefreshTask = () => {
 	const queryClient = useQueryClient();
 	const { enqueueSnackbar } = useSnackbar();
-	const loginMutation = useLoginAccountMutation();
+	const preloginMutation = usePreloginAttempt();
 	const changeAccountDescription =
 		usePendingTasks.use.changeAccountDescription();
 
-	const mutation = useRefreshFinancesAccounts({
-		onMutate: (variables) =>
-			/* Prelogin */
-			new Promise((resolve, reject) => {
-				changeAccountDescription(
-					variables.taskId,
-					variables.database_id,
-					'Logging in...',
-				);
-				if (variables.settings.prelogin) {
-					loginMutation
-						.mutateAsync(variables)
-						.then((result) => {
-							resolve(result);
-						})
-						.catch((error) => {
-							reject(error);
-						});
-				} else {
-					resolve();
-				}
-			}),
-	});
+	const mutation = useRefreshFinancesAccounts();
 	const addInfoLog = useLogs.use.addInfoLog();
 	const addErrorLog = useLogs.use.addErrorLog();
 	const addSuccessLog = useLogs.use.addSuccessLog();
@@ -84,6 +61,18 @@ const useRefreshTask = () => {
 		taskId,
 		settings,
 	}) => {
+		try {
+			await preloginMutation.mutateAsync({
+				database_id,
+				signal,
+				settings,
+				taskId,
+			});
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
+
 		addInfoLog({
 			message: 'start refresh balance',
 			group: taskId,
@@ -107,6 +96,7 @@ const useRefreshTask = () => {
 			group: taskId,
 			database_id,
 		});
+		return;
 	};
 
 	const settleHandler = () => {

@@ -1,11 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAccount } from 'entities/account';
 import { useLogs } from 'entities/log';
 import { usePendingTasks, useTask } from 'entities/task';
 // eslint-disable-next-line no-restricted-imports
-import { useLoginAccountMutation } from 'features/login/api/loginAccount';
+import { usePreloginAttempt } from 'features/login/@X/pre-login';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
-import { getExpireFromAllCookies } from 'shared/lib/session-cookies';
 
 const setPreferences = (database_id, signal) => {
 	const api = new Api();
@@ -50,11 +48,10 @@ const useSetPreferencesTask = () => {
 		changeAccountDescription(taskId, id, 'Seting preferences...');
 	};
 	const mutation = useSetPreferencesAccountMutation();
-	const loginMutation = useLoginAccountMutation();
-	const accountMutation = useAccount();
 	const addInfoLog = useLogs.use.addInfoLog();
 	const addErrorLog = useLogs.use.addErrorLog();
 	const addSuccessLog = useLogs.use.addSuccessLog();
+	const preloginAttemptMutation = usePreloginAttempt();
 
 	const mutationFunction = async ({
 		database_id,
@@ -62,41 +59,20 @@ const useSetPreferencesTask = () => {
 		taskId,
 		settings,
 	}) => {
-		const account = await accountMutation.mutateAsync(database_id);
-		const expire = getExpireFromAllCookies(account.cookies);
-
-		/* If account is not logged in */
-		if (!expire || expire * 1000 < Date.now()) {
-			if (settings.prelogin) {
-				try {
-					addInfoLog({
-						message:
-							'Cookies was not found or expired, try to prelogin account',
-						group: taskId,
-						database_id,
-					});
-
-					await loginMutation.mutateAsync({
-						database_id,
-						taskId,
-						signal,
-					});
-				} catch (error) {
-					addErrorLog({ error, group: taskId, database_id });
-					return;
-				}
-			} else {
-				addErrorLog({
-					error: new Error('Account is not logged in, skip'),
-					group: taskId,
-					database_id,
-				});
-				return;
-			}
+		try {
+			await preloginAttemptMutation.mutateAsync({
+				database_id,
+				signal,
+				settings,
+				taskId,
+			});
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
 		}
 
 		addInfoLog({
-			message: 'Setting preferences',
+			message: 'setting preferences',
 			group: taskId,
 			database_id,
 		});
@@ -109,7 +85,7 @@ const useSetPreferencesTask = () => {
 		}
 
 		addSuccessLog({
-			message: 'Preferences set',
+			message: 'preferences set',
 			group: taskId,
 			database_id,
 		});

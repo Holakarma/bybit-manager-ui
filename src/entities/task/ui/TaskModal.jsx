@@ -34,7 +34,7 @@ const TaskModal = ({
 		>
 			<Box>
 				<ModalBody
-					sx={{ minWidth: '600px' }}
+					sx={{ minWidth: '600px', p: 4 }}
 					position="relative"
 				>
 					<Stack

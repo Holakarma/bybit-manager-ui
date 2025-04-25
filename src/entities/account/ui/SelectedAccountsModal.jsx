@@ -1,14 +1,21 @@
 import {
 	Box,
+	Button,
+	Card,
+	CardActions,
+	CardContent,
+	CardHeader,
 	Checkbox,
 	List,
 	ListItem,
+	ListItemButton,
 	ListItemIcon,
 	ListItemText,
 	Modal,
-	Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList } from 'react-window';
 import { ModalBody } from 'shared/ui/modal-body';
 
 const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
@@ -31,6 +38,16 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 		});
 	};
 
+	const handleUnselectAll = () => {
+		setSelectedAccountsIdsTmp([]);
+	};
+
+	const handleSelectAll = () => {
+		setSelectedAccountsIdsTmp(
+			selectedAccounts.map((account) => account.database_id),
+		);
+	};
+
 	if (!selectedAccounts) {
 		return (
 			<Modal
@@ -42,12 +59,46 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 						sx={{ minWidth: '400px' }}
 						position="relative"
 					>
-						aaaa
+						No selected accounts
 					</ModalBody>
 				</Box>
 			</Modal>
 		);
 	}
+
+	const Row = ({ index, style }) => {
+		const account = selectedAccounts[index];
+		return (
+			<ListItem
+				disablePadding
+				sx={style}
+			>
+				<ListItemButton
+					dense
+					onClick={() => handleClick(account)}
+				>
+					<ListItemIcon>
+						<Checkbox
+							edge="start"
+							checked={selectedAccountsIdsTmp.includes(
+								account.database_id,
+							)}
+							tabIndex={-1}
+							disableRipple
+							inputProps={{
+								'aria-labelledby': account.database_id,
+							}}
+						/>
+					</ListItemIcon>
+					<ListItemText
+						id={account.database_id}
+						primary={account.email.address}
+						secondary={`${account.group_name} ${account.database_id}`}
+					/>
+				</ListItemButton>
+			</ListItem>
+		);
+	};
 
 	return (
 		<Modal
@@ -58,57 +109,68 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 				<ModalBody
 					sx={{
 						minWidth: '400px',
-						maxHeight: '500px',
 						overflow: 'auto',
 					}}
 					position="relative"
 				>
-					<Typography
-						variant="caption"
-						color="textSecondary"
-					>
-						{selectedAccounts.length} selected
-					</Typography>
-					<List
+					<Card
 						sx={{
-							width: '100%',
-							maxWidth: 360,
-							bgcolor: 'background.paper',
+							display: 'flex',
+							flexDirection: 'column',
+							height: '100%',
 						}}
 					>
-						{selectedAccounts.map((account) => (
-							<ListItem
-								key={account.database_id}
-								disablePadding
+						<CardHeader
+							subheader={`${selectedAccounts.length} selected`}
+						/>
+
+						<CardContent sx={{ flexGrow: 1, position: 'relative' }}>
+							<List
+								sx={{
+									overflow: 'auto',
+									position: 'absolute',
+									top: '0',
+									bottom: '0',
+									left: '0',
+									right: '0',
+								}}
 							>
-								{/* <ListItemButton
-									role={undefined}
-									dense
-								> */}
-								<ListItemIcon>
-									<Checkbox
-										onChange={() => handleClick(account)}
-										edge="start"
-										checked={selectedAccountsIdsTmp.includes(
-											account.database_id,
-										)}
-										tabIndex={-1}
-										disableRipple
-										inputProps={{
-											'aria-labelledby':
-												account.database_id,
-										}}
-									/>
-								</ListItemIcon>
-								<ListItemText
-									id={account.database_id}
-									primary={account.email.address}
-									secondary={`${account.group_name} ${account.database_id}`}
-								/>
-								{/* </ListItemButton> */}
-							</ListItem>
-						))}{' '}
-					</List>
+								<AutoSizer>
+									{({ height, width }) => (
+										<FixedSizeList
+											height={height}
+											width={width}
+											itemCount={selectedAccounts.length}
+											itemSize={60}
+											overscanCount={10}
+										>
+											{Row}
+										</FixedSizeList>
+									)}
+								</AutoSizer>
+							</List>
+						</CardContent>
+
+						<CardActions>
+							{selectedAccountsIdsTmp.length === 0 ? (
+								<Button
+									size="small"
+									sx={{ marginLeft: 'auto' }}
+									onClick={handleSelectAll}
+								>
+									select all
+								</Button>
+							) : (
+								<Button
+									size="small"
+									sx={{ marginLeft: 'auto' }}
+									onClick={handleUnselectAll}
+								>
+									unselect all
+								</Button>
+							)}
+						</CardActions>
+					</Card>
 				</ModalBody>
 			</Box>
 		</Modal>

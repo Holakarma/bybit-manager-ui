@@ -38,19 +38,28 @@ const LogsList = () => {
 
 	return (
 		<List sx={{ width: '100%', height: '100%' }}>
-			<AutoSizer>
-				{({ height, width }) => (
-					<FixedSizeList
-						height={height}
-						width={width}
-						itemCount={allLogs.length}
-						itemSize={25}
-						overscanCount={8}
-					>
-						{Row}
-					</FixedSizeList>
-				)}
-			</AutoSizer>
+			{allLogs.length === 0 ? (
+				<Typography
+					variant="Captopn"
+					color="textSecondary"
+				>
+					No logs for this session
+				</Typography>
+			) : (
+				<AutoSizer>
+					{({ height, width }) => (
+						<FixedSizeList
+							height={height}
+							width={width}
+							itemCount={allLogs.length}
+							itemSize={25}
+							overscanCount={8}
+						>
+							{Row}
+						</FixedSizeList>
+					)}
+				</AutoSizer>
+			)}
 		</List>
 	);
 };

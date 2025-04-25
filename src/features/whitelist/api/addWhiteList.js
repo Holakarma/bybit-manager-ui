@@ -3,11 +3,12 @@ import { usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
+import { useAccount } from 'entities/account';
 import { useLogs } from 'entities/log';
 // eslint-disable-next-line no-restricted-imports
-import { useAccount } from 'entities/account';
 import { useEnable2faMutation } from 'features/enable-2fa/api/enable2fa';
-import { useLoginAccountMutation } from 'features/login/api/loginAccount';
+// eslint-disable-next-line no-restricted-imports
+import { usePreloginAttempt } from 'features/login/@X/pre-login';
 import useWithdrawAddresses from './withdrawAddresses';
 
 const getFinanceAccounts = (database_id, signal) => {
@@ -51,25 +52,24 @@ const useAddWhiteListMutation = () => {
 	const addInfoLog = useLogs.use.addInfoLog();
 	const addErrorLog = useLogs.use.addErrorLog();
 	const addSuccessLog = useLogs.use.addSuccessLog();
-	const loginMutation = useLoginAccountMutation();
 	const enableTotpMutaiton = useEnable2faMutation();
+	const preloginMutaiton = usePreloginAttempt();
 	const withdrawAddressesMutation = useWithdrawAddresses();
 	const accountMutatin = useAccount();
 	const getTask = usePendingTasks.use.getTask();
 	const tasks = usePendingTasks.use.tasks();
 
 	const mutationFn = async ({ database_id, signal, taskId, settings }) => {
-		if (settings.prelogin) {
-			try {
-				await loginMutation.mutateAsync({
-					database_id,
-					signal,
-					taskId,
-				});
-			} catch (error) {
-				addErrorLog({ error, group: taskId, database_id });
-				return;
-			}
+		try {
+			await preloginMutaiton.mutateAsync({
+				database_id,
+				signal,
+				taskId,
+				settings,
+			});
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
+			return;
 		}
 
 		if (settings.enable_totp) {
