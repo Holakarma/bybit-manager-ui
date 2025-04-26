@@ -12,6 +12,7 @@ const CreateTask = ({
 	startTitle,
 	children,
 	onCheckedIdsChange,
+	settingsAdapter = (settings) => settings,
 	...props
 }) => {
 	const [open, setOpen] = useState(false);
@@ -27,7 +28,7 @@ const CreateTask = ({
 	const startHandler = () => {
 		handleStart({
 			database_ids: checkedIds,
-			settings,
+			settings: settingsAdapter(settings),
 		});
 		handleClose();
 	};

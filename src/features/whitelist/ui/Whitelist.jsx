@@ -1,17 +1,21 @@
 import QueueRoundedIcon from '@mui/icons-material/QueueRounded';
 import { IconButton, Stack, Tooltip } from '@mui/material';
+import { useDefaultAccount } from 'entities/account';
 import {
 	CreateTask,
 	TaskAccountsPage,
 	TaskSettingsPage,
 	TaskSettingsPrelogin,
 } from 'entities/task';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import useAddWithdrawAddressesTask from '../api/addWhiteList';
 import WhiteListParams from './WhiteListParams';
 import WhiteListSettings from './WhiteListSettings';
 
 const Whitelist = () => {
 	const [tooltipOpen, setTooltipOpen] = useState(false);
+	const defaultAccount = useDefaultAccount.use.defaultAccountId();
+	const mutation = useAddWithdrawAddressesTask();
 
 	const [settings, setSettings] = useState({
 		threads: 1,
@@ -20,18 +24,51 @@ const Whitelist = () => {
 		prelogin: true,
 		enable_totp: false,
 		enable_whitelist: false,
-	});
-
-	const [withdrawParams, setWithdrawParams] = useState({
 		universal: true,
 		remark: '',
-		coin: '',
-		chainType: '',
+		coin: { coin: '' },
+		chain: { chain_full_name: '' },
 		addresses: [],
+		setAsDefault: true,
 		verify: true,
+		memo: '',
+		internalAddressType: '',
 	});
 
+	const [errorText, setErrorText] = useState('');
 	const [ids, setIds] = useState([]);
+
+	useEffect(() => {
+		if (ids.length !== settings.addresses.length) {
+			setErrorText('Addresses count does not match');
+		} else if (!defaultAccount) {
+			setErrorText('Default account is required');
+		} else if (settings.chain.has_memo && !settings.memo) {
+			setErrorText('Memo is required');
+		} else {
+			setErrorText('');
+		}
+	}, [ids, settings, defaultAccount]);
+
+	const onSettingsChange = useCallback(
+		(newSettings) => setSettings(newSettings),
+		[],
+	);
+
+	const getAddressesObj = (addresses) => {
+		const obj = {};
+		addresses.forEach((address, i) => (obj[ids[i]] = address));
+		return obj;
+	};
+
+	const settingsAdapter = (settings) => {
+		return {
+			...settings,
+			addresses: getAddressesObj(settings.addresses),
+			chain_type: settings.chain.chain_type,
+			coin: settings.coin.coin,
+		};
+	};
 
 	return (
 		<Tooltip
@@ -44,18 +81,10 @@ const Whitelist = () => {
 				alignItems="center"
 			>
 				<CreateTask
-					handleStart={({ database_ids, settings }) =>
-						console.log({
-							database_ids,
-							settings,
-						})
-					}
+					handleStart={mutation.mutate}
+					settingsAdapter={settingsAdapter}
 					onCheckedIdsChange={(ids) => setIds(ids)}
-					errorText={
-						ids.length !== withdrawParams.addresses.length
-							? 'Addresses count does not match'
-							: ''
-					}
+					errorText={errorText}
 					task="whitelist"
 					settings={settings}
 					pages={[
@@ -66,15 +95,11 @@ const Whitelist = () => {
 									<Stack gap={3}>
 										<TaskSettingsPrelogin
 											settings={settings}
-											onSettingsChange={(newSettings) =>
-												setSettings(newSettings)
-											}
+											onSettingsChange={onSettingsChange}
 										/>
 										<WhiteListSettings
 											settings={settings}
-											onSettingsChange={(newSettings) =>
-												setSettings(newSettings)
-											}
+											onSettingsChange={onSettingsChange}
 										/>
 									</Stack>
 								</TaskSettingsPage>
@@ -85,14 +110,12 @@ const Whitelist = () => {
 							component: <TaskAccountsPage key="accounts" />,
 						},
 						{
-							title: 'Withdraw Params',
+							title: 'Withdraw params',
 							component: (
 								<TaskSettingsPage key="params">
 									<WhiteListParams
-										settings={withdrawParams}
-										onSettingsChange={(newSettings) =>
-											setWithdrawParams(newSettings)
-										}
+										settings={settings}
+										onSettingsChange={onSettingsChange}
 									/>
 								</TaskSettingsPage>
 							),

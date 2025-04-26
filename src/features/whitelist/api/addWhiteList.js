@@ -1,54 +1,19 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { usePendingTasks, useTask } from 'entities/task';
+import { useMutation } from '@tanstack/react-query';
+import { useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
-import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
-import { useAccount } from 'entities/account';
+import { useAccount, useRiskToken } from 'entities/account';
 import { useLogs } from 'entities/log';
 // eslint-disable-next-line no-restricted-imports
 import { useEnable2faMutation } from 'features/enable-2fa/api/enable2fa';
+import { SENCE, useVerifyRiskToken } from 'features/login';
 // eslint-disable-next-line no-restricted-imports
 import { usePreloginAttempt } from 'features/login/@X/pre-login';
+import useAddWithdrawAddress from './addWithdrawAddress';
+import useEnableWhitelist from './enableWhitelist';
 import useWithdrawAddresses from './withdrawAddresses';
 
-const getFinanceAccounts = (database_id, signal) => {
-	const api = new Api();
-
-	const url = ENDPOINTS.finance_accounts;
-
-	return new Promise((resolve, reject) => {
-		api.Get(url, {
-			params: { database_id, ['quote_coin_symbol']: 'BTC' },
-			signal,
-		})
-			.then((response) => {
-				return resolve({ database_id, ...response });
-			})
-			.catch((error) => {
-				return reject({ database_id, ...error });
-			});
-	});
-};
-
-const useRefreshFinancesAccounts = (props) => {
-	const mutationFunction = ({ database_id, signal }) => {
-		return deduplicateRequests({
-			requestKey: ['refresh finance accounts', database_id],
-			requestFn: async () => {
-				const result = await getFinanceAccounts(database_id, signal);
-				return { ...result, database_id };
-			},
-		});
-	};
-
-	return useMutation({
-		mutationFn: mutationFunction,
-		mutationKey: ['refresh finance accounts'],
-		...props,
-	});
-};
-
-const useAddWhiteListMutation = () => {
+const useAddWithdrawAddressAccount = () => {
 	const addInfoLog = useLogs.use.addInfoLog();
 	const addErrorLog = useLogs.use.addErrorLog();
 	const addSuccessLog = useLogs.use.addSuccessLog();
@@ -56,8 +21,10 @@ const useAddWhiteListMutation = () => {
 	const preloginMutaiton = usePreloginAttempt();
 	const withdrawAddressesMutation = useWithdrawAddresses();
 	const accountMutatin = useAccount();
-	const getTask = usePendingTasks.use.getTask();
-	const tasks = usePendingTasks.use.tasks();
+	const enableWhitelistMutation = useEnableWhitelist();
+	const riskTokenMutation = useRiskToken();
+	const vetifyRiskTokenMutation = useVerifyRiskToken();
+	const addWithdrawAddressMutation = useAddWithdrawAddress();
 
 	const mutationFn = async ({ database_id, signal, taskId, settings }) => {
 		try {
@@ -72,45 +39,164 @@ const useAddWhiteListMutation = () => {
 			return;
 		}
 
-		if (settings.enable_totp) {
+		let account = await accountMutatin.mutateAsync(database_id);
+
+		if (account.totp_enabled === false) {
+			if (settings.enable_totp) {
+				try {
+					await enableTotpMutaiton.mutateAsync({
+						database_id,
+						signal,
+						taskId,
+					});
+				} catch (error) {
+					addErrorLog({ error, group: taskId, database_id });
+					return;
+				}
+			} else {
+				addErrorLog({
+					error: new Error('2fa is not enabled, skip account'),
+					group: taskId,
+					database_id,
+				});
+				return;
+			}
+		}
+
+		if (account.withdraw_whitelist_enabled === null) {
 			try {
-				await enableTotpMutaiton.mutateAsync({
+				await withdrawAddressesMutation.mutateAsync({
 					database_id,
 					signal,
-					taskId,
+					coinSymbol: settings.coin,
 				});
+				account = await accountMutatin.mutateAsync(database_id);
 			} catch (error) {
 				addErrorLog({ error, group: taskId, database_id });
 				return;
 			}
 		}
 
-		const account = await accountMutatin.mutateAsync(database_id);
-		if (!account.totp_enabled) {
-			addErrorLog({
-				error: new Error('2fa is not enabled, skip account'),
-				group: taskId,
+		if (account.withdraw_whitelist_enabled === false) {
+			if (!settings.enable_whitelist) {
+				addErrorLog({
+					error: new Error('Whitelist is not enabled, skip account'),
+					group: taskId,
+					database_id,
+				});
+				return;
+			} else {
+				let verifiedRiskToken;
+				try {
+					const {
+						risk_token: riskToken,
+						risk_token_type: riskTokenType,
+					} = await vetifyRiskTokenMutation.mutateAsync({
+						database_id,
+						signal,
+						sence: SENCE.ENABLE_WITHDRAW_WHITELIST,
+					});
+
+					await vetifyRiskTokenMutation.mutateAsync({
+						database_id,
+						signal,
+						riskToken,
+						riskTokenType,
+					});
+					verifiedRiskToken = riskToken;
+				} catch (error) {
+					addErrorLog({ error, group: taskId, database_id });
+					return;
+				}
+
+				addInfoLog({
+					message: 'try to enable whitelist',
+					group: taskId,
+					database_id,
+				});
+
+				try {
+					await enableWhitelistMutation.mutateAsync({
+						database_id,
+						signal,
+						verifiedRiskToken,
+					});
+				} catch (error) {
+					addErrorLog({ error, group: taskId, database_id });
+					return;
+				}
+			}
+		}
+
+		const addressData = {
+			coin: settings.universal ? 'baseCoin' : settings.coin,
+			address: settings.addresses[database_id],
+			chain_type: settings.chain_type,
+			remark: settings.remark,
+			is_verified: settings.verify,
+			address_type: 0,
+		};
+
+		if (settings.memo) {
+			addressData['memo'] = settings.memo;
+		}
+
+		if (settings.internalAddressType) {
+			addressData['internal_address_type'] = settings.internalAddressType;
+		}
+
+		let verifiedRiskToken;
+
+		try {
+			const extInfo = { addresses: [addressData] };
+			const { risk_token: riskToken, risk_token_type: riskTokenType } =
+				await riskTokenMutation.mutateAsync({
+					database_id,
+					signal,
+					sence: SENCE.ADD_WITHDRAW_ADDRESS,
+					extInfo,
+				});
+			await vetifyRiskTokenMutation.mutateAsync({
 				database_id,
+				signal,
+				riskToken,
+				riskTokenType,
 			});
+			verifiedRiskToken = riskToken;
+		} catch (error) {
+			addErrorLog({ error, group: taskId, database_id });
 			return;
 		}
 
-		const task = getTask(taskId);
+		addInfoLog({
+			message: 'try to add withdraw address',
+			group: taskId,
+			database_id,
+		});
 
-		// if (account.withdraw_whitelist_enabled === null) {
-		// 	try {
-		// 		await withdrawAddressesMutation.mutateAsync({
-		// 			database_id,
-		// 			signal,
-		// 		});
-		// 	} catch (error) {
-		// 		addErrorLog({ error, group: taskId, database_id });
-		// 		return;
-		// 	}
-		// }
+		try {
+			await addWithdrawAddressMutation.mutateAsync({
+				database_id,
+				signal,
+				...addressData,
+				set_as_default: settings.setAsDefault,
+				verified_risk_token: verifiedRiskToken,
+			});
+		} catch (error) {
+			if (error.bybit_response?.ret_code === 32040) {
+				addSuccessLog({
+					message: 'withdraw address already exists',
+					group: taskId,
+					database_id,
+				});
+				return;
+			}
+			addErrorLog({ error, group: taskId, database_id });
+			return;
+		}
 
 		addSuccessLog({
-			message: 'whitelist added',
+			message: 'withdraw address added to whitelist',
 			group: taskId,
 			database_id,
 		});
@@ -122,17 +208,10 @@ const useAddWhiteListMutation = () => {
 	});
 };
 
-const useAddWhitelistTask = () => {
-	const queryClient = useQueryClient();
+const useAddWithdrawAddressesTask = () => {
 	const { enqueueSnackbar } = useSnackbar();
 
-	const mutation = useAddWhiteListMutation();
-
-	const settleHandler = () => {
-		queryClient.invalidateQueries({
-			queryKey: ['finance accounts'],
-		});
-	};
+	const mutation = useAddWithdrawAddressAccount();
 
 	const processedAccountHandler = ({ id, error }) => {
 		if (error) {
@@ -151,10 +230,9 @@ const useAddWhitelistTask = () => {
 
 	return useTask({
 		asyncMutation: mutation.mutateAsync,
-		onSettled: settleHandler,
 		onAccountProcessed: processedAccountHandler,
-		type: 'finance accounts',
+		type: 'withdraw-whitelist',
 	});
 };
 
-export default useAddWhitelistTask;
+export default useAddWithdrawAddressesTask;

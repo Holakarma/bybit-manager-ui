@@ -11,7 +11,7 @@ const PendingTaskModal = ({ task, open, handleClose }) => {
 
 	const grouped = useMemo(() => {
 		if (task) {
-			return groupedLogs(logs[task.id]);
+			return groupedLogs(logs[task.id] || []);
 		}
 	}, [task, logs]);
 

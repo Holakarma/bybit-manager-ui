@@ -27,6 +27,9 @@ const ENDPOINTS = {
 	imap_scanner: '/imap/scan',
 	withdraw_addresses: '/private/withdraw/addresses',
 	set_preferences: '/private/set-preferences',
+	coins_chains: '/private/withdraw/coins-chains',
+	enable_whitelist: '/private/withdraw/enable-whitelist',
+	add_withdraw_address: '/private/withdraw/add-address',
 };
 
 export default ENDPOINTS;

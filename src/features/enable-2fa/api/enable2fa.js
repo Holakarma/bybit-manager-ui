@@ -3,6 +3,7 @@ import { useRiskToken } from 'entities/account';
 import { useLogs } from 'entities/log';
 import { usePendingTasks, useTask } from 'entities/task';
 import { SENCE, useVerifyRiskToken } from 'features/login';
+// eslint-disable-next-line no-restricted-imports
 import { useUpdateProfileMutation } from 'features/update-profile/api/updateProfile';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 

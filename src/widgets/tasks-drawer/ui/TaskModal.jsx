@@ -9,6 +9,7 @@ import { RefreshTaskResult } from 'features/refresh-balances';
 import { RegisterTaskResult } from 'features/register';
 import { SetPreferencesTaskResult } from 'features/set-preference';
 import { UpdateProfileTaskResult } from 'features/update-profile';
+import { WhiteListTaskResult } from 'features/whitelist';
 import { timeDifference } from 'shared/lib/formatDate';
 import { ModalBody } from 'shared/ui/modal-body';
 
@@ -32,8 +33,10 @@ const taskResult = (task) => {
 			return <Enable2faTaskResult task={task} />;
 		case 'custom request':
 			return <CustomRequestTaskResult task={task} />;
+		case 'withdraw-whitelist':
+			return <WhiteListTaskResult task={task} />;
 		default:
-			return null;
+			return 'no task result component';
 	}
 };
 
