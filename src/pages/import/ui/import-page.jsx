@@ -4,7 +4,7 @@ import { ImportAccountForm, useAccounts } from 'features/import-accounts';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { ERRORS } from 'shared/api';
-import { ModalBody } from 'shared/ui/modal-body';
+import { ModalBody, ModalBodyBackground } from 'shared/ui/modal-body';
 
 const ImportPage = () => {
 	const deleteAccount = useAccounts.use.deleteAccount();
@@ -61,14 +61,17 @@ const ImportPage = () => {
 				onClose={handleClose}
 			>
 				<ModalBody>
-					<Typography variant="H6">
-						Error while import account {account?.bybit_email || ''}
-					</Typography>
-					<Typography sx={{ mt: 2 }}>
-						{!error
-							? 'Cannot reach the server. It looks like you forgot to turn on the API server.'
-							: ERRORS[error.error] || error.detail}
-					</Typography>
+					<ModalBodyBackground>
+						<Typography variant="H6">
+							Error while import account{' '}
+							{account?.bybit_email || ''}
+						</Typography>
+						<Typography sx={{ mt: 2 }}>
+							{!error
+								? 'Cannot reach the server. It looks like you forgot to turn on the API server.'
+								: ERRORS[error.error] || error.detail}
+						</Typography>{' '}
+					</ModalBodyBackground>
 				</ModalBody>
 			</Modal>
 		</Stack>

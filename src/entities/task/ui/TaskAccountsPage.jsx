@@ -15,9 +15,9 @@ import { useState } from 'react';
 const TaskAccountsPage = ({
 	accounts,
 	onToggle,
-	filterAccounts,
 	initialChecked,
-	filteredTooltip,
+	disabledTooltip,
+	preloginTooltip,
 }) => {
 	const [checked, setChecked] = useState(initialChecked);
 
@@ -56,23 +56,29 @@ const TaskAccountsPage = ({
 				>
 					{(accounts || []).map((account) => {
 						const labelId = `checkbox-task-account-${account.database_id}`;
-						const isDisabled = filterAccounts
-							? !filterAccounts(account)
-							: false;
+						const _preloginTooltip = preloginTooltip(account);
+						const _disabledTooltip = disabledTooltip
+							? disabledTooltip(account)
+							: '';
 
 						return (
 							<ListItem
 								key={account.database_id}
 								disablePadding
 							>
-								<Tooltip title={isDisabled && filteredTooltip}>
+								<Tooltip
+									title={_disabledTooltip || _preloginTooltip}
+								>
 									<Box width="100%">
 										<ListItemButton
 											onClick={handleToggle(
 												account.database_id,
 											)}
 											dense
-											disabled={isDisabled}
+											disabled={Boolean(
+												_disabledTooltip ||
+													_preloginTooltip,
+											)}
 										>
 											<ListItemIcon>
 												<Checkbox

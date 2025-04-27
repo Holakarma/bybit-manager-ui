@@ -3,7 +3,7 @@ import { Box, Button, Modal, Stack, Typography } from '@mui/material';
 
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import { useState } from 'react';
-import { ModalBody } from 'shared/ui/modal-body';
+import { ModalBody, ModalBodyBackground } from 'shared/ui/modal-body';
 
 const TaskModal = ({
 	open,
@@ -14,6 +14,7 @@ const TaskModal = ({
 	startButtonProps,
 	startTitle,
 	errorText,
+	loading,
 }) => {
 	const [page, setPage] = useState(0);
 
@@ -32,19 +33,17 @@ const TaskModal = ({
 			open={open}
 			onClose={handleClose}
 		>
-			<Box>
-				<ModalBody
-					sx={{ minWidth: '600px', p: 4 }}
-					position="relative"
-				>
+			<ModalBody>
+				<ModalBodyBackground>
 					<Stack
 						direction="row"
 						gap={2}
 						height="100%"
+						maxWidth="100%"
 					>
 						<Stack
-							width="100%"
 							flexGrow={1}
+							maxWidth="100%"
 						>
 							<Typography variant="H5">{taskTitle}</Typography>
 
@@ -59,6 +58,8 @@ const TaskModal = ({
 							<Box
 								flexGrow={1}
 								paddingBlock={2}
+								maxWidth="100%"
+								overflow="auto"
 							>
 								{pages?.[page].component || null}
 							</Box>
@@ -90,6 +91,7 @@ const TaskModal = ({
 									<Button
 										onClick={handleStart}
 										variant={'contained'}
+										loading={loading}
 										sx={{ marginLeft: 'auto' }}
 										{...startButtonProps}
 									>
@@ -101,8 +103,8 @@ const TaskModal = ({
 							</Stack>
 						</Stack>
 					</Stack>
-				</ModalBody>
-			</Box>
+				</ModalBodyBackground>
+			</ModalBody>
 		</Modal>
 	);
 };

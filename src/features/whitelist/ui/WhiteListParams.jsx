@@ -20,40 +20,7 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ChainPicker from './ChainPicker';
 import CoinsPicker from './CoinsPicker';
-
-// @FIXME: hardcode default chains
-const defaultChains = [
-	{
-		symbol: 'BTC',
-		full_name: 'Bitcoin',
-		chain_type: 'BTC',
-		chain_full_name: 'BTC',
-		trading_balance: 0,
-		funding_balance: 0,
-		total_balance: '0',
-		precision: 8,
-		has_memo: false,
-		icon_url:
-			'https://s1.bycsi.com/app/assets/token/d9c8c35b4223b50d9773d7d5294d019f.svg',
-		icon_night_url:
-			'https://s1.bycsi.com/app/assets/token/62942131f968981af06a885a79f864ba.svg',
-	},
-	{
-		symbol: 'ETH',
-		full_name: 'Ethereum',
-		chain_type: 'ETH',
-		chain_full_name: 'Ethereum (ERC20)',
-		trading_balance: 0,
-		funding_balance: 0,
-		total_balance: '0',
-		precision: 8,
-		has_memo: false,
-		icon_url:
-			'https://s1.bycsi.com/app/assets/token/8f413d7ed51fa4bc3d206d6abf41f4dc.svg',
-		icon_night_url:
-			'https://s1.bycsi.com/app/assets/token/35a48e2a91411dcdb00c7fdd443676a9.svg',
-	},
-];
+import videoUrl from '/public/assets/video/batman-placeholder.mp4';
 
 function CustomTabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -84,7 +51,7 @@ function a11yProps(index) {
 	};
 }
 
-const WhiteListParams = ({ settings, onSettingsChange }) => {
+const WhiteListParams = ({ settings, onSettingsChange, onError }) => {
 	const defaultAccount = useDefaultAccount.use.defaultAccountId();
 	const queryClient = useQueryClient();
 	const {
@@ -92,6 +59,31 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 		isFetching,
 		isError,
 	} = useCoinsChains(defaultAccount);
+
+	const chain = useMemo(() => settings.chain, [settings.chain]);
+	const handleChainChange = useCallback(
+		(_event, newChain) => {
+			onSettingsChange((prev) => ({
+				...prev,
+				chain: newChain,
+			}));
+		},
+		[onSettingsChange],
+	);
+
+	/* universal */
+	const universal = useMemo(() => settings.universal, [settings.universal]);
+	const handleUniversalChange = () => {
+		onSettingsChange((prev) => ({
+			...prev,
+			universal: !prev.universal,
+		}));
+
+		const newChains = universal
+			? Object.values(coinsChains[coin.coin])
+			: Object.values(allChains);
+		handleChainChange(null, newChains[0]);
+	};
 
 	/* coins */
 	const [coins, allChains] = useMemo(() => {
@@ -121,8 +113,22 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 					coin: newValue,
 				};
 			});
+
+			if (coinsChains) {
+				const newChains = universal
+					? Object.values(allChains)
+					: Object.values(coinsChains[newValue.coin]);
+
+				handleChainChange(null, newChains[0]);
+			}
 		},
-		[onSettingsChange],
+		[
+			onSettingsChange,
+			allChains,
+			coinsChains,
+			handleChainChange,
+			universal,
+		],
 	);
 
 	useEffect(() => {
@@ -134,35 +140,8 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 		}
 	}, [coins, coin, handleCoinChange]);
 
-	/* universal */
-	const universal = useMemo(() => settings.universal, [settings]);
-	const handleUniversalChange = () => {
-		onSettingsChange((prev) => ({
-			...prev,
-			universal: !prev.universal,
-		}));
-	};
-
-	/* chain */
-	const chain = useMemo(() => settings.chain, [settings]);
-	const handleChainChange = useCallback(
-		(_event, newChain) => {
-			const newSettings = { chain: newChain };
-
-			if (newChain.has_memo) {
-				newSettings.memo = '';
-			}
-
-			onSettingsChange((prev) => ({
-				...prev,
-				...newSettings,
-			}));
-		},
-		[onSettingsChange],
-	);
-
 	const chains = useMemo(() => {
-		if (coin && coinsChains) {
+		if (coin.coin && coinsChains) {
 			let newChains = [];
 			if (universal) {
 				newChains = Object.values(allChains);
@@ -174,18 +153,24 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 		}
 
 		return null;
-	}, [coin, coinsChains, universal, allChains]);
+	}, [coin.coin, coinsChains, universal, allChains]);
 
 	useEffect(() => {
-		if (coinsChains) {
-			if (coin && !universal) {
-				const newChains = Object.values(coinsChains[coin.coin]);
-				handleChainChange(null, newChains[0]);
-			} else {
-				handleChainChange(null, defaultChains[0]);
-			}
+		if (coinsChains && !chain.chain_full_name) {
+			const newChains =
+				coin.coin && !universal
+					? Object.values(coinsChains[coin.coin])
+					: Object.values(allChains);
+			handleChainChange(null, newChains[0]);
 		}
-	}, [coin, coinsChains, handleChainChange, universal]);
+	}, [
+		coin.coin,
+		coinsChains,
+		handleChainChange,
+		universal,
+		allChains,
+		chain.chain_full_name,
+	]);
 
 	/* Tabs */
 	const [tab, setTab] = useState(0);
@@ -193,7 +178,8 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 		setTab(newValue);
 	};
 
-	const remark = useMemo(() => settings.remark, [settings]);
+	/* other settings */
+	const remark = useMemo(() => settings.remark, [settings.remark]);
 	const handleRemarkChange = (event) => {
 		onSettingsChange((prev) => ({
 			...prev,
@@ -201,15 +187,7 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 		}));
 	};
 
-	const memo = useMemo(() => settings.memo, [settings]);
-	const handleMemoChange = (event) => {
-		onSettingsChange((prev) => ({
-			...prev,
-			memo: event.target.value,
-		}));
-	};
-
-	const verify = useMemo(() => settings.verify, [settings]);
+	const verify = useMemo(() => settings.verify, [settings.verify]);
 	const handleVerifyChange = () => {
 		onSettingsChange((prev) => ({
 			...prev,
@@ -217,12 +195,32 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 		}));
 	};
 
-	const setAsDefault = useMemo(() => settings.setAsDefault, [settings]);
+	const setAsDefault = useMemo(
+		() => settings.setAsDefault,
+		[settings.setAsDefault],
+	);
 	const handleSetAsDefaultChange = () => {
 		onSettingsChange((prev) => ({
 			...prev,
 			setAsDefault: !prev.setAsDefault,
 		}));
+	};
+
+	const memo = useMemo(() => settings.memo.join('\n'), [settings.memo]);
+	const [memoTyping, setMemoTyping] = useState(memo);
+	const handleMemoTyping = (e) => {
+		setMemoTyping(e.target.value);
+	};
+	const handleMemoChange = (event) => {
+		const memoValue = event.target.value
+			.split('\n')
+			.map((memo) => memo.trim())
+			.filter(Boolean);
+		onSettingsChange((prev) => ({
+			...prev,
+			memo: memoValue,
+		}));
+		setMemoTyping(memoValue.join('\n'));
 	};
 
 	const addresses = useMemo(
@@ -233,7 +231,6 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 	const handleAddressesTyping = (e) => {
 		setAddressesTyping(e.target.value);
 	};
-
 	const handleAddressesChange = (event) => {
 		const addressesValue = event.target.value
 			.split('\n')
@@ -247,7 +244,15 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 	};
 
 	if (isError) {
-		return <Typography>Error while getting coins-chains</Typography>;
+		if (onError) {
+			onError();
+		}
+		return (
+			<Typography>
+				Error while getting coins-chains. Check session on your default
+				account.
+			</Typography>
+		);
 	}
 
 	if (!defaultAccount) {
@@ -288,39 +293,6 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 				>
 					<Stack gap={3}>
 						<Stack gap={1}>
-							<Stack
-								direction="row"
-								gap={1}
-								width="100%"
-							>
-								<CoinsPicker
-									disabled={universal}
-									options={coins || []}
-									loading={isFetching}
-									onChange={handleCoinChange}
-									startAdornment={
-										coin.icon_night_url ? (
-											<Avatar
-												src={coin.icon_night_url}
-												sx={{ width: 24, height: 24 }}
-											/>
-										) : null
-									}
-									value={coin}
-								/>
-
-								<IconButton
-									onClick={() =>
-										queryClient.invalidateQueries({
-											queryKey: ['coins-chains'],
-										})
-									}
-									disabled={isFetching || universal}
-								>
-									<RefreshRoundedIcon />
-								</IconButton>
-							</Stack>
-
 							<FormGroup size="small">
 								<FormControlLabel
 									control={
@@ -331,10 +303,47 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 										/>
 									}
 									label="Save as universal wallet address"
-									labelPlacement="start"
-									sx={{ marginRight: 0 }}
+									sx={{ marginLeft: 0 }}
 								/>
 							</FormGroup>
+
+							{!universal && (
+								<Stack
+									direction="row"
+									gap={1}
+									width="100%"
+								>
+									<CoinsPicker
+										disabled={universal}
+										options={coins || []}
+										loading={isFetching}
+										onChange={handleCoinChange}
+										startAdornment={
+											coin.icon_night_url ? (
+												<Avatar
+													src={coin.icon_night_url}
+													sx={{
+														width: 24,
+														height: 24,
+													}}
+												/>
+											) : null
+										}
+										value={coin}
+									/>
+
+									<IconButton
+										onClick={() =>
+											queryClient.invalidateQueries({
+												queryKey: ['coins-chains'],
+											})
+										}
+										disabled={isFetching || universal}
+									>
+										<RefreshRoundedIcon />
+									</IconButton>
+								</Stack>
+							)}
 						</Stack>
 						<TextField
 							multiline
@@ -358,11 +367,15 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 
 						{chain.has_memo && (
 							<TextField
+								multiline
+								minRows={3}
+								maxRows={5}
 								size="small"
 								label="Memo"
 								variant="outlined"
-								value={memo}
-								onChange={handleMemoChange}
+								value={memoTyping}
+								onChange={handleMemoTyping}
+								onBlur={handleMemoChange}
 							/>
 						)}
 
@@ -410,7 +423,7 @@ const WhiteListParams = ({ settings, onSettingsChange }) => {
 						style={{ borderRadius: '16px' }}
 					>
 						<source
-							src="public/assets/video/batman-placeholder.MP4"
+							src={videoUrl}
 							type="video/mp4"
 						/>
 						Browser does not support video

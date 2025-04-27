@@ -2,7 +2,7 @@ import { Box, Button, Modal, Stack, Typography } from '@mui/material';
 import { groupedLogs, useLogs } from 'entities/log';
 import { taskTitle } from 'entities/task';
 import { useMemo } from 'react';
-import { ModalBody } from 'shared/ui/modal-body';
+import { ModalBody, ModalBodyBackground } from 'shared/ui/modal-body';
 import { Pulsing } from 'shared/ui/pulsing';
 import PendingTaskAccountItem from './PendingTaskAccountItem';
 
@@ -34,52 +34,56 @@ const PendingTaskModal = ({ task, open, handleClose }) => {
 					minWidth="600px"
 					sx={{ p: 4 }}
 				>
-					<Stack
-						gap={1}
-						height="100%"
-					>
+					<ModalBodyBackground>
 						<Stack
-							direction="row"
-							gap={2}
-							alignItems="center"
+							gap={1}
+							height="100%"
 						>
-							<Typography variant="H5">
-								{taskTitle[task.type]}
-							</Typography>
-							<Pulsing />
-						</Stack>
+							<Stack
+								direction="row"
+								gap={2}
+								alignItems="center"
+							>
+								<Typography variant="H5">
+									{taskTitle[task.type]}
+								</Typography>
+								<Pulsing />
+							</Stack>
 
-						<Box
-							sx={{
-								flexGrow: 1,
-								position: 'relative',
-							}}
-						>
 							<Box
 								sx={{
-									height: '100%',
-									overflow: 'auto',
-									position: 'absolute',
-									top: 0,
-									bottom: 0,
-									left: 0,
-									right: 0,
+									flexGrow: 1,
+									position: 'relative',
 								}}
 							>
-								{task.data.map((database_id) => (
-									<PendingTaskAccountItem
-										key={database_id}
-										database_id={database_id}
-										logs={grouped[database_id]}
-									/>
-								))}
+								<Box
+									sx={{
+										height: '100%',
+										overflow: 'auto',
+										position: 'absolute',
+										top: 0,
+										bottom: 0,
+										left: 0,
+										right: 0,
+									}}
+								>
+									{task.data.map((database_id) => (
+										<PendingTaskAccountItem
+											key={database_id}
+											database_id={database_id}
+											logs={grouped[database_id]}
+										/>
+									))}
+								</Box>
 							</Box>
-						</Box>
 
-						<Box textAlign="end">
-							<Button onClick={handleAbort}>Abort task</Button>
-						</Box>
-					</Stack>
+							<Box textAlign="end">
+								<Button onClick={handleAbort}>
+									Abort task
+								</Button>
+							</Box>
+						</Stack>{' '}
+					</ModalBodyBackground>
 				</ModalBody>
 			</Box>
 		</Modal>

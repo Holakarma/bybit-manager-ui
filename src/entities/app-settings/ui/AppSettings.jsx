@@ -22,7 +22,7 @@ import {
 	API_CONFIG_NAME,
 	VERIFY_ATTEMPTS_CONFIG_NAME,
 } from 'shared/model/app-config/consts';
-import { ModalBody } from 'shared/ui/modal-body';
+import { ModalBody, ModalBodyBackground } from 'shared/ui/modal-body';
 import * as yup from 'yup';
 import ApiSettings from './ApiSettings';
 import CaptchaSelect from './CaptchaSelect';
@@ -111,54 +111,56 @@ const AppSettings = ({ children, tooltipTitle, ...props }) => {
 				onClose={handleClose}
 			>
 				<ModalBody>
-					<Typography
-						variant="H5"
-						marginBottom={4}
-					>
-						App Settings
-					</Typography>
+					<ModalBodyBackground>
+						<Typography
+							variant="H5"
+							marginBottom={4}
+						>
+							App Settings
+						</Typography>
 
-					<form onSubmit={handleSubmit(saveHandle)}>
-						<Stack gap={5}>
-							<LicenseInfo />
+						<form onSubmit={handleSubmit(saveHandle)}>
+							<Stack gap={5}>
+								<LicenseInfo />
 
-							<Divider />
+								<Divider />
 
-							<CaptchaSelect
-								control={control}
-								name="captchaType"
-								error={!!errors.captchaType}
-							/>
+								<CaptchaSelect
+									control={control}
+									name="captchaType"
+									error={!!errors.captchaType}
+								/>
 
-							<VerifyingSettings
-								control={control}
-								name={VERIFY_ATTEMPTS_CONFIG_NAME}
-								emailError={!!errors.verifyAttempts?.email}
-								totpError={!!errors.verifyAttempts?.totp}
-								emailHelperText={
-									errors.verifyAttempts?.email?.message
-								}
-								totpHelperText={
-									errors.verifyAttempts?.totp?.message
-								}
-							/>
+								<VerifyingSettings
+									control={control}
+									name={VERIFY_ATTEMPTS_CONFIG_NAME}
+									emailError={!!errors.verifyAttempts?.email}
+									totpError={!!errors.verifyAttempts?.totp}
+									emailHelperText={
+										errors.verifyAttempts?.email?.message
+									}
+									totpHelperText={
+										errors.verifyAttempts?.totp?.message
+									}
+								/>
 
-							<ApiSettings
-								control={control}
-								errors={errors[API_CONFIG_NAME]}
-							/>
+								<ApiSettings
+									control={control}
+									errors={errors[API_CONFIG_NAME]}
+								/>
 
-							<Box textAlign="end">
-								<Button onClick={resetHandle}>Reset</Button>
-								<Button
-									type="submit"
-									disabled={!isDirty}
-								>
-									Save & Reload
-								</Button>
-							</Box>
-						</Stack>
-					</form>
+								<Box textAlign="end">
+									<Button onClick={resetHandle}>Reset</Button>
+									<Button
+										type="submit"
+										disabled={!isDirty}
+									>
+										Save & Reload
+									</Button>
+								</Box>
+							</Stack>
+						</form>
+					</ModalBodyBackground>
 				</ModalBody>
 			</Modal>
 		</>

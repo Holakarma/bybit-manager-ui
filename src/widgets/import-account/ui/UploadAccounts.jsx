@@ -15,7 +15,7 @@ import { createAccountObject, useAccounts } from 'features/import-accounts';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { readExcelSheets } from 'shared/lib/read-excel-file';
-import { ModalBody } from 'shared/ui/modal-body';
+import { ModalBody, ModalBodyBackground } from 'shared/ui/modal-body';
 import AccountExcelDTO from '../model/accountExcelDTO';
 
 const UploadAccounts = ({ file }) => {
@@ -127,81 +127,89 @@ const UploadAccounts = ({ file }) => {
 				onClose={handleClose}
 			>
 				<ModalBody minWidth="600px">
-					<Stack
-						gap={2}
-						height="100%"
-					>
-						<Typography variant="H5">Selecting sheets</Typography>
-
-						<Box
-							sx={{
-								flexGrow: 1,
-								position: 'relative',
-							}}
+					<ModalBodyBackground>
+						<Stack
+							gap={2}
+							height="100%"
 						>
-							<List
+							<Typography variant="H5">
+								Selecting sheets
+							</Typography>
+
+							<Box
 								sx={{
-									position: 'absolute',
-									top: 0,
-									bottom: 0,
-									right: 0,
-									left: 0,
-									overflowY: 'auto',
+									flexGrow: 1,
+									position: 'relative',
 								}}
 							>
-								{selectedSheets &&
-									Object.entries(sheets).map(
-										([sheetName, sheet]) => {
-											const labelId = `checkbox-list-sheet-${sheetName}`;
+								<List
+									sx={{
+										position: 'absolute',
+										top: 0,
+										bottom: 0,
+										right: 0,
+										left: 0,
+										overflowY: 'auto',
+									}}
+								>
+									{selectedSheets &&
+										Object.entries(sheets).map(
+											([sheetName, sheet]) => {
+												const labelId = `checkbox-list-sheet-${sheetName}`;
 
-											return (
-												<ListItem
-													disablePadding
-													key={sheetName}
-													direction="row"
-												>
-													<ListItemButton
-														onClick={handleToggle(
-															sheetName,
-														)}
-														dense
+												return (
+													<ListItem
+														disablePadding
+														key={sheetName}
+														direction="row"
 													>
-														<ListItemIcon>
-															<Checkbox
-																edge="start"
-																checked={selectedSheets.includes(
-																	sheetName,
-																)}
-																tabIndex={-1}
-																disableRipple
-																inputProps={{
-																	'aria-labelledby':
-																		labelId,
-																}}
-															/>
-														</ListItemIcon>
-														<ListItemText
-															id={sheetName}
-															primary={sheetName}
-															secondary={getGroups(
-																sheet,
+														<ListItemButton
+															onClick={handleToggle(
+																sheetName,
 															)}
-														/>
-													</ListItemButton>
-												</ListItem>
-											);
-										},
-									)}
-							</List>
-						</Box>
+															dense
+														>
+															<ListItemIcon>
+																<Checkbox
+																	edge="start"
+																	checked={selectedSheets.includes(
+																		sheetName,
+																	)}
+																	tabIndex={
+																		-1
+																	}
+																	disableRipple
+																	inputProps={{
+																		'aria-labelledby':
+																			labelId,
+																	}}
+																/>
+															</ListItemIcon>
+															<ListItemText
+																id={sheetName}
+																primary={
+																	sheetName
+																}
+																secondary={getGroups(
+																	sheet,
+																)}
+															/>
+														</ListItemButton>
+													</ListItem>
+												);
+											},
+										)}
+								</List>
+							</Box>
 
-						<Button
-							onClick={() => uploadHandler(sheets)}
-							disabled={!selectedSheets?.length}
-						>
-							Select sheets
-						</Button>
-					</Stack>
+							<Button
+								onClick={() => uploadHandler(sheets)}
+								disabled={!selectedSheets?.length}
+							>
+								Select sheets
+							</Button>
+						</Stack>{' '}
+					</ModalBodyBackground>
 				</ModalBody>
 			</Modal>
 		</>

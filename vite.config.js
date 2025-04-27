@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 import autoAlias from './config/autoAlias.js';
 
 export default defineConfig({
@@ -21,4 +21,5 @@ export default defineConfig({
 			},
 		},
 	},
+	assetsInclude: '**/*.MP4',
 });

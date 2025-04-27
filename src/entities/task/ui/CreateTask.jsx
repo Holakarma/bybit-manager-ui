@@ -1,16 +1,18 @@
 import { useSelectedAccounts } from 'entities/account';
 import { TaskModal } from 'entities/task';
-import { cloneElement, useEffect, useState } from 'react';
+import { cloneElement, useCallback, useEffect, useState } from 'react';
+import { isCookieAlive } from 'shared/lib/session-cookies';
 
 const CreateTask = ({
 	handleStart,
 	task,
 	pages,
 	settings,
-	filterAccounts,
+	disabledTooltip,
 	errorText,
 	startTitle,
 	children,
+	loading,
 	onCheckedIdsChange,
 	settingsAdapter = (settings) => settings,
 	...props
@@ -41,21 +43,32 @@ const CreateTask = ({
 		}
 	}, [checkedIds, onCheckedIdsChange]);
 
+	const preloginTooltip = useCallback(
+		(account) =>
+			settings?.prelogin !== undefined && // if no prelogin setting
+			!settings?.prelogin &&
+			!isCookieAlive(account.cookies)
+				? 'No session'
+				: '',
+		[settings?.prelogin],
+	);
+
 	useEffect(() => {
 		if (selectedAccounts) {
-			if (filterAccounts) {
-				setCheckedIds(
-					selectedAccounts
-						.filter(filterAccounts)
-						.map((account) => account.database_id),
-				);
-			} else {
-				setCheckedIds(
-					selectedAccounts.map((account) => account.database_id),
+			let accounts = [];
+			accounts = selectedAccounts.filter(
+				(account) => !preloginTooltip(account),
+			);
+
+			if (disabledTooltip) {
+				accounts = accounts.filter(
+					(account) => !disabledTooltip(account),
 				);
 			}
+
+			setCheckedIds(accounts.map((account) => account.database_id));
 		}
-	}, [selectedAccounts, filterAccounts, task]);
+	}, [selectedAccounts, disabledTooltip, task, preloginTooltip]);
 
 	if (isLoading) {
 		return cloneElement(children, { ...props, loading: isLoading });
@@ -65,7 +78,6 @@ const CreateTask = ({
 		return cloneElement(children, {
 			...props,
 			disabled: true,
-			children: 'Error',
 		});
 	}
 
@@ -84,6 +96,7 @@ const CreateTask = ({
 				}}
 				startTitle={startTitle}
 				errorText={errorText}
+				loading={loading}
 				pages={pages.map((page) => ({
 					...page,
 					component: cloneElement(page.component, {
@@ -91,6 +104,8 @@ const CreateTask = ({
 						accounts: selectedAccounts,
 						onToggle: (checked) => setCheckedIds(checked),
 						initialChecked: checkedIds,
+						disabledTooltip,
+						preloginTooltip,
 					}),
 				}))}
 			/>

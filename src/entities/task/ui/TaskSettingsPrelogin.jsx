@@ -153,7 +153,7 @@ const TaskSettingsPrelogin = ({ settings, onSettingsChange }) => {
 			justifyContent="center"
 			gap={3}
 			width="100%"
-			paddingTop={2}
+			overflow="visible"
 		>
 			<Stack
 				direction="row"

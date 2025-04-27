@@ -68,7 +68,7 @@ const useAddWithdrawAddressAccount = () => {
 				await withdrawAddressesMutation.mutateAsync({
 					database_id,
 					signal,
-					coinSymbol: settings.coin,
+					coinSymbol: settings.coin.coin,
 				});
 				account = await accountMutatin.mutateAsync(database_id);
 			} catch (error) {
@@ -129,16 +129,16 @@ const useAddWithdrawAddressAccount = () => {
 		}
 
 		const addressData = {
-			coin: settings.universal ? 'baseCoin' : settings.coin,
+			coin: settings.universal ? 'baseCoin' : settings.coin.coin,
 			address: settings.addresses[database_id],
-			chain_type: settings.chain_type,
+			chain_type: settings.chain.chain_type,
 			remark: settings.remark,
 			is_verified: settings.verify,
 			address_type: 0,
 		};
 
 		if (settings.memo) {
-			addressData['memo'] = settings.memo;
+			addressData['memo'] = settings.memo[database_id];
 		}
 
 		if (settings.internalAddressType) {

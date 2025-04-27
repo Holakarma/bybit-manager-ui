@@ -7,10 +7,12 @@ import {
 	TaskSettingsPage,
 	TaskSettingsPrelogin,
 } from 'entities/task';
-import { useCallback, useEffect, useState } from 'react';
-import useAddWithdrawAddressesTask from '../api/addWhiteList';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { isCookieAlive } from 'shared/lib/session-cookies';
+import useAddWithdrawAddressesTask from '../api/addWhitelist';
 import WhiteListParams from './WhiteListParams';
 import WhiteListSettings from './WhiteListSettings';
+import WhitelistTable from './WhitelistTable';
 
 const Whitelist = () => {
 	const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -29,9 +31,9 @@ const Whitelist = () => {
 		coin: { coin: '' },
 		chain: { chain_full_name: '' },
 		addresses: [],
+		memo: [],
 		setAsDefault: true,
 		verify: true,
-		memo: '',
 		internalAddressType: '',
 	});
 
@@ -43,36 +45,50 @@ const Whitelist = () => {
 			setErrorText('Addresses count does not match');
 		} else if (!defaultAccount) {
 			setErrorText('Default account is required');
-		} else if (settings.chain.has_memo && !settings.memo) {
-			setErrorText('Memo is required');
+		} else if (
+			settings.chain.has_memo &&
+			ids.length !== settings.memo.length
+		) {
+			setErrorText('Memo count does not match');
 		} else {
 			setErrorText('');
 		}
 	}, [ids, settings, defaultAccount]);
+
+	const getAddressesObj = useCallback(
+		(addresses) => {
+			const obj = {};
+			addresses.forEach((address, i) => (obj[ids[i]] = address));
+			return obj;
+		},
+		[ids],
+	);
+	const adaptedSettings = useMemo(
+		() => ({
+			...settings,
+			addresses: getAddressesObj(settings.addresses),
+			memo: getAddressesObj(settings.memo),
+		}),
+		[settings, getAddressesObj],
+	);
 
 	const onSettingsChange = useCallback(
 		(newSettings) => setSettings(newSettings),
 		[],
 	);
 
-	const getAddressesObj = (addresses) => {
-		const obj = {};
-		addresses.forEach((address, i) => (obj[ids[i]] = address));
-		return obj;
-	};
-
-	const settingsAdapter = (settings) => {
-		return {
-			...settings,
-			addresses: getAddressesObj(settings.addresses),
-			chain_type: settings.chain.chain_type,
-			coin: settings.coin.coin,
-		};
-	};
+	const disabledTooltip = useCallback(
+		(account) => {
+			if (!isCookieAlive(account.cookies) && !settings.prelogin) {
+				return 'Prelogin is not enabled';
+			}
+		},
+		[settings.prelogin],
+	);
 
 	return (
 		<Tooltip
-			title="whitelist"
+			title="Whitelist"
 			open={tooltipOpen}
 		>
 			<Stack
@@ -82,11 +98,15 @@ const Whitelist = () => {
 			>
 				<CreateTask
 					handleStart={mutation.mutate}
-					settingsAdapter={settingsAdapter}
 					onCheckedIdsChange={(ids) => setIds(ids)}
 					errorText={errorText}
+					loading={
+						!adaptedSettings.coin.coin ||
+						!adaptedSettings.chain.chain_full_name
+					}
 					task="whitelist"
-					settings={settings}
+					settings={adaptedSettings}
+					disabledTooltip={disabledTooltip}
 					pages={[
 						{
 							title: 'Settings',
@@ -116,8 +136,23 @@ const Whitelist = () => {
 									<WhiteListParams
 										settings={settings}
 										onSettingsChange={onSettingsChange}
+										onError={() =>
+											setErrorText(
+												'Error while getting chains',
+											)
+										}
 									/>
 								</TaskSettingsPage>
+							),
+						},
+						{
+							title: 'Withdraw table',
+							component: (
+								<WhitelistTable
+									key="table"
+									ids={ids}
+									settings={adaptedSettings}
+								/>
 							),
 						},
 					]}

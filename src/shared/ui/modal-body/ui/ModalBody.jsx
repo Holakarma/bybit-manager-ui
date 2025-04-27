@@ -5,11 +5,10 @@ const style = {
 	position: 'absolute',
 	top: 0,
 	bottom: 0,
+	maxWidth: '100%',
 	left: '50%',
 	transform: 'translateX(-50%)',
-	bgcolor: 'background.paper',
-	boxShadow: 24,
-	marginBlock: 3,
+	padding: 3,
 };
 
 // eslint-disable-next-line react/display-name

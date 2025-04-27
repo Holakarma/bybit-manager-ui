@@ -16,7 +16,7 @@ import {
 import { useEffect, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
-import { ModalBody } from 'shared/ui/modal-body';
+import { ModalBody, ModalBodyBackground } from 'shared/ui/modal-body';
 
 const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 	const [selectedAccountsIdsTmp, setSelectedAccountsIdsTmp] = useState(
@@ -59,7 +59,9 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 						sx={{ minWidth: '400px' }}
 						position="relative"
 					>
-						No selected accounts
+						<ModalBodyBackground>
+							No selected accounts
+						</ModalBodyBackground>
 					</ModalBody>
 				</Box>
 			</Modal>
@@ -105,14 +107,14 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 			open={open}
 			onClose={() => onClose(selectedAccountsIdsTmp)}
 		>
-			<Box>
-				<ModalBody
-					sx={{
-						minWidth: '400px',
-						overflow: 'auto',
-					}}
-					position="relative"
-				>
+			<ModalBody
+				sx={{
+					minWidth: '400px',
+					overflow: 'auto',
+				}}
+				position="relative"
+			>
+				<ModalBodyBackground>
 					<Card
 						sx={{
 							display: 'flex',
@@ -171,8 +173,8 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 							)}
 						</CardActions>
 					</Card>
-				</ModalBody>
-			</Box>
+				</ModalBodyBackground>
+			</ModalBody>
 		</Modal>
 	);
 };

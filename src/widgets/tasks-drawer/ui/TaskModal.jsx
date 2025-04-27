@@ -11,7 +11,7 @@ import { SetPreferencesTaskResult } from 'features/set-preference';
 import { UpdateProfileTaskResult } from 'features/update-profile';
 import { WhiteListTaskResult } from 'features/whitelist';
 import { timeDifference } from 'shared/lib/formatDate';
-import { ModalBody } from 'shared/ui/modal-body';
+import { ModalBody, ModalBodyBackground } from 'shared/ui/modal-body';
 
 const taskResult = (task) => {
 	switch (task.type) {
@@ -54,52 +54,54 @@ const TaskModal = ({ task, open, handleClose }) => {
 				minWidth="600px"
 				sx={{ p: 4 }}
 			>
-				<Stack
-					gap={1}
-					height="100%"
-				>
+				<ModalBodyBackground>
 					<Stack
-						direction="row"
-						gap={2}
-						alignItems="baseline"
-						justifyContent="space-between"
+						gap={1}
+						height="100%"
 					>
-						<Typography variant="H5">
-							{taskTitle[task.type]}
-						</Typography>
-						<Typography
-							variant="Body"
-							color="textSecondary"
+						<Stack
+							direction="row"
+							gap={2}
+							alignItems="baseline"
+							justifyContent="space-between"
 						>
-							{timeDifference(
-								task.startedAt,
-								task.timestamp,
-								'mm:ss',
-							)}
-						</Typography>
-					</Stack>
+							<Typography variant="H5">
+								{taskTitle[task.type]}
+							</Typography>
+							<Typography
+								variant="Body"
+								color="textSecondary"
+							>
+								{timeDifference(
+									task.startedAt,
+									task.timestamp,
+									'mm:ss',
+								)}
+							</Typography>
+						</Stack>
 
-					<Box
-						sx={{
-							flexGrow: 1,
-							position: 'relative',
-						}}
-					>
 						<Box
 							sx={{
-								height: '100%',
-								overflow: 'auto',
-								position: 'absolute',
-								top: 0,
-								bottom: 0,
-								left: 0,
-								right: 0,
+								flexGrow: 1,
+								position: 'relative',
 							}}
 						>
-							{taskResult(task)}
+							<Box
+								sx={{
+									height: '100%',
+									overflow: 'auto',
+									position: 'absolute',
+									top: 0,
+									bottom: 0,
+									left: 0,
+									right: 0,
+								}}
+							>
+								{taskResult(task)}
+							</Box>
 						</Box>
-					</Box>
-				</Stack>
+					</Stack>{' '}
+				</ModalBodyBackground>
 			</ModalBody>
 		</Modal>
 	);

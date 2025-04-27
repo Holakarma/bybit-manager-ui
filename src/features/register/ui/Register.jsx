@@ -5,7 +5,7 @@ import {
 	TaskSettingsBase,
 	TaskSettingsPage,
 } from 'entities/task';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import useRegisterTask from '../api/registerAccount';
 
 const Register = ({ ...props }) => {
@@ -16,11 +16,14 @@ const Register = ({ ...props }) => {
 	});
 	const mutation = useRegisterTask();
 
-	const isLegit = (account) => !account.registered;
+	const disabledTooltip = useCallback(
+		(account) => (account.registered === true ? 'Already registered' : ''),
+		[],
+	);
 
 	return (
 		<CreateTask
-			filterAccounts={isLegit}
+			disabledTooltip={disabledTooltip}
 			handleStart={mutation.mutate}
 			task="register"
 			settings={settings}
@@ -40,13 +43,7 @@ const Register = ({ ...props }) => {
 				},
 				{
 					title: 'Accounts',
-					component: (
-						<TaskAccountsPage
-							key="accounts"
-							filterAccounts={isLegit}
-							filteredTooltip="Account is already registered"
-						/>
-					),
+					component: <TaskAccountsPage key="accounts" />,
 				},
 			]}
 		>
