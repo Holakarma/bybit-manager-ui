@@ -57,6 +57,8 @@ const useSolveAndVerifyCaptcha = () => {
 						gee4test_gen_time: solvedCaptcha.result.gen_time,
 					});
 				}
+
+				throw Error('No captcha type found. Check the app settings.');
 			},
 		});
 	};

@@ -27,7 +27,7 @@ const successLog = (message, database_id) => ({
 	time: Date.now(),
 });
 
-const useLogStoreBase = create((set) => ({
+const useLogStoreBase = create((set, get) => ({
 	logs: { general: [] },
 
 	addLog: ({ newLog, group = 'general' }) =>
@@ -39,6 +39,8 @@ const useLogStoreBase = create((set) => ({
 				},
 			};
 		}),
+
+	getLogsByGroup: (group) => get().logs[group],
 
 	addErrorLog: ({ error, group = 'general', database_id = null }) =>
 		set((state) => {

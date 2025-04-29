@@ -1,7 +1,6 @@
 import {
 	Box,
 	Button,
-	Card,
 	CardActions,
 	CardContent,
 	CardHeader,
@@ -12,6 +11,7 @@ import {
 	ListItemIcon,
 	ListItemText,
 	Modal,
+	Stack,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -78,6 +78,7 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 				<ListItemButton
 					dense
 					onClick={() => handleClick(account)}
+					disableRipple
 				>
 					<ListItemIcon>
 						<Checkbox
@@ -115,13 +116,7 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 				position="relative"
 			>
 				<ModalBodyBackground>
-					<Card
-						sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							height: '100%',
-						}}
-					>
+					<Stack height="100%">
 						<CardHeader
 							subheader={`${selectedAccounts.length} selected`}
 						/>
@@ -172,7 +167,7 @@ const SelectedAccountsModal = ({ onClose, open, selectedAccounts }) => {
 								</Button>
 							)}
 						</CardActions>
-					</Card>
+					</Stack>
 				</ModalBodyBackground>
 			</ModalBody>
 		</Modal>

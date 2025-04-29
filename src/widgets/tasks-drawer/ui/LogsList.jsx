@@ -3,6 +3,7 @@ import { useLogs } from 'entities/log';
 import { useMemo } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
+import formatTime from './../../../shared/lib/formatDate/formatTime';
 
 const LogsList = () => {
 	const logs = useLogs.use.logs();
@@ -18,6 +19,12 @@ const LogsList = () => {
 				<ListItem
 					key={log.id}
 					disablePadding
+					sx={{
+						display: 'flex',
+						justifyContent: 'space-between',
+						alignItems: 'center',
+						gap: 2,
+					}}
 				>
 					<Stack
 						direction="row"
@@ -31,6 +38,13 @@ const LogsList = () => {
 						</Typography>
 						<Typography color={log.type}>{log.message}</Typography>
 					</Stack>
+
+					<Typography
+						variant="caption"
+						color="textSecondary"
+					>
+						{formatTime(new Date(log.time))}
+					</Typography>
 				</ListItem>
 			</div>
 		);
