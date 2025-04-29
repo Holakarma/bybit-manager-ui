@@ -52,7 +52,7 @@ const MethodSelect = forwardRef(({ value, onChange, ...props }, ref) => (
 	</Select>
 ));
 
-const defaultCustomRequest = {
+const defaultCustomRequest = () => ({
 	method: 'GET',
 	path: '',
 	json: '{}',
@@ -61,11 +61,13 @@ const defaultCustomRequest = {
 	bodyType: 'JSON',
 	title: 'New request',
 	id: uniqueId(),
-};
+});
 
 const CustomRequest = ({ ...props }) => {
 	const customRequest = useSelectedRequest.use.request();
 	const setRequest = useSelectedRequest.use.setRequest();
+
+	console.log(customRequest);
 
 	const {
 		control,
@@ -77,7 +79,7 @@ const CustomRequest = ({ ...props }) => {
 		resetField,
 		watch,
 	} = useForm({
-		defaultValues: customRequest || defaultCustomRequest,
+		defaultValues: customRequest || defaultCustomRequest(),
 		mode: 'onChange',
 	});
 
@@ -99,7 +101,7 @@ const CustomRequest = ({ ...props }) => {
 			});
 			append({ key: '', value: '' });
 		} else {
-			reset(defaultCustomRequest);
+			reset(defaultCustomRequest());
 		}
 		return () => reset();
 	}, [customRequest, reset, append]);

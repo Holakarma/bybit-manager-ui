@@ -48,6 +48,7 @@ export const useUpdateProfileMutation = () => {
 				settings,
 			});
 		} catch (error) {
+			console.log('here');
 			addErrorLog({ error, group: taskId, database_id });
 			return;
 		}

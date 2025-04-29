@@ -20,20 +20,21 @@ const usePreloginAttempt = () => {
 				/* If account is not logged in */
 				if (!expire || expire * 1000 < Date.now()) {
 					if (settings.prelogin) {
-						try {
-							addInfoLog({
-								message:
-									'cookies was not found or expired, try to prelogin account',
-								group: taskId,
-								database_id,
-							});
+						addInfoLog({
+							message:
+								'cookies was not found or expired, try to prelogin account',
+							group: taskId,
+							database_id,
+						});
 
+						try {
 							await loginMutation.mutateAsync({
 								database_id,
 								taskId,
 								signal,
 							});
 						} catch (error) {
+							console.log('error in prelogin attempt');
 							throw Error(
 								`failed to prelogin account: ${error.message}`,
 							);
