@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
 	ColumnVisibilityContext,
 	ToggleNameContext,
+	useAccount,
 	useDefaultAccount,
 	useSelectedAccountsId,
 	useUpdateAccountMutation,
@@ -87,11 +88,14 @@ const AccountsTable = ({
 	};
 	const [toggleName, setToggleName] = useState(getInitialToggleName());
 
-	const handleRowContextMenu = (event) => {
+	const accountMutation = useAccount();
+	const handleRowContextMenu = async (event) => {
 		event.preventDefault();
-		setDefaultAccountId(
-			Number(event.currentTarget.getAttribute('data-id')),
-		);
+		const id = event.currentTarget.getAttribute('data-id');
+		const account = await accountMutation.mutateAsync(id);
+		if (account.registered) {
+			setDefaultAccountId(Number(id));
+		}
 	};
 
 	const computeMutation = (newRow, oldRow) => {

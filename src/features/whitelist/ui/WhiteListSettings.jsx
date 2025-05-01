@@ -40,7 +40,7 @@ const WhiteListSettings = ({ settings, onSettingsChange }) => {
 								value="enable_totp"
 							/>
 						}
-						label="Try to enable TOTP"
+						label="Enable 2FA (TOTP) if disabled"
 					/>
 				</FormGroup>
 				<Typography
@@ -62,7 +62,7 @@ const WhiteListSettings = ({ settings, onSettingsChange }) => {
 								value="enable_whitelist"
 							/>
 						}
-						label="Try to enable whitelist"
+						label="Enable whitelist is disabled"
 					/>
 				</FormGroup>
 			</Stack>

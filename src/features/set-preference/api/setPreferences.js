@@ -5,11 +5,11 @@ import { usePendingTasks, useTask } from 'entities/task';
 import { usePreloginAttempt } from 'features/login/@X/pre-login';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
 
-const setPreferences = (database_id, signal) => {
+const setPreferences = ({ database_id, signal, deposit_to }) => {
 	const api = new Api();
 	return api.Post(
 		ENDPOINTS.set_preferences,
-		{ deposit_to: 'uta' },
+		{ deposit_to },
 		{
 			signal,
 			params: { database_id },
@@ -18,11 +18,15 @@ const setPreferences = (database_id, signal) => {
 };
 
 export const useSetPreferencesAccountMutation = () => {
-	const mutationFunction = ({ database_id, signal }) => {
+	const mutationFunction = ({ database_id, signal, deposit_to }) => {
 		return deduplicateRequests({
 			requestKey: ['set-preferences', database_id],
 			requestFn: async () => {
-				const result = await setPreferences(database_id, signal);
+				const result = await setPreferences({
+					database_id,
+					signal,
+					deposit_to,
+				});
 				return { result, database_id };
 			},
 		});
@@ -78,7 +82,11 @@ const useSetPreferencesTask = () => {
 		});
 
 		try {
-			await mutation.mutateAsync({ database_id, signal });
+			await mutation.mutateAsync({
+				database_id,
+				signal,
+				deposit_to: settings.deposit_to,
+			});
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
 			return;

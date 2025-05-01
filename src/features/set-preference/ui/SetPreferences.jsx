@@ -8,6 +8,7 @@ import {
 } from 'entities/task';
 import { useState } from 'react';
 import useSetPreferencesTask from '../api/setPreferences';
+import DepositSettings from './DepositSettings';
 
 const SetPreferences = () => {
 	const [settings, setSettings] = useState({
@@ -15,6 +16,7 @@ const SetPreferences = () => {
 		delay: { min: 60, max: 90, enabled: true },
 		shuffle: false,
 		prelogin: true,
+		deposit_to: 'uta',
 	});
 
 	const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -45,6 +47,13 @@ const SetPreferences = () => {
 										onSettingsChange={(newSettings) =>
 											setSettings(newSettings)
 										}
+									/>
+									<DepositSettings
+										settings={settings}
+										onSettingsChange={(newSettings) =>
+											setSettings(newSettings)
+										}
+										sx={{ marginTop: 2 }}
 									/>
 								</TaskSettingsPage>
 							),
