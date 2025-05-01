@@ -50,7 +50,7 @@ export const useLoginAccountMutation = () => {
 			});
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
-			return;
+			throw Error(error.detail);
 		}
 
 		if (permission.is_sanction_ip_disallow) {
@@ -77,7 +77,7 @@ export const useLoginAccountMutation = () => {
 			});
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
-			return;
+			throw Error(error.detail);
 		}
 
 		addInfoLog({
@@ -97,7 +97,7 @@ export const useLoginAccountMutation = () => {
 			});
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
-			return;
+			throw Error(error.detail);
 		}
 
 		addInfoLog({
@@ -117,7 +117,7 @@ export const useLoginAccountMutation = () => {
 				});
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
-			return;
+			throw Error(error.detail);
 		}
 
 		addInfoLog({
@@ -138,7 +138,7 @@ export const useLoginAccountMutation = () => {
 			riskTokenType = risk.result.risk_token_type;
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
-			return;
+			throw Error(error.detail);
 		}
 
 		addInfoLog({
@@ -157,7 +157,7 @@ export const useLoginAccountMutation = () => {
 			});
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
-			return;
+			throw Error(error.detail);
 		}
 
 		addInfoLog({
@@ -175,7 +175,7 @@ export const useLoginAccountMutation = () => {
 			});
 		} catch (error) {
 			addErrorLog({ error, group: taskId, database_id });
-			return;
+			throw Error(error.detail);
 		}
 
 		addSuccessLog({

@@ -51,7 +51,7 @@ function a11yProps(index) {
 	};
 }
 
-const WhiteListParams = ({ settings, onSettingsChange, onError }) => {
+const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 	const defaultAccount = useDefaultAccount.use.defaultAccountId();
 	const queryClient = useQueryClient();
 	const {
@@ -355,6 +355,13 @@ const WhiteListParams = ({ settings, onSettingsChange, onError }) => {
 							size="small"
 							label="Addresses"
 							variant="outlined"
+							helperText={`${addressesTyping ? addressesTyping.split('\n').length : 0}/${ids.length}`}
+							error={
+								addressesTyping
+									? addressesTyping.split('\n').length !==
+										ids.length
+									: true
+							}
 						/>
 
 						<ChainPicker

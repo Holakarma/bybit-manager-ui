@@ -1,4 +1,4 @@
-import { Box, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 
 const style = {
 	bgcolor: 'background.paper',
@@ -12,17 +12,13 @@ const ModalBodyBackground = ({ sx, children, ...props }) => {
 	return (
 		<Stack
 			height="100%"
-			maxWidth="100%"
+			minWidth="100%"
 			overflow="auto"
-			justifyContent="center"
-			alignItems="center"
+			justifyContent="start"
+			{...props}
+			sx={{ ...style, ...sx }}
 		>
-			<Box
-				{...props}
-				sx={{ ...style, ...sx }}
-			>
-				{children}
-			</Box>
+			{children}
 		</Stack>
 	);
 };

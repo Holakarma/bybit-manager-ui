@@ -33,11 +33,8 @@ const usePreloginAttempt = () => {
 								taskId,
 								signal,
 							});
-						} catch (error) {
-							console.log('error in prelogin attempt');
-							throw Error(
-								`failed to prelogin account: ${error.message}`,
-							);
+						} catch (_e) {
+							throw Error(`failed to prelogin account`);
 						}
 					} else {
 						throw Error('account is not logged in, skip');

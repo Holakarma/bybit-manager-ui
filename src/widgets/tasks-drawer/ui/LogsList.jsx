@@ -51,7 +51,7 @@ const LogsList = () => {
 	};
 
 	return (
-		<List sx={{ width: '100%', height: '100%' }}>
+		<List sx={{ minWidth: '100%', height: '100%' }}>
 			{allLogs.length === 0 ? (
 				<Typography
 					variant="Captopn"

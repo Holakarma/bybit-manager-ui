@@ -135,6 +135,7 @@ const Whitelist = () => {
 								<TaskSettingsPage key="params">
 									<WhiteListParams
 										settings={settings}
+										ids={ids}
 										onSettingsChange={onSettingsChange}
 										onError={() =>
 											setErrorText(

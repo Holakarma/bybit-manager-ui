@@ -10,13 +10,15 @@ const useSaveTask = () => {
 		mutationFn: async (task) => {
 			await taskDB.addTask({
 				type: task.type,
-				logs: getLogsByGroup(task.id),
+				logs: getLogsByGroup(task.id) || [],
 				startedAt: task.startedAt,
 				id: task.id,
 			});
 			queryClient.invalidateQueries({
 				queryKey: ['tasks'],
 			});
+
+			return;
 		},
 		mutationKey: ['save task'],
 	});

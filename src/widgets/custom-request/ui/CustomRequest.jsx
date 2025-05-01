@@ -67,8 +67,6 @@ const CustomRequest = ({ ...props }) => {
 	const customRequest = useSelectedRequest.use.request();
 	const setRequest = useSelectedRequest.use.setRequest();
 
-	console.log(customRequest);
-
 	const {
 		control,
 		handleSubmit,

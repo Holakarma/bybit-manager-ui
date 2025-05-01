@@ -185,7 +185,7 @@ const useAddWithdrawAddressAccount = () => {
 		} catch (error) {
 			if (error.bybit_response?.ret_code === 32040) {
 				addSuccessLog({
-					message: 'withdraw address already exists',
+					message: `withdraw address ${addressData.address} already exists`,
 					group: taskId,
 					database_id,
 				});
@@ -195,11 +195,37 @@ const useAddWithdrawAddressAccount = () => {
 			return;
 		}
 
+		if (addressData.remark) {
+			addSuccessLog({
+				message: `REMARK: ${addressData.remark}`,
+				group: taskId,
+				database_id,
+			});
+		}
+		if (settings.memo[database_id]) {
+			addSuccessLog({
+				message: `MEMO: ${settings.memo[database_id]}`,
+				group: taskId,
+				database_id,
+			});
+		}
 		addSuccessLog({
-			message: 'withdraw address added to whitelist',
+			message: `SYMBOL CHAIN: ${addressData.chain_type}`,
 			group: taskId,
 			database_id,
 		});
+		addSuccessLog({
+			message: `ADDRESS: ${addressData.address}`,
+			group: taskId,
+			database_id,
+		});
+		addSuccessLog({
+			message: `withdraw address added to whitelist ${settings.setAsDefault ? 'and set as default' : ''}.`,
+			group: taskId,
+			database_id,
+		});
+
+		return;
 	};
 
 	return useMutation({
