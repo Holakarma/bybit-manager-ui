@@ -43,7 +43,10 @@ const CustomRequestItem = ({ request }) => {
 	};
 	const handleDelete = () => {
 		mutation.mutate(request.id);
-		unsetRequest();
+
+		if (selected?.id === request.id) {
+			unsetRequest();
+		}
 		handleClose();
 	};
 

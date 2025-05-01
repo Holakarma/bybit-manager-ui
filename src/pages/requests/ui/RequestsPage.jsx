@@ -8,7 +8,6 @@ const RequestPage = () => {
 			gap={4}
 			flexGrow={1}
 			maxWidth="100%"
-			// maxHeight="100%"
 		>
 			<Typography variant="H3">Requests</Typography>
 

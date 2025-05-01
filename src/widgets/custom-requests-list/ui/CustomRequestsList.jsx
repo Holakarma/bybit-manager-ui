@@ -48,7 +48,6 @@ const CustomRequestsList = ({ ...props }) => {
 
 			{!requests.length && (
 				<Typography
-					textAlign="center"
 					variant="Body"
 					color="textSecondary"
 				>
