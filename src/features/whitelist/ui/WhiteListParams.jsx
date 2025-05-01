@@ -402,6 +402,7 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 										onChange={handleVerifyChange}
 									/>
 								}
+								sx={{ marginLeft: 0 }}
 								label="No verification needed for these addresses next time"
 							/>
 						</FormGroup>
@@ -413,6 +414,7 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 										onChange={handleSetAsDefaultChange}
 									/>
 								}
+								sx={{ marginLeft: 0 }}
 								label="Set as default address"
 							/>
 						</FormGroup>

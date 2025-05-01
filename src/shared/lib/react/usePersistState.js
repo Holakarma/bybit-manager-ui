@@ -9,9 +9,7 @@ const usePersistState = (key, defaultReturned) => {
 		try {
 			const savedWidths = localStorage.getItem(key);
 			return savedWidths ? JSON.parse(savedWidths) : defaultReturned;
-		} catch (e) {
-			console.error('Error while getting column widths: ', e);
-
+		} catch (_e) {
 			return defaultReturned;
 		}
 	});
