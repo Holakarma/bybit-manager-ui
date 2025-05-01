@@ -1,12 +1,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+	useAccount,
+	useDefaultAccount,
+	useUpdateAccountMutation,
+} from 'entities/account';
 import { useLogs } from 'entities/log';
 import { usePendingTasks, useTask } from 'entities/task';
 import { useSnackbar } from 'notistack';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
+import useIsEmailExistMutation from './isEmailExist';
 
-const registerAccount = (database_id, signal) => {
+const registerAccount = async (database_id, signal) => {
 	const api = new Api();
-	return api.Post(ENDPOINTS.register_account, null, {
+	return await api.Post(ENDPOINTS.register_account, null, {
 		signal,
 		params: { database_id },
 	});
@@ -60,17 +66,68 @@ const useRegisterTask = () => {
 		changeAccountDescription(taskId, id, 'Signing up...');
 	};
 
+	const defaultAccount = useDefaultAccount.use.defaultAccountId();
+	const updateAccountMutation = useUpdateAccountMutation();
+	const accountMutation = useAccount();
+	const testEmailMutation = useIsEmailExistMutation();
 	const mutation = useRegisterAccountMutation();
 	const addInfoLog = useLogs.use.addInfoLog();
 	const addErrorLog = useLogs.use.addErrorLog();
 	const addSuccessLog = useLogs.use.addSuccessLog();
 
-	const mutationFunction = async ({ database_id, signal, taskId }) => {
+	const mutationFunction = async ({
+		database_id,
+		signal,
+		taskId,
+		settings,
+	}) => {
 		addInfoLog({
-			message: 'registering',
+			message: 'try to sign up',
 			group: taskId,
 			database_id,
 		});
+
+		if (settings.test_email) {
+			try {
+				const account = await accountMutation.mutateAsync(database_id);
+
+				addInfoLog({
+					message: `checking the email ${account.email.address}`,
+					group: taskId,
+					database_id,
+				});
+
+				const isExist = await testEmailMutation.mutateAsync({
+					database_id: defaultAccount,
+					signal,
+					email: account.email.address,
+				});
+
+				if (isExist.result) {
+					addErrorLog({
+						error: Error('email already exist'),
+						group: taskId,
+						database_id,
+					});
+					await updateAccountMutation.mutateAsync({
+						id: database_id,
+						registered: true,
+					});
+					return;
+				}
+			} catch (error) {
+				addErrorLog({ error, group: taskId, database_id });
+				return;
+			}
+		}
+
+		addInfoLog({
+			message: 'email is not exist, signing up',
+			group: taskId,
+			database_id,
+		});
+
+		return;
 
 		try {
 			await mutation.mutateAsync({ database_id, signal });

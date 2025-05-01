@@ -7,12 +7,14 @@ import {
 } from 'entities/task';
 import { useCallback, useState } from 'react';
 import useRegisterTask from '../api/registerAccount';
+import TestEmailSetting from './TestEmailSetting';
 
 const Register = ({ ...props }) => {
 	const [settings, setSettings] = useState({
 		threads: 1,
 		delay: { min: 60, max: 90, enabled: true },
 		shuffle: false,
+		test_email: true,
 	});
 	const mutation = useRegisterTask();
 
@@ -37,6 +39,13 @@ const Register = ({ ...props }) => {
 								onSettingsChange={(newSettings) =>
 									setSettings(newSettings)
 								}
+							/>
+							<TestEmailSetting
+								settings={settings}
+								onSettingsChange={(newSettings) =>
+									setSettings(newSettings)
+								}
+								sx={{ marginTop: 2 }}
 							/>
 						</TaskSettingsPage>
 					),
