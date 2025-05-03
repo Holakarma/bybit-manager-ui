@@ -1,15 +1,26 @@
-import { Box, Button, Stack, Tab, Tabs } from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import {
+	Box,
+	Button,
+	ListItemIcon,
+	ListItemText,
+	Menu,
+	MenuItem,
+	Stack,
+	Tab,
+	Tabs,
+} from '@mui/material';
 import { useSelectedRequest } from 'entities/custom-request';
+import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
+import { stringifyCurl } from 'shared/lib/curl-parser';
 import { formatJson } from 'shared/lib/format-json';
 import { uniqueId } from 'shared/lib/generateUniqueId';
 import { exportParams } from 'shared/lib/param-parser';
 import RequestFormContainer from '../containers/handleSubmitContainer';
 import pastehandler from '../lib/pasteHandler';
-import useCustomRequestForm from '../model/customRequestForm';
-import CookiesTab from './CookiesTab';
-import HeadersTab from './HeadersTab';
+import useCustomRequestForm, { defaultParam } from '../model/customRequestForm';
 import ParamsTab from './ParamsTab';
 import PathController from './PathController';
 import RequestBodyTab from './RequestBodyTab';
@@ -20,7 +31,9 @@ const defaultCustomRequest = () => ({
 	path: '',
 	json: '{}',
 	data: '',
-	params: [{ key: '', value: '', avtive: false }],
+	params: [defaultParam()],
+	headers: [defaultParam()],
+	cookies: [defaultParam()],
 	bodyType: 'JSON',
 	title: 'New request',
 	id: uniqueId(),
@@ -28,6 +41,7 @@ const defaultCustomRequest = () => ({
 
 const CustomRequest = ({ ...props }) => {
 	const customRequest = useSelectedRequest.use.request();
+	const { enqueueSnackbar } = useSnackbar();
 
 	const {
 		handleSubmit,
@@ -38,25 +52,32 @@ const CustomRequest = ({ ...props }) => {
 		reset,
 		resetField,
 		watch,
-		paramsFields,
-		append,
-		remove,
-		handleParamChange,
+		fieldArrays,
+		fieldsController,
+		handleArrayFieldsChange,
 	} = useCustomRequestForm(defaultCustomRequest());
 
 	useEffect(() => {
+		const paramNames = ['params', 'headers', 'cookies'];
 		if (customRequest) {
 			reset({
 				...customRequest,
 				json: formatJson(customRequest.json),
 				params: [...exportParams(customRequest.params)],
+				headers: [...exportParams(customRequest.headers || [])], // || [] for backward compatibility
+				cookies: [...exportParams(customRequest.cookies || [])], // || [] for backward compatibility
 			});
-			append({ key: '', value: '' });
+			paramNames.forEach((name) => {
+				fieldsController.append[name](defaultParam());
+			});
 		} else {
 			reset(defaultCustomRequest());
+			paramNames.forEach((name) => {
+				fieldsController.replace[name]([defaultParam()]);
+			});
 		}
 		return () => reset();
-	}, [customRequest, reset, append]);
+	}, [customRequest, reset, fieldsController]);
 
 	const { onSubmit, isLoading } = RequestFormContainer();
 
@@ -96,102 +117,202 @@ const CustomRequest = ({ ...props }) => {
 	};
 
 	const handlePaste = (e) => {
-		pastehandler({ e, setValue, trigger, remove, append, resetField });
+		pastehandler({ e, setValue, trigger, fieldsController, resetField });
+	};
+
+	/* Context menu */
+	const handleCopy = () => {
+		try {
+			navigator.clipboard.writeText(stringifyCurl(customRequest));
+			enqueueSnackbar('Copied to clipboard', {
+				variant: 'info',
+			});
+		} catch (e) {
+			if (!customRequest) {
+				enqueueSnackbar(
+					`There is nothing to copy. Try to save or update the request.`,
+					{
+						variant: 'warning',
+					},
+				);
+			} else {
+				enqueueSnackbar(`Did not copied to clipboard: ${e.message}`, {
+					variant: 'error',
+				});
+			}
+		}
+
+		handleClose();
+	};
+
+	const [contextMenu, setContextMenu] = useState(null);
+	const handleContextMenu = (event) => {
+		event.preventDefault();
+		setContextMenu(
+			contextMenu === null
+				? {
+						mouseX: event.clientX + 2,
+						mouseY: event.clientY - 6,
+					}
+				: // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+					// Other native context menus might behave different.
+					// With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+					null,
+		);
+	};
+	const handleClose = () => {
+		setContextMenu(null);
 	};
 
 	return (
-		<Stack
-			{...props}
-			gap={2}
-			component={'form'}
-			onSubmit={handleSubmit(onSubmit)}
-			justifyContent={'space-between'}
-		>
-			<Stack gap={2}>
-				<Controller
-					name="title"
-					control={control}
-					render={({ field }) => (
-						<RequestTitle
-							title={field.value}
-							onChange={field.onChange}
-						/>
-					)}
-				/>
+		<>
+			<Stack
+				{...props}
+				gap={2}
+				component={'form'}
+				onSubmit={handleSubmit(onSubmit)}
+				justifyContent={'space-between'}
+			>
 				<Stack
-					direction="row"
 					gap={2}
-					paddingTop={2}
+					flexGrow={1}
 				>
-					<PathController
+					<Controller
+						name="title"
 						control={control}
-						errors={errors}
-						onPaste={handlePaste}
+						render={({ field }) => (
+							<RequestTitle
+								title={field.value}
+								onChange={field.onChange}
+							/>
+						)}
 					/>
+					<Stack
+						direction="row"
+						gap={2}
+						paddingTop={2}
+						onContextMenu={handleContextMenu}
+					>
+						<PathController
+							control={control}
+							errors={errors}
+							onPaste={handlePaste}
+						/>
+					</Stack>
+
+					<Tabs
+						value={tab}
+						onChange={handletabChange}
+					>
+						<Tab label="Query" />
+						<Tab label="Body" />
+						<Tab label="Headers" />
+						<Tab label="Cookies" />
+					</Tabs>
+
+					<Box
+						flexGrow={1}
+						position="relative"
+					>
+						<Box
+							position="absolute"
+							height="100%"
+							width="100%"
+							overflow="auto"
+						>
+							{/* Params */}
+							{tab === 0 && (
+								<ParamsTab
+									onChange={(newParam, i) =>
+										handleArrayFieldsChange(
+											i,
+											newParam,
+											'params',
+										)
+									}
+									paramsFields={fieldArrays['params']}
+									errors={errors}
+								/>
+							)}
+
+							{/* Body */}
+							{tab === 1 && (
+								<RequestBodyTab
+									onJsonBlur={handleJsonBlur}
+									control={control}
+									bodyTypeWatch={bodyTypeWatch}
+									validateBody={validateBody}
+									errors={errors}
+								/>
+							)}
+
+							{/* Headers */}
+							{tab === 2 && (
+								<ParamsTab
+									onChange={(newParam, i) =>
+										handleArrayFieldsChange(
+											i,
+											newParam,
+											'headers',
+										)
+									}
+									paramsFields={fieldArrays['headers']}
+									errors={errors}
+								/>
+							)}
+
+							{/* Cookies */}
+							{tab === 3 && (
+								<ParamsTab
+									onChange={(newParam, i) =>
+										handleArrayFieldsChange(
+											i,
+											newParam,
+											'cookies',
+										)
+									}
+									paramsFields={fieldArrays['cookies']}
+									errors={errors}
+								/>
+							)}
+						</Box>
+					</Box>
 				</Stack>
 
-				<Tabs
-					value={tab}
-					onChange={handletabChange}
-					aria-label="basic tabs example"
-				>
-					<Tab label="Query" />
-					<Tab label="Body" />
-					<Tab label="Headers" />
-					<Tab label="Cookies" />
-				</Tabs>
-
-				{/* Params */}
-				{tab === 0 && (
-					<ParamsTab
-						onChange={(newParam, i) =>
-							handleParamChange(i, newParam)
-						}
-						paramsFields={paramsFields}
-						errors={errors}
-					/>
-				)}
-
-				{/* Body */}
-				{tab === 1 && (
-					<RequestBodyTab
-						onJsonBlur={handleJsonBlur}
-						control={control}
-						bodyTypeWatch={bodyTypeWatch}
-						validateBody={validateBody}
-						errors={errors}
-					/>
-				)}
-
-				{/* Headers */}
-				{tab === 3 && (
-					<HeadersTab
-						control={control}
-						errors={errors}
-					/>
-				)}
-
-				{/* Cookies */}
-				{tab === 4 && (
-					<CookiesTab
-						control={control}
-						errors={errors}
-					/>
-				)}
+				<Box textAlign="end">
+					<Button
+						type="submit"
+						variant="contained"
+						sx={{ minWidth: '100px' }}
+						disabled={!isValid || !isDirty}
+						loading={isLoading}
+					>
+						{customRequest ? 'Update' : 'Save'}
+					</Button>
+				</Box>
 			</Stack>
 
-			<Box textAlign="end">
-				<Button
-					type="submit"
-					variant="contained"
-					sx={{ minWidth: '100px' }}
-					disabled={!isValid || !isDirty}
-					loading={isLoading}
-				>
-					{customRequest ? 'Update' : 'Save'}
-				</Button>
-			</Box>
-		</Stack>
+			<Menu
+				open={contextMenu !== null}
+				onClose={handleClose}
+				anchorReference="anchorPosition"
+				anchorPosition={
+					contextMenu !== null
+						? {
+								top: contextMenu.mouseY,
+								left: contextMenu.mouseX,
+							}
+						: undefined
+				}
+			>
+				<MenuItem onClick={handleCopy}>
+					<ListItemIcon>
+						<ContentCopyIcon fontSize="small" />
+					</ListItemIcon>
+					<ListItemText>copy as curl(Bash)</ListItemText>
+				</MenuItem>
+			</Menu>
+		</>
 	);
 };
 

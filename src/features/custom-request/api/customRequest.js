@@ -3,6 +3,7 @@ import { useCustomRequests } from 'entities/custom-request';
 import { useLogs } from 'entities/log';
 import { usePendingTasks, useTask } from 'entities/task';
 import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
+import { CustomRequestApiDTO } from '../model/customRequestApiDTO';
 
 const customRequest = (database_id, signal, request) => {
 	const api = new Api();
@@ -30,6 +31,7 @@ export const useCustomRequestMutation = (request) => {
 	return useMutation({
 		mutationFn: mutationFunction,
 		mutationKey: ['custom request'],
+		enabled: request,
 	});
 };
 
@@ -58,7 +60,9 @@ const useCustomRequestTask = (requestId) => {
 	const accountMutationHandler = (id, taskId) => {
 		changeAccountDescription(taskId, id, 'Processing...');
 	};
-	const mutation = useCustomRequestMutation(request);
+	const mutation = useCustomRequestMutation(
+		request && new CustomRequestApiDTO(request),
+	);
 	const addInfoLog = useLogs.use.addInfoLog();
 	const addErrorLog = useLogs.use.addErrorLog();
 	const addSuccessLog = useLogs.use.addSuccessLog();

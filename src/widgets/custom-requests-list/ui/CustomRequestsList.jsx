@@ -1,5 +1,7 @@
-import { CircularProgress, List, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, List, Stack, Typography } from '@mui/material';
 import { useCustomRequests } from 'entities/custom-request';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList } from 'react-window';
 import CreateRequestButton from './CreateRequestButton';
 import CustomRequestItem from './CustomRequestItem';
 
@@ -39,10 +41,20 @@ const CustomRequestsList = ({ ...props }) => {
 		);
 	}
 
+	const Row = ({ index, style }) => {
+		const request = requests[index];
+		return (
+			<div style={style}>
+				<CustomRequestItem request={request} />
+			</div>
+		);
+	};
+
 	return (
 		<Stack
 			gap={2}
 			{...props}
+			height="100%"
 		>
 			<Typography variant="H5">Your requests</Typography>
 
@@ -57,14 +69,33 @@ const CustomRequestsList = ({ ...props }) => {
 
 			{requests.length ? <CreateRequestButton /> : null}
 
-			<List>
-				{requests.map((request, i) => (
-					<CustomRequestItem
-						key={i}
-						request={request}
-					/>
-				))}
-			</List>
+			<Box
+				flexGrow={1}
+				position="relative"
+			>
+				<List
+					sx={{
+						position: 'absolute',
+						width: '100%',
+						height: '100%',
+						overflow: 'auto',
+					}}
+				>
+					<AutoSizer>
+						{({ height, width }) => (
+							<FixedSizeList
+								height={height}
+								width={width}
+								itemCount={requests.length}
+								itemSize={40}
+								overscanCount={1}
+							>
+								{Row}
+							</FixedSizeList>
+						)}
+					</AutoSizer>
+				</List>
+			</Box>
 		</Stack>
 	);
 };

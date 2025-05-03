@@ -1,5 +1,7 @@
-import parseCurl from 'shared/lib/curl-parser';
+import { parseCookies } from 'shared/lib/cookie-parser';
+import { parseCurl } from 'shared/lib/curl-parser';
 import { formatJson } from 'shared/lib/format-json';
+import { defaultParam } from '../model/customRequestForm';
 
 /* 
 
@@ -32,19 +34,16 @@ export default function pastehandler({
 	e,
 	setValue,
 	trigger,
-	remove,
-	append,
+	fieldsController,
 	resetField,
 }) {
 	e.preventDefault();
 
 	const pastedText = e.clipboardData.getData('text').trim();
 
-	let parsedUrl;
-
 	try {
 		/* try to parse url */
-		parsedUrl = new URL(pastedText);
+		const parsedUrl = new URL(pastedText);
 		setValue('path', parsedUrl.pathname.substring(1));
 		trigger('path');
 
@@ -59,11 +58,11 @@ export default function pastehandler({
 			value,
 		}));
 
-		remove();
+		fieldsController.remove['params']();
 		if (paramsArray.length > 0) {
-			append([...paramsArray]);
+			fieldsController.append['params']([...paramsArray]);
 		}
-		append([{ key: '', value: '' }]);
+		fieldsController.append['params']([defaultParam()]);
 	} catch (_e) {
 		/* try to parse curl */
 		try {
@@ -75,21 +74,59 @@ export default function pastehandler({
 			setValue('path', parsedUrl.pathname.substring(1));
 			trigger('path');
 
+			/* Query */
 			const queryParams = {};
 			for (const [key, value] of parsedUrl.searchParams.entries()) {
 				queryParams[key] = value;
 			}
 			const paramsArray = Object.entries(queryParams).map(
 				([key, value]) => ({
+					...defaultParam(),
 					key,
 					value,
 				}),
 			);
-			remove();
-			if (paramsArray.length > 0) {
-				append([...paramsArray]);
+
+			fieldsController.remove['params']();
+			fieldsController.append['params']([...paramsArray, defaultParam()]);
+
+			/* Cookie */
+			const { 'Set-Cookie': parcedCookies, ...parcedHeaders } =
+				parsedCurl.header;
+
+			let cookiesArray = [];
+
+			if (parcedCookies) {
+				const parsedCookiesObj = parseCookies(parcedCookies);
+
+				cookiesArray = Object.entries(parsedCookiesObj).map(
+					([key, value]) => ({
+						...defaultParam(),
+						key,
+						value,
+					}),
+				);
 			}
-			append([{ key: '', value: '' }]);
+			fieldsController.remove['cookies']();
+			fieldsController.append['cookies']([
+				...cookiesArray,
+				defaultParam(),
+			]);
+
+			/* Headers */
+			const headersArray = Object.entries(parcedHeaders).map(
+				([key, value]) => ({
+					...defaultParam(),
+					key,
+					value,
+				}),
+			);
+
+			fieldsController.remove['headers']();
+			fieldsController.append['headers']([
+				...headersArray,
+				defaultParam(),
+			]);
 
 			resetField('body');
 			resetField('data');
@@ -107,7 +144,7 @@ export default function pastehandler({
 				trigger('bodyType');
 			}
 		} catch (_e) {
-			console.log(_e.message);
+			console.error(_e.message);
 			/* do not parse */
 			setValue('path', pastedText);
 		}

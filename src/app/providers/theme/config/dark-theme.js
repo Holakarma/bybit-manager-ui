@@ -75,8 +75,15 @@ const componentsStyles = {
 			// 	borderRadius: 8, // Закругление углов
 			// },
 			// arrow: {
-			// 	color: '#333', // Цвет стрелки Tooltip
+			// 	color: '#333', // Цвет стрелки TooltАip
 			// },
+		},
+	},
+	MuiFormControlLabel: {
+		styleOverrides: {
+			root: {
+				marginLeft: 0,
+			},
 		},
 	},
 };

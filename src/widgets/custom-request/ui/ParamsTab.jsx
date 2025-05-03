@@ -6,7 +6,6 @@ const ParamsTab = ({ paramsFields, onChange, errors }) => {
 		<TableContainer
 			sx={{
 				flexGrow: 1,
-				paddingBlock: 1,
 				scrollbarWidth: 'thin',
 			}}
 		>
