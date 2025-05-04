@@ -1,6 +1,7 @@
 import {
 	CustomRequestDTO,
 	useAddCustomRequest,
+	useCustomRequests,
 	useSelectedRequest,
 	useUpdateCustomRequest,
 } from 'entities/custom-request';
@@ -11,6 +12,8 @@ const RequestFormContainer = () => {
 	const customRequest = useSelectedRequest.use.request();
 	const setRequest = useSelectedRequest.use.setRequest();
 
+	const { data: customRequests } = useCustomRequests();
+
 	const onSubmit = (data) => {
 		const newRequest = new CustomRequestDTO({
 			...data,
@@ -19,7 +22,8 @@ const RequestFormContainer = () => {
 			cookies: data.cookies.filter((p) => p.key),
 		});
 
-		if (customRequest) {
+		const isRequestExist = customRequests.includes(customRequest);
+		if (customRequest && isRequestExist) {
 			updateMutation.mutate({
 				id: newRequest.id,
 				newCustomRequestData: newRequest,

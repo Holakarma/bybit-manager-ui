@@ -63,29 +63,16 @@ const CustomRequest = ({ ...props }) => {
 	useEffect(() => {
 		const paramNames = ['params', 'headers', 'cookies'];
 		if (customRequest) {
-			if (!isRequestExist) {
-				setValue('title', customRequest.title + ' (copy)', {
-					shouldDirty: true,
-				});
-			}
-
-			reset(
-				{
-					...customRequest,
-					json: formatJson(customRequest.json),
-					params: [...exportParams(customRequest.params)],
-					headers: [...exportParams(customRequest.headers || [])], // || [] for backward compatibility
-					cookies: [...exportParams(customRequest.cookies || [])], // || [] for backward compatibility
-				},
-				{ keepDirty: true },
-			);
+			reset({
+				...customRequest,
+				json: formatJson(customRequest.json),
+				params: [...exportParams(customRequest.params)],
+				headers: [...exportParams(customRequest.headers || [])], // || [] for backward compatibility
+				cookies: [...exportParams(customRequest.cookies || [])], // || [] for backward compatibility
+			});
 			paramNames.forEach((name) => {
 				fieldsController.append[name](defaultParam());
 			});
-
-			if (!isRequestExist) {
-				setValue('title', customRequest.title + ' (copy)');
-			}
 		} else {
 			reset(defaultCustomRequest());
 			paramNames.forEach((name) => {

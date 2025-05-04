@@ -60,6 +60,7 @@ const CustomRequestItem = ({ request }) => {
 		setRequest({
 			...request,
 			id: uniqueId(),
+			title: request.title + ' (copy)',
 		});
 		handleClose();
 	};
