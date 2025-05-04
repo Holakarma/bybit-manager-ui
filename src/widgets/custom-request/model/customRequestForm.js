@@ -1,14 +1,7 @@
+import { defaultParam } from 'entities/custom-request';
 import { useCallback, useMemo } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
-import { uniqueId } from 'shared/lib/generateUniqueId';
 import { isEmptyValues } from 'shared/lib/isEmptyValues';
-
-export const defaultParam = () => ({
-	key: '',
-	value: '',
-	active: true,
-	id: uniqueId(),
-});
 
 const useCustomRequestForm = (defaultValues) => {
 	const form = useForm({

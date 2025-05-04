@@ -16,7 +16,7 @@ const RequestPage = () => {
 				spacing={2}
 				sx={{ flexGrow: 1 }}
 			>
-				<Grid2 size={3}>
+				<Grid2 size={4}>
 					<Paper sx={{ height: '100%', padding: 2 }}>
 						<CustomRequestsList />
 					</Paper>

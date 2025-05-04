@@ -14,9 +14,9 @@ const RequestFormContainer = () => {
 	const onSubmit = (data) => {
 		const newRequest = new CustomRequestDTO({
 			...data,
-			params: data.params.filter((p) => p.key && p.value),
-			headers: data.headers.filter((p) => p.key && p.value),
-			cookies: data.cookies.filter((p) => p.key && p.value),
+			params: data.params.filter((p) => p.key),
+			headers: data.headers.filter((p) => p.key),
+			cookies: data.cookies.filter((p) => p.key),
 		});
 
 		if (customRequest) {

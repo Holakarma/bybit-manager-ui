@@ -1,5 +1,10 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+// import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
+import ControlPointDuplicateRoundedIcon from '@mui/icons-material/ControlPointDuplicateRounded';
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import {
+	IconButton,
 	ListItem,
 	ListItemButton,
 	ListItemIcon,
@@ -14,7 +19,10 @@ import {
 	useDeleteCustomRequest,
 	useSelectedRequest,
 } from 'entities/custom-request';
+import { useSnackbar } from 'notistack';
 import { useState } from 'react';
+import { stringifyCurl } from 'shared/lib/curl-parser';
+import { uniqueId } from 'shared/lib/generateUniqueId';
 
 const CustomRequestItem = ({ request }) => {
 	const setRequest = useSelectedRequest.use.setRequest();
@@ -23,24 +31,6 @@ const CustomRequestItem = ({ request }) => {
 	const unsetRequest = useSelectedRequest.use.unsetRequest();
 	const mutation = useDeleteCustomRequest();
 
-	const [contextMenu, setContextMenu] = useState(null);
-	const handleContextMenu = (event) => {
-		event.preventDefault();
-		setContextMenu(
-			contextMenu === null
-				? {
-						mouseX: event.clientX + 2,
-						mouseY: event.clientY - 6,
-					}
-				: // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-					// Other native context menus might behave different.
-					// With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-					null,
-		);
-	};
-	const handleClose = () => {
-		setContextMenu(null);
-	};
 	const handleDelete = () => {
 		mutation.mutate(request.id);
 
@@ -50,12 +40,43 @@ const CustomRequestItem = ({ request }) => {
 		handleClose();
 	};
 
+	const { enqueueSnackbar } = useSnackbar();
+	const handleCopy = () => {
+		try {
+			navigator.clipboard.writeText(stringifyCurl(request));
+			enqueueSnackbar('Copied to clipboard', {
+				variant: 'info',
+			});
+		} catch (e) {
+			enqueueSnackbar(`Did not copied to clipboard: ${e.message}`, {
+				variant: 'error',
+			});
+		}
+
+		handleClose();
+	};
+
+	const handleDuplicate = () => {
+		setRequest({
+			...request,
+			id: uniqueId(),
+		});
+		handleClose();
+	};
+
+	/* Menu */
+	const [anchorEl, setAnchorEl] = useState(null);
+	const open = Boolean(anchorEl);
+	const handleClick = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+
 	return (
 		<>
-			<ListItem
-				disablePadding
-				onContextMenu={handleContextMenu}
-			>
+			<ListItem disablePadding>
 				<Tooltip
 					title={request.path}
 					disableInteractive
@@ -65,6 +86,7 @@ const CustomRequestItem = ({ request }) => {
 						onClick={() => {
 							setRequest(request);
 						}}
+						disableRipple
 					>
 						<Stack
 							gap={1}
@@ -93,26 +115,40 @@ const CustomRequestItem = ({ request }) => {
 							>
 								{request.title}
 							</Typography>
+
+							<IconButton
+								size="small"
+								onClick={(e) => {
+									e.stopPropagation();
+									handleClick(e);
+								}}
+							>
+								<MoreVertOutlinedIcon />
+							</IconButton>
 						</Stack>
 					</ListItemButton>
 				</Tooltip>
 			</ListItem>
 
 			<Menu
-				open={contextMenu !== null}
+				anchorEl={anchorEl}
+				open={open}
 				onClose={handleClose}
-				anchorReference="anchorPosition"
-				anchorPosition={
-					contextMenu !== null
-						? {
-								top: contextMenu.mouseY,
-								left: contextMenu.mouseX,
-							}
-						: undefined
-				}
 			>
+				<MenuItem onClick={handleCopy}>
+					<ListItemIcon size="small">
+						<ContentCopyRoundedIcon fontSize="small" />
+					</ListItemIcon>
+					<ListItemText>Copy as curl(bash)</ListItemText>
+				</MenuItem>
+				<MenuItem onClick={handleDuplicate}>
+					<ListItemIcon size="small">
+						<ControlPointDuplicateRoundedIcon fontSize="small" />
+					</ListItemIcon>
+					<ListItemText>Duplicate</ListItemText>
+				</MenuItem>
 				<MenuItem onClick={handleDelete}>
-					<ListItemIcon>
+					<ListItemIcon size="small">
 						<DeleteRoundedIcon fontSize="small" />
 					</ListItemIcon>
 					<ListItemText>Delete</ListItemText>

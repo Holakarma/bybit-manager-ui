@@ -87,7 +87,7 @@ const CustomRequestsList = ({ ...props }) => {
 								height={height}
 								width={width}
 								itemCount={requests.length}
-								itemSize={40}
+								itemSize={50}
 								overscanCount={1}
 							>
 								{Row}

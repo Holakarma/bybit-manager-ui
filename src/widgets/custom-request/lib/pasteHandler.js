@@ -1,9 +1,9 @@
+import { defaultParam } from 'entities/custom-request';
 import { parseCookies } from 'shared/lib/cookie-parser';
 import { parseCurl } from 'shared/lib/curl-parser';
 import { formatJson } from 'shared/lib/format-json';
-import { defaultParam } from '../model/customRequestForm';
 
-/* 
+/* EXAMPLE CURL
 
 curl 'https://chat.qwen.ai/api/v1/chats/?page=1' \
   -H 'Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7' \
@@ -102,6 +102,7 @@ export default function pastehandler({
 				cookiesArray = Object.entries(parsedCookiesObj).map(
 					([key, value]) => ({
 						...defaultParam(),
+						active: false,
 						key,
 						value,
 					}),
@@ -117,6 +118,7 @@ export default function pastehandler({
 			const headersArray = Object.entries(parcedHeaders).map(
 				([key, value]) => ({
 					...defaultParam(),
+					active: false,
 					key,
 					value,
 				}),

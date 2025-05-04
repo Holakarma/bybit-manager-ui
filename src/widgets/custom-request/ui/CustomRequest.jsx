@@ -1,4 +1,5 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+
 import {
 	Box,
 	Button,
@@ -10,37 +11,39 @@ import {
 	Tab,
 	Tabs,
 } from '@mui/material';
-import { useSelectedRequest } from 'entities/custom-request';
+import {
+	defaultCustomRequest,
+	defaultParam,
+	useCustomRequests,
+	useSelectedRequest,
+} from 'entities/custom-request';
 import { useSnackbar } from 'notistack';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { stringifyCurl } from 'shared/lib/curl-parser';
 import { formatJson } from 'shared/lib/format-json';
-import { uniqueId } from 'shared/lib/generateUniqueId';
 import { exportParams } from 'shared/lib/param-parser';
 import RequestFormContainer from '../containers/handleSubmitContainer';
 import pastehandler from '../lib/pasteHandler';
-import useCustomRequestForm, { defaultParam } from '../model/customRequestForm';
+import useCustomRequestForm from '../model/customRequestForm';
+import CookiesTab from './CookiesTab';
+import HeadersTab from './HeadersTab';
 import ParamsTab from './ParamsTab';
 import PathController from './PathController';
 import RequestBodyTab from './RequestBodyTab';
 import RequestTitle from './RequestTitle';
 
-const defaultCustomRequest = () => ({
-	method: 'GET',
-	path: '',
-	json: '{}',
-	data: '',
-	params: [defaultParam()],
-	headers: [defaultParam()],
-	cookies: [defaultParam()],
-	bodyType: 'JSON',
-	title: 'New request',
-	id: uniqueId(),
-});
-
 const CustomRequest = ({ ...props }) => {
 	const customRequest = useSelectedRequest.use.request();
+	const { data: customRequests } = useCustomRequests();
+
+	const isRequestExist = useMemo(() => {
+		if (customRequests && customRequest) {
+			return customRequests.includes(customRequest);
+		}
+		return null;
+	}, [customRequests, customRequest]);
+
 	const { enqueueSnackbar } = useSnackbar();
 
 	const {
@@ -60,16 +63,29 @@ const CustomRequest = ({ ...props }) => {
 	useEffect(() => {
 		const paramNames = ['params', 'headers', 'cookies'];
 		if (customRequest) {
-			reset({
-				...customRequest,
-				json: formatJson(customRequest.json),
-				params: [...exportParams(customRequest.params)],
-				headers: [...exportParams(customRequest.headers || [])], // || [] for backward compatibility
-				cookies: [...exportParams(customRequest.cookies || [])], // || [] for backward compatibility
-			});
+			if (!isRequestExist) {
+				setValue('title', customRequest.title + ' (copy)', {
+					shouldDirty: true,
+				});
+			}
+
+			reset(
+				{
+					...customRequest,
+					json: formatJson(customRequest.json),
+					params: [...exportParams(customRequest.params)],
+					headers: [...exportParams(customRequest.headers || [])], // || [] for backward compatibility
+					cookies: [...exportParams(customRequest.cookies || [])], // || [] for backward compatibility
+				},
+				{ keepDirty: true },
+			);
 			paramNames.forEach((name) => {
 				fieldsController.append[name](defaultParam());
 			});
+
+			if (!isRequestExist) {
+				setValue('title', customRequest.title + ' (copy)');
+			}
 		} else {
 			reset(defaultCustomRequest());
 			paramNames.forEach((name) => {
@@ -77,7 +93,14 @@ const CustomRequest = ({ ...props }) => {
 			});
 		}
 		return () => reset();
-	}, [customRequest, reset, fieldsController]);
+	}, [
+		customRequest,
+		reset,
+		fieldsController,
+		isRequestExist,
+		setValue,
+		trigger,
+	]);
 
 	const { onSubmit, isLoading } = RequestFormContainer();
 
@@ -248,7 +271,9 @@ const CustomRequest = ({ ...props }) => {
 
 							{/* Headers */}
 							{tab === 2 && (
-								<ParamsTab
+								<HeadersTab
+									array={fieldArrays['headers']}
+									errors={errors}
 									onChange={(newParam, i) =>
 										handleArrayFieldsChange(
 											i,
@@ -256,14 +281,14 @@ const CustomRequest = ({ ...props }) => {
 											'headers',
 										)
 									}
-									paramsFields={fieldArrays['headers']}
-									errors={errors}
 								/>
 							)}
 
 							{/* Cookies */}
 							{tab === 3 && (
-								<ParamsTab
+								<CookiesTab
+									array={fieldArrays['cookies']}
+									errors={errors}
 									onChange={(newParam, i) =>
 										handleArrayFieldsChange(
 											i,
@@ -271,8 +296,6 @@ const CustomRequest = ({ ...props }) => {
 											'cookies',
 										)
 									}
-									paramsFields={fieldArrays['cookies']}
-									errors={errors}
 								/>
 							)}
 						</Box>
@@ -287,7 +310,7 @@ const CustomRequest = ({ ...props }) => {
 						disabled={!isValid || !isDirty}
 						loading={isLoading}
 					>
-						{customRequest ? 'Update' : 'Save'}
+						{isRequestExist ? 'Update' : 'Save'}
 					</Button>
 				</Box>
 			</Stack>

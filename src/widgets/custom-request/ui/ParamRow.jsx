@@ -1,14 +1,17 @@
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import {
 	Checkbox,
 	IconButton,
+	Stack,
 	TableCell,
 	TableRow,
 	TextField,
+	Typography,
 } from '@mui/material';
 import { useState } from 'react';
 
-const ParamRow = ({ param, onChange, error, ...props }) => {
+const ParamRow = ({ param, onChange, error, hiddenValueLabel, ...props }) => {
 	const [tmpParam, setTmpParam] = useState(param);
 
 	const handleChange = (e) => {
@@ -21,6 +24,7 @@ const ParamRow = ({ param, onChange, error, ...props }) => {
 
 	const handleParamChange = () => {
 		onChange(tmpParam);
+		setEditMode(false);
 	};
 
 	const handleDelete = () => {
@@ -36,6 +40,8 @@ const ParamRow = ({ param, onChange, error, ...props }) => {
 		setTmpParam(newParam);
 		onChange(newParam);
 	};
+
+	const [editMode, setEditMode] = useState(false);
 
 	return (
 		<TableRow {...props}>
@@ -54,22 +60,35 @@ const ParamRow = ({ param, onChange, error, ...props }) => {
 				/>
 			</TableCell>
 			<TableCell>
-				<TextField
-					defaultValue={param.value}
-					name="value"
-					onChange={handleChange}
-					onBlur={handleParamChange}
-					size="small"
-					placeholder="value"
-					fullWidth
-					variant="standard"
-					slotProps={{ input: { disableUnderline: true } }}
-					error={error}
-				/>
+				{hiddenValueLabel && hiddenValueLabel(param) && !editMode ? (
+					<Stack
+						direction="row"
+						justifyContent="space-between"
+						alignItems="center"
+					>
+						<Typography>{hiddenValueLabel(param)}</Typography>
+						<IconButton onClick={() => setEditMode(true)}>
+							<EditRoundedIcon />
+						</IconButton>
+					</Stack>
+				) : (
+					<TextField
+						defaultValue={param.value}
+						name="value"
+						onChange={handleChange}
+						onBlur={handleParamChange}
+						size="small"
+						placeholder={param.key ? 'empty value' : 'value'}
+						fullWidth
+						variant="standard"
+						slotProps={{ input: { disableUnderline: true } }}
+						error={error}
+					/>
+				)}
 			</TableCell>
 			<TableCell align="center">
 				<Checkbox
-					disabled={!tmpParam.key || !tmpParam.value}
+					disabled={!tmpParam.key}
 					checked={tmpParam.active}
 					onChange={handleActiveChange}
 				/>
@@ -77,7 +96,7 @@ const ParamRow = ({ param, onChange, error, ...props }) => {
 			<TableCell align="center">
 				<IconButton
 					onClick={handleDelete}
-					disabled={!tmpParam.key || !tmpParam.value}
+					disabled={!tmpParam.key && !tmpParam.value}
 				>
 					<DeleteRoundedIcon />
 				</IconButton>
