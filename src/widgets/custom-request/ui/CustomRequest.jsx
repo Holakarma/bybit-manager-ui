@@ -59,6 +59,7 @@ const CustomRequest = ({ ...props }) => {
 		fieldsController,
 		handleArrayFieldsChange,
 	} = useCustomRequestForm(defaultCustomRequest());
+	const { onSubmit, isLoading } = RequestFormContainer();
 
 	useEffect(() => {
 		const paramNames = ['params', 'headers', 'cookies'];
@@ -80,16 +81,7 @@ const CustomRequest = ({ ...props }) => {
 			});
 		}
 		return () => reset();
-	}, [
-		customRequest,
-		reset,
-		fieldsController,
-		isRequestExist,
-		setValue,
-		trigger,
-	]);
-
-	const { onSubmit, isLoading } = RequestFormContainer();
+	}, [customRequest, reset, fieldsController, setValue, trigger]);
 
 	const [tab, setTab] = useState(0);
 

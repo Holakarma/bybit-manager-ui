@@ -14,7 +14,7 @@ const RequestFormContainer = () => {
 
 	const { data: customRequests } = useCustomRequests();
 
-	const onSubmit = (data) => {
+	const onSubmit = async (data) => {
 		const newRequest = new CustomRequestDTO({
 			...data,
 			params: data.params.filter((p) => p.key),
@@ -24,12 +24,12 @@ const RequestFormContainer = () => {
 
 		const isRequestExist = customRequests.includes(customRequest);
 		if (customRequest && isRequestExist) {
-			updateMutation.mutate({
+			await updateMutation.mutateAsync({
 				id: newRequest.id,
 				newCustomRequestData: newRequest,
 			});
 		} else {
-			addMutation.mutate(newRequest);
+			await addMutation.mutateAsync(newRequest);
 		}
 		setRequest(newRequest);
 	};
