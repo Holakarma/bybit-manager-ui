@@ -1,8 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import {
-	FINANCE_ACCOUNT_TYPE,
-	FINANCE_ACCOUNT_TYPE_TITLE,
-} from 'entities/finance-account';
+import { FINANCE_ACCOUNT_TYPE_TITLE } from 'entities/finance-account';
 import { useLogs } from 'entities/log';
 import { useTask } from 'entities/task';
 // eslint-disable-next-line no-restricted-imports
@@ -69,26 +66,10 @@ const useTransferTask = () => {
 			return;
 		}
 
-		for (const coin_symbol of settings.coinSymbols) {
-			let cachedData;
-
-			if (settings.from === FINANCE_ACCOUNT_TYPE.ACCOUNT_TYPE_FUND) {
-				cachedData = queryClient.getQueryData([
-					'available-funding-coins',
-					database_id,
-				]);
-			} else if (
-				settings.from === FINANCE_ACCOUNT_TYPE.ACCOUNT_TYPE_UNIFIED
-			) {
-				cachedData = queryClient.getQueryData([
-					'available-trading-coins',
-					database_id,
-				]);
-			}
-
-			if (!cachedData?.[coin_symbol]) {
+		for (const coin of settings.coinSymbols) {
+			if (!coin.ids.includes(database_id)) {
 				addInfoLog({
-					message: `account has no ${coin_symbol} ${FINANCE_ACCOUNT_TYPE_TITLE[settings.from]} balance`,
+					message: `account has no ${coin.symbol} ${FINANCE_ACCOUNT_TYPE_TITLE[settings.from]} balance`,
 					group: taskId,
 					database_id,
 				});
@@ -101,38 +82,29 @@ const useTransferTask = () => {
 					signal,
 					finance_account_type_from: settings.from,
 					finance_account_type_to: settings.to,
-					coin_symbol,
+					coin_symbol: coin.symbol,
 				});
 
 				addSuccessLog({
-					message: `transferred ${result.result.transferred} ${coin_symbol}`,
+					message: `transferred ${result.result.transferred} ${coin.symbol} to ${FINANCE_ACCOUNT_TYPE_TITLE[settings.to]}`,
 					group: taskId,
 					database_id,
 				});
 			} catch (error) {
 				addErrorLog({
 					error: new Error(
-						`did not transfer ${coin_symbol}: ${JSON.stringify(error)}`,
+						`did not transfer ${coin.symbol}: ${JSON.stringify(error)}`,
 					),
 					group: taskId,
 					database_id,
 				});
 			}
 		}
-
-		addSuccessLog({
-			message: 'transferred',
-			group: taskId,
-			database_id,
-		});
 	};
 
 	const settleHandler = () => {
 		queryClient.invalidateQueries({
-			queryKey: ['available-trading-coins'],
-		});
-		queryClient.invalidateQueries({
-			queryKey: ['available-funding-coins'],
+			queryKey: ['transfer-coins'],
 		});
 	};
 

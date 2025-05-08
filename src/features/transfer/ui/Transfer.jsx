@@ -4,8 +4,8 @@ import { FINANCE_ACCOUNT_TYPE } from 'entities/finance-account';
 import {
 	CreateTask,
 	TaskAccountsPage,
+	TaskSettingsBase,
 	TaskSettingsPage,
-	TaskSettingsPrelogin,
 } from 'entities/task';
 import { useCallback, useState } from 'react';
 import { isCookieAlive } from 'shared/lib/session-cookies';
@@ -17,7 +17,6 @@ const Transfer = () => {
 		threads: 1,
 		delay: { min: 60, max: 90, enabled: true },
 		shuffle: false,
-		prelogin: true,
 		from: FINANCE_ACCOUNT_TYPE.ACCOUNT_TYPE_FUND,
 		to: FINANCE_ACCOUNT_TYPE.ACCOUNT_TYPE_UNIFIED,
 		coinSymbols: [],
@@ -66,7 +65,7 @@ const Transfer = () => {
 							title: 'Settings',
 							component: (
 								<TaskSettingsPage key="settings">
-									<TaskSettingsPrelogin
+									<TaskSettingsBase
 										settings={settings}
 										onSettingsChange={(newSettings) =>
 											setSettings(newSettings)

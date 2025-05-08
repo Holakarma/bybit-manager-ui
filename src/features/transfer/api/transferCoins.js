@@ -18,26 +18,6 @@ export const getTransferCoins = ({
 		signal,
 	});
 };
-export const getFundingCoins = ({ database_id, signal }) => {
-	const api = new Api();
-
-	return api.Get(ENDPOINTS.funding_coins, {
-		params: {
-			database_id,
-		},
-		signal,
-	});
-};
-export const getTradingCoins = ({ database_id, signal }) => {
-	const api = new Api();
-
-	return api.Get(ENDPOINTS.trading_coins, {
-		params: {
-			database_id,
-		},
-		signal,
-	});
-};
 
 const useTransferCoins = ({
 	database_id,
