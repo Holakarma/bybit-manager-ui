@@ -9,6 +9,7 @@ const taskTitle = {
 	'custom request': 'Custom request',
 	set_preferences: 'Set preferences',
 	'withdraw-whitelist': 'Withdraw whitelist',
+	transfer: 'Transfer',
 };
 
 export default taskTitle;

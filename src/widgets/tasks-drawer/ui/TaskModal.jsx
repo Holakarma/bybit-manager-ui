@@ -8,6 +8,7 @@ import { LogoutTaskResult } from 'features/logout';
 import { RefreshTaskResult } from 'features/refresh-balances';
 import { RegisterTaskResult } from 'features/register';
 import { SetPreferencesTaskResult } from 'features/set-preference';
+import { TransferTaskResult } from 'features/transfer';
 import { UpdateProfileTaskResult } from 'features/update-profile';
 import { WhiteListTaskResult } from 'features/whitelist';
 import { timeDifference } from 'shared/lib/formatDate';
@@ -35,6 +36,8 @@ const taskResult = (task) => {
 			return <CustomRequestTaskResult task={task} />;
 		case 'withdraw-whitelist':
 			return <WhiteListTaskResult task={task} />;
+		case 'transfer':
+			return <TransferTaskResult task={task} />;
 		default:
 			return 'no task result component';
 	}

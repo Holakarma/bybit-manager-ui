@@ -18,6 +18,7 @@ import { Logout } from 'features/logout';
 import { Refresh } from 'features/refresh-balances';
 import { Register } from 'features/register';
 import { SetPreferences } from 'features/set-preference';
+import { Transfer } from 'features/transfer';
 import { UpdateProfile } from 'features/update-profile';
 import { Whitelist } from 'features/whitelist';
 import { DollarIcon } from 'shared/assets/icons/dollar';
@@ -45,6 +46,8 @@ const getActions = (layer) => {
 				<Enable2fa key="enable2fa" />,
 				<Disable2fa key="disable2fa" />,
 			];
+		case 'balances':
+			return [<Transfer key="transfer" />];
 		default:
 			return [<ExportAccounts key="export" />];
 	}

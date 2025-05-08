@@ -31,6 +31,10 @@ const ENDPOINTS = {
 	enable_whitelist: '/private/withdraw/enable-whitelist',
 	add_withdraw_address: '/private/withdraw/add-address',
 	is_email_exist: '/private/is-email-exist',
+	transfer_coins: '/private/transfer/coins',
+	funding_coins: '/private/funding-coins',
+	trading_coins: '/private/trading-coins',
+	transfer: '/private/transfer',
 };
 
 export default ENDPOINTS;

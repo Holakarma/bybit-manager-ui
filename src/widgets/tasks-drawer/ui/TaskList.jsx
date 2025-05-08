@@ -2,7 +2,6 @@ import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import FileDownloadRoundedIcon from '@mui/icons-material/FileDownloadRounded';
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import IntegrationInstructionsRoundedIcon from '@mui/icons-material/IntegrationInstructionsRounded';
-
 import {
 	Box,
 	Divider,
