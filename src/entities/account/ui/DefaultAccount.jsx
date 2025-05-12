@@ -19,21 +19,9 @@ const DefaultAccount = () => {
 
 	if (!defaultAccountId) {
 		return (
-			<Tooltip
-				onClose={handleTooltipClose}
-				open={open}
-				disableHoverListener
-				title="Just right-click account in table"
-				slotProps={{
-					popper: {
-						disablePortal: true,
-					},
-				}}
-			>
+			<Tooltip title="right click any account">
 				<Button
-					variant="contained"
-					color="secondary"
-					onClick={handleTooltipOpen}
+					variant="error"
 					loadingPosition="start"
 					sx={{
 						fill: (theme) => theme.palette.error.main,

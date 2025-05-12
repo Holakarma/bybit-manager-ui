@@ -1,5 +1,6 @@
 import LogoutIcon from '@mui/icons-material/Logout';
 import { IconButton, Stack, Tooltip } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
@@ -7,14 +8,13 @@ import {
 	TaskSettingsPage,
 } from 'entities/task';
 import { useState } from 'react';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useLogoutTask from '../api/logoutAccount';
 
 const Logout = () => {
-	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { min: 60, max: 90, enabled: true },
-		shuffle: false,
-	});
+	const [settings, setSettings] = useState(
+		getTaskSettingsConfig(taskSettingsDefaultConfig),
+	);
 
 	const [tooltipOpen, setTooltipOpen] = useState(false);
 

@@ -1,5 +1,6 @@
 import SyncAltRoundedIcon from '@mui/icons-material/SyncAltRounded';
 import { IconButton, Stack, Tooltip } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import { FINANCE_ACCOUNT_TYPE } from 'entities/finance-account';
 import {
 	CreateTask,
@@ -9,14 +10,13 @@ import {
 } from 'entities/task';
 import { useCallback, useState } from 'react';
 import { isCookieAlive } from 'shared/lib/session-cookies';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useTransferTask from '../api/transfer';
 import TransferSettings from './TransferSettings';
 
 const Transfer = () => {
 	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { min: 60, max: 90, enabled: true },
-		shuffle: false,
+		...getTaskSettingsConfig(taskSettingsDefaultConfig),
 		from: FINANCE_ACCOUNT_TYPE.ACCOUNT_TYPE_FUND,
 		to: FINANCE_ACCOUNT_TYPE.ACCOUNT_TYPE_UNIFIED,
 		coinSymbols: [],

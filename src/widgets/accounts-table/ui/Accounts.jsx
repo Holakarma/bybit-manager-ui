@@ -1,7 +1,6 @@
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { usePersistState } from 'shared/lib/react';
-import useLayer from '../model/layerStore';
 import AccountsTable from './AccountsTable';
 
 const HEIGHTS = {
@@ -12,8 +11,6 @@ const HEIGHTS = {
 };
 
 const Accounts = () => {
-	const layer = useLayer.use.layer();
-
 	const { enqueueSnackbar } = useSnackbar();
 	const [paginationModel, setPaginationModel] = useState({
 		page: 0,
@@ -31,7 +28,6 @@ const Accounts = () => {
 			}}
 		>
 			<AccountsTable
-				layer={layer}
 				columnWidthModel={columnWidthModel}
 				onSuccess={() => {
 					enqueueSnackbar('Row updated', {

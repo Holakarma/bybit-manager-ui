@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 import { useDefaultAccount } from 'entities/account';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
@@ -7,14 +8,13 @@ import {
 	TaskSettingsPage,
 } from 'entities/task';
 import { useCallback, useState } from 'react';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useRegisterTask from '../api/registerAccount';
 import TestEmailSetting from './TestEmailSetting';
 
 const Register = ({ ...props }) => {
 	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { min: 60, max: 90, enabled: true },
-		shuffle: false,
+		...getTaskSettingsConfig(taskSettingsDefaultConfig),
 		test_email: true,
 	});
 	const mutation = useRegisterTask();
@@ -48,7 +48,6 @@ const Register = ({ ...props }) => {
 								onSettingsChange={(newSettings) =>
 									setSettings(newSettings)
 								}
-								sx={{ marginTop: 2 }}
 							/>
 						</TaskSettingsPage>
 					),

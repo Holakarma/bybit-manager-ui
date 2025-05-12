@@ -8,6 +8,7 @@ const ApiSettings = ({ control, errors }) => {
 			container
 			spacing={2}
 			columns={10}
+			width="100%"
 		>
 			<Grid2 size={5}>
 				<Controller

@@ -71,7 +71,7 @@ const CreateTask = ({
 	}, [selectedAccounts, disabledTooltip, task, preloginTooltip]);
 
 	if (isLoading) {
-		return cloneElement(children, { ...props, loading: isLoading });
+		return cloneElement(children, { ...props, disabled: isLoading });
 	}
 
 	if (isError) {

@@ -12,12 +12,13 @@ import { useCustomRequests } from 'entities/custom-request';
 import { Link } from 'react-router';
 import ROUTES from 'shared/config/routes';
 
-const RequestSelect = ({ onRequestChange, requestId }) => {
+const RequestSelect = ({ onRequestChange, requestId, ...props }) => {
 	const { data: customRequests, isLoading, isError } = useCustomRequests();
 
 	if (isLoading) {
 		return (
 			<Stack
+				{...props}
 				gap={2}
 				padding={2}
 				justifyContent="center"
@@ -31,6 +32,7 @@ const RequestSelect = ({ onRequestChange, requestId }) => {
 	if (isError) {
 		return (
 			<Stack
+				{...props}
 				gap={2}
 				padding={2}
 				justifyContent="center"
@@ -47,7 +49,10 @@ const RequestSelect = ({ onRequestChange, requestId }) => {
 	}
 
 	return (
-		<FormControl fullWidth>
+		<FormControl
+			{...props}
+			fullWidth
+		>
 			<InputLabel id="request-select-label">Choose request</InputLabel>
 			<Select
 				labelId="request-select-label"

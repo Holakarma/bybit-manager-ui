@@ -8,11 +8,12 @@ const useDefaultAccountBase = create(
 	persist(
 		(set) => ({
 			defaultAccountId: null,
-			setDefaultAccountId: (defaultAccountId) =>
-				set({ defaultAccountId }),
+			setDefaultAccountId: (defaultAccountId) => {
+				set({ defaultAccountId });
+			},
 			clearStorage: () => {
 				set({ defaultAccountId: null });
-				window.localStorage.removeItem(ACCOUNTSTORE_KEY); // Удаляем данные по ключу
+				window.localStorage.removeItem(ACCOUNTSTORE_KEY);
 			},
 		}),
 		{ name: ACCOUNTSTORE_KEY },

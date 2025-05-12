@@ -11,6 +11,7 @@ const CaptchaSelect = ({ control, name, error }) => {
 				<Grid2
 					container
 					spacing={2}
+					width="100%"
 				>
 					<Grid2 size={4}>
 						<Stack

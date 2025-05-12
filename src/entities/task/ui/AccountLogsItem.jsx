@@ -13,7 +13,6 @@ import {
 import { useAccounts } from 'entities/account';
 import { useMemo } from 'react';
 import { Pulsing } from 'shared/ui/pulsing';
-import color from '../model/taskColors';
 
 const AccountLogsItem = ({ logs, database_id }) => {
 	const {
@@ -109,7 +108,7 @@ const AccountLogsItem = ({ logs, database_id }) => {
 						<Typography
 							variant="Caption"
 							key={log.message}
-							color={`${color[log.type]}.main`}
+							color={log.type}
 						>
 							{log.message}
 						</Typography>

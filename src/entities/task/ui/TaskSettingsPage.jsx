@@ -1,14 +1,7 @@
-import { Box } from '@mui/material';
+import { List } from '@mui/material';
 
 const TaskSettingsPage = ({ children }) => {
-	return (
-		<Box
-			paddingInline={2}
-			height="100%"
-		>
-			{children}
-		</Box>
-	);
+	return <List sx={{ height: '100%' }}>{children}</List>;
 };
 
 export default TaskSettingsPage;

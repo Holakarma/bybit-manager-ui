@@ -1,21 +1,21 @@
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import { IconButton, Stack, Tooltip } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
+	TaskSettingsBase,
 	TaskSettingsPage,
 	TaskSettingsPrelogin,
 } from 'entities/task';
 import { useState } from 'react';
+import getTaskSettingsConfig from 'shared/model/app-config/getTaskSettingsConfig.js';
 import useEnable2faTask from '../api/enable2fa.js';
 
 const Enable2fa = () => {
-	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { min: 60, max: 90, enabled: true },
-		shuffle: false,
-		prelogin: true,
-	});
+	const [settings, setSettings] = useState(
+		getTaskSettingsConfig(taskSettingsDefaultConfig),
+	);
 
 	const [tooltipOpen, setTooltipOpen] = useState(false);
 
@@ -40,6 +40,12 @@ const Enable2fa = () => {
 							title: 'Settings',
 							component: (
 								<TaskSettingsPage key="settings">
+									<TaskSettingsBase
+										settings={settings}
+										onSettingsChange={(newSettings) =>
+											setSettings(newSettings)
+										}
+									/>
 									<TaskSettingsPrelogin
 										settings={settings}
 										onSettingsChange={(newSettings) =>

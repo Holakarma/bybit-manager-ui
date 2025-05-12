@@ -1,21 +1,21 @@
 import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded';
 import { IconButton, Stack, Tooltip } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
+	TaskSettingsBase,
 	TaskSettingsPage,
 	TaskSettingsPrelogin,
 } from 'entities/task';
 import { useState } from 'react';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useSetPreferencesTask from '../api/setPreferences';
 import DepositSettings from './DepositSettings';
 
 const SetPreferences = () => {
 	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { min: 60, max: 90, enabled: true },
-		shuffle: false,
-		prelogin: true,
+		...getTaskSettingsConfig(taskSettingsDefaultConfig),
 		deposit_to: 'uta',
 	});
 
@@ -42,18 +42,25 @@ const SetPreferences = () => {
 							title: 'Settings',
 							component: (
 								<TaskSettingsPage key="settings">
+									<TaskSettingsBase
+										settings={settings}
+										onSettingsChange={(newSettings) =>
+											setSettings(newSettings)
+										}
+									/>
 									<TaskSettingsPrelogin
 										settings={settings}
 										onSettingsChange={(newSettings) =>
 											setSettings(newSettings)
 										}
 									/>
+
 									<DepositSettings
 										settings={settings}
 										onSettingsChange={(newSettings) =>
 											setSettings(newSettings)
 										}
-										sx={{ marginTop: 2 }}
+										sx={{ marginTop: 5, paddingInline: 2 }}
 									/>
 								</TaskSettingsPage>
 							),

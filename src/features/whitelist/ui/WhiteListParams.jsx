@@ -1,8 +1,12 @@
+import NoAccountsRoundedIcon from '@mui/icons-material/NoAccountsRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 import {
 	Avatar,
 	Box,
+	Button,
 	Checkbox,
+	CircularProgress,
 	FormControlLabel,
 	FormGroup,
 	IconButton,
@@ -14,7 +18,10 @@ import {
 	Typography,
 } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDefaultAccount } from 'entities/account';
+import {
+	useDefaultAccount,
+	useDefaultAccountWithCookie,
+} from 'entities/account';
 import { useCoinsChains } from 'entities/coins-chains';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -53,12 +60,20 @@ function a11yProps(index) {
 
 const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 	const defaultAccount = useDefaultAccount.use.defaultAccountId();
+
+	const defaultAccountWithCookieMutation = useDefaultAccountWithCookie();
+
+	const setDefaultAccountWithCookie = () => {
+		defaultAccountWithCookieMutation.mutate();
+	};
+
 	const queryClient = useQueryClient();
 	const {
 		data: coinsChains,
 		isFetching,
 		isError,
-	} = useCoinsChains(defaultAccount);
+		isLoading,
+	} = useCoinsChains(defaultAccount, onError);
 
 	const chain = useMemo(() => settings.chain, [settings.chain]);
 	const handleChainChange = useCallback(
@@ -244,19 +259,80 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 	};
 
 	if (isError) {
-		if (onError) {
-			onError();
-		}
 		return (
-			<Typography>
-				Error while getting coins-chains. Check session on your default
-				account.
-			</Typography>
+			<Stack
+				height="100%"
+				justifyContent="center"
+				alignItems="center"
+				color="textSecondary.default"
+			>
+				<WarningRoundedIcon
+					sx={{
+						width: '200px',
+						height: '200px',
+						fill: 'currentColor',
+					}}
+				/>
+				<Typography variant="h6">
+					Error while fetching chains.
+				</Typography>
+
+				<Typography variant="h6">
+					Try to update session on your default account.
+				</Typography>
+
+				<Button
+					sx={{ marginTop: 2 }}
+					onClick={setDefaultAccountWithCookie}
+					// disabled
+				>
+					Choose the first account with session (Soon)
+				</Button>
+			</Stack>
+		);
+	}
+
+	if (isLoading) {
+		return (
+			<Stack
+				height="100%"
+				justifyContent="center"
+				alignItems="center"
+				color="textSecondary.default"
+			>
+				<CircularProgress />
+			</Stack>
 		);
 	}
 
 	if (!defaultAccount) {
-		return <Typography>You should set default account first</Typography>;
+		return (
+			<Stack
+				width="100%"
+				height="100%"
+				justifyContent="center"
+				alignItems="center"
+				color="textSecondary.default"
+			>
+				<NoAccountsRoundedIcon
+					sx={{
+						width: '150px',
+						height: '150px',
+						fill: 'currentColor',
+					}}
+				/>
+				<Typography variant="h6">
+					Default account with session is required
+				</Typography>
+				<Button
+					sx={{ marginTop: 2 }}
+					onClick={setDefaultAccountWithCookie}
+					// disabled
+				>
+					Choose the first account with session (Soon)
+				</Button>
+			</Stack>
+		);
 	}
 
 	return (
@@ -270,7 +346,8 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 				right={0}
 				bottom={0}
 				left={0}
-				overflow="auto"
+				overflowY="auto"
+				overflowX="hidden"
 				paddingRight={1}
 			>
 				<Tabs

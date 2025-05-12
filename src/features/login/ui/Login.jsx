@@ -1,4 +1,5 @@
 import { Button } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
@@ -6,16 +7,15 @@ import {
 	TaskSettingsPage,
 } from 'entities/task';
 import { useState } from 'react';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useLoginTask from '../api/loginAccount';
 
 const Login = ({ ...props }) => {
 	const mutation = useLoginTask();
 
-	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { min: 60, max: 90, enabled: true },
-		shuffle: false,
-	});
+	const [settings, setSettings] = useState(
+		getTaskSettingsConfig(taskSettingsDefaultConfig),
+	);
 
 	return (
 		<CreateTask

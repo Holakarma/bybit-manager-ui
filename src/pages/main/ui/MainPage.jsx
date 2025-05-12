@@ -187,6 +187,8 @@ const MainPage = () => {
 					</Grid2>
 				</Grid2>
 			</Stack>
+
+			{/* Table */}
 			<Paper
 				sx={{
 					flexGrow: 1,

@@ -1,17 +1,23 @@
-import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
+import AvTimerRoundedIcon from '@mui/icons-material/AvTimerRounded';
+import SafetyDividerRoundedIcon from '@mui/icons-material/SafetyDividerRounded';
+import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded';
 import {
+	Collapse,
 	FormControlLabel,
 	FormGroup,
 	InputAdornment,
+	List,
+	ListItem,
+	ListItemButton,
+	ListItemIcon,
+	ListItemText,
 	Stack,
 	Switch,
 	TextField,
-	Tooltip,
-	Typography,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 
-const NumberField = ({
+export const NumberField = ({
 	label,
 	value,
 	onChange,
@@ -29,10 +35,10 @@ const NumberField = ({
 				),
 			},
 		}}
-		sx={{ maxWidth: '120px', ...sx }}
+		sx={{ maxWidth: '120px', marginInline: 1, ...sx }}
 		label={label}
 		type="number"
-		variant="outlined"
+		variant="standard"
 		size="small"
 		value={value}
 		onChange={onChange}
@@ -49,41 +55,32 @@ const DelaySettings = ({
 	onMaxBlur,
 	disabled,
 }) => (
-	<Stack gap={1}>
-		<Typography
-			variant="Caption"
-			color="text.secondary"
-		>
-			Delay interval
-		</Typography>
-		<Stack
-			direction="row"
-			gap={2}
-			alignItems="center"
-			sx={{ maxWidth: '100%' }}
-		>
-			<NumberField
-				disabled={disabled}
-				value={minDelay}
-				onChange={onMinChange}
-				onBlur={onMinBlur}
-				unit="sec"
-				sx={{ maxWidth: '160px' }}
-			/>
-			-
-			<NumberField
-				disabled={disabled}
-				value={maxDelay}
-				onChange={onMaxChange}
-				onBlur={onMaxBlur}
-				unit="sec"
-				sx={{ maxWidth: '160px' }}
-			/>
-		</Stack>
+	<Stack
+		direction="row"
+		gap={2}
+		sx={{ maxWidth: '100%' }}
+	>
+		<NumberField
+			value={minDelay}
+			onChange={onMinChange}
+			onBlur={onMinBlur}
+			unit="sec"
+			disabled={disabled}
+			sx={{ maxWidth: '160px' }}
+		/>
+		-
+		<NumberField
+			value={maxDelay}
+			onChange={onMaxChange}
+			onBlur={onMaxBlur}
+			unit="sec"
+			disabled={disabled}
+			sx={{ maxWidth: '160px' }}
+		/>
 	</Stack>
 );
 
-const TaskSettingsBase = ({ settings, onSettingsChange }) => {
+const TaskSettingsPrelogin = ({ settings, onSettingsChange }) => {
 	const [inputMinDelay, setInputMinDelay] = useState(
 		String(settings.delay.min),
 	);
@@ -134,10 +131,11 @@ const TaskSettingsBase = ({ settings, onSettingsChange }) => {
 		setInputThreads(String(threads));
 	};
 
-	const handleShuffleChange = (_event) => {
+	const handleShuffleChange = () => {
 		onSettingsChange((prev) => ({ ...prev, shuffle: !prev.shuffle }));
 	};
-	const handleDelayChange = (_event) => {
+
+	const handleDelayChange = () => {
 		onSettingsChange((prev) => ({
 			...prev,
 			delay: { ...prev.delay, enabled: !prev.delay.enabled },
@@ -145,74 +143,102 @@ const TaskSettingsBase = ({ settings, onSettingsChange }) => {
 	};
 
 	return (
-		<Stack
-			justifyContent="center"
-			gap={3}
-			width="100%"
-			paddingTop={2}
-		>
-			<Stack
-				direction="row"
-				gap={2}
-				alignItems="center"
-			>
-				<NumberField
-					value={inputThreads}
-					onChange={handleInputChange(setInputThreads)}
-					onBlur={handleThreadsBlur}
-				/>
-				<Typography>Threads</Typography>
-			</Stack>
-
-			<FormGroup>
-				<FormControlLabel
-					control={
-						<Switch
-							checked={shuffle}
-							onChange={handleShuffleChange}
-							value="shuffle"
-						/>
-					}
-					label="Shuffle accounts"
-				/>
-			</FormGroup>
-
-			<Stack gap={1}>
-				<Stack
-					direction="row"
-					alignItems="center"
-				>
-					<FormGroup>
+		<>
+			<ListItem disablePadding>
+				<ListItemButton disableTouchRipple>
+					<ListItemIcon>
+						<SafetyDividerRoundedIcon fontSize="large" />
+					</ListItemIcon>
+					<FormGroup sx={{ width: '100%' }}>
 						<FormControlLabel
+							labelPlacement="start"
+							sx={{
+								justifyContent: 'space-between',
+								flexGrow: 1,
+							}}
 							control={
-								<Switch
-									checked={delay}
-									onChange={handleDelayChange}
-									value="delay"
+								<NumberField
+									value={inputThreads}
+									onChange={handleInputChange(
+										setInputThreads,
+									)}
+									onBlur={handleThreadsBlur}
 								/>
 							}
-							label="Enable delay"
+							label="Threads"
 						/>
 					</FormGroup>
-					<Tooltip title="Generate random delay between accounts">
-						<HelpOutlineRoundedIcon color="textSecondary" />
-					</Tooltip>
-				</Stack>
+				</ListItemButton>
+			</ListItem>
 
-				{delay && (
-					<DelaySettings
-						minDelay={inputMinDelay}
-						maxDelay={inputMaxDelay}
-						onMinChange={handleInputChange(setInputMinDelay)}
-						onMaxChange={handleInputChange(setInputMaxDelay)}
-						onMinBlur={handleMinDelayBlur}
-						onMaxBlur={handleMaxDelayBlur}
-						disabled={!delay}
+			<ListItem disablePadding>
+				<ListItemButton
+					onClick={handleShuffleChange}
+					disableRipple
+				>
+					<ListItemIcon>
+						<ShuffleRoundedIcon fontSize="large" />
+					</ListItemIcon>
+
+					<ListItemText primary="Shuffle" />
+
+					<Switch
+						checked={shuffle}
+						value="shuffle"
 					/>
-				)}
-			</Stack>
-		</Stack>
+				</ListItemButton>
+			</ListItem>
+
+			<ListItem disablePadding>
+				<ListItemButton
+					onClick={handleDelayChange}
+					disableRipple
+				>
+					<ListItemIcon>
+						<AvTimerRoundedIcon fontSize="large" />
+					</ListItemIcon>
+
+					<ListItemText
+						primary="Delay"
+						secondary="Generate random delay between accounts"
+					/>
+
+					<Switch
+						checked={delay}
+						value="delay"
+					/>
+				</ListItemButton>
+			</ListItem>
+
+			<Collapse
+				in={delay}
+				timeout="auto"
+				unmountOnExit
+			>
+				<List
+					component="div"
+					disablePadding
+				>
+					<ListItem
+						sx={{
+							justifyContent: 'end',
+							minHeight: '55px',
+						}}
+					>
+						<DelaySettings
+							minDelay={inputMinDelay}
+							maxDelay={inputMaxDelay}
+							onMinChange={handleInputChange(setInputMinDelay)}
+							onMaxChange={handleInputChange(setInputMaxDelay)}
+							onMinBlur={handleMinDelayBlur}
+							onMaxBlur={handleMaxDelayBlur}
+							disabled={!delay}
+						/>
+					</ListItem>
+				</List>
+			</Collapse>
+		</>
 	);
 };
 
-export default TaskSettingsBase;
+export default TaskSettingsPrelogin;

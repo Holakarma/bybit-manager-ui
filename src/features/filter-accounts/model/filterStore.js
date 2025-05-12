@@ -9,8 +9,8 @@ const useFilterBase = create(
 		(set) => ({
 			search: '',
 			groups: [],
-			setSearch: (newSearch) => set({ search: newSearch }),
-			setGroups: (newGroups) => set({ groups: newGroups }),
+			setSearch: (newSearch) => set({ search: newSearch || '' }),
+			setGroups: (newGroups) => set({ groups: newGroups || [] }),
 			addGroup: (newGroup) =>
 				set((state) => {
 					if (state.groups.includes(newGroup)) {

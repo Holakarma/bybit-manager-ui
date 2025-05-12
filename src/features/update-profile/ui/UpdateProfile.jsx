@@ -1,21 +1,21 @@
 import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
 import { IconButton, Stack, Tooltip } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
+	TaskSettingsBase,
 	TaskSettingsPage,
 	TaskSettingsPrelogin,
 } from 'entities/task';
 import { useState } from 'react';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useUpdateProfileTask from '../api/updateProfile';
 
 const UpdateProfile = () => {
-	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { enabled: true, min: 60, max: 90 },
-		prelogin: true,
-		shuffle: false,
-	});
+	const [settings, setSettings] = useState(
+		getTaskSettingsConfig(taskSettingsDefaultConfig),
+	);
 
 	const [tooltipOpen, setTooltipOpen] = useState(false);
 
@@ -40,6 +40,12 @@ const UpdateProfile = () => {
 							title: 'Settings',
 							component: (
 								<TaskSettingsPage key="settings">
+									<TaskSettingsBase
+										settings={settings}
+										onSettingsChange={(newSettings) =>
+											setSettings(newSettings)
+										}
+									/>
 									<TaskSettingsPrelogin
 										settings={settings}
 										onSettingsChange={(newSettings) =>

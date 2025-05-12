@@ -1,22 +1,22 @@
 import SmartButtonRoundedIcon from '@mui/icons-material/SmartButtonRounded';
 import { IconButton, Stack, Tooltip } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings/index.js';
 import {
 	CreateTask,
 	TaskAccountsPage,
+	TaskSettingsBase,
 	TaskSettingsPage,
 	TaskSettingsPrelogin,
 } from 'entities/task';
 import { useState } from 'react';
+import getTaskSettingsConfig from 'shared/model/app-config/getTaskSettingsConfig.js';
 import useCustomRequestTask from '../api/customRequest.js';
 import RequestSelect from './RequestSelect.jsx';
 
 const CustomRequest = () => {
-	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { min: 60, max: 90, enabled: true },
-		shuffle: false,
-		prelogin: false,
-	});
+	const [settings, setSettings] = useState(
+		getTaskSettingsConfig(taskSettingsDefaultConfig),
+	);
 	const [tooltipOpen, setTooltipOpen] = useState(false);
 
 	const [requestId, setRequestId] = useState('');
@@ -42,21 +42,26 @@ const CustomRequest = () => {
 							title: 'Settings',
 							component: (
 								<TaskSettingsPage key="settings">
-									<Stack gap={3}>
-										<TaskSettingsPrelogin
-											settings={settings}
-											onSettingsChange={(newSettings) =>
-												setSettings(newSettings)
-											}
-										/>
+									<TaskSettingsBase
+										settings={settings}
+										onSettingsChange={(newSettings) =>
+											setSettings(newSettings)
+										}
+									/>
+									<TaskSettingsPrelogin
+										settings={settings}
+										onSettingsChange={(newSettings) =>
+											setSettings(newSettings)
+										}
+									/>
 
-										<RequestSelect
-											onRequestChange={(newRequest) =>
-												setRequestId(newRequest)
-											}
-											requestId={requestId}
-										/>
-									</Stack>
+									<RequestSelect
+										sx={{ marginTop: 5 }}
+										onRequestChange={(newRequest) =>
+											setRequestId(newRequest)
+										}
+										requestId={requestId}
+									/>
 								</TaskSettingsPage>
 							),
 						},
