@@ -1,37 +1,53 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Api, ENDPOINTS } from 'shared/api';
 
-const getAccounts = (body, page = 1, offset = 50) => {
+const getAccounts = (body, only_with_secure_token = false) => {
 	const api = new Api();
 
 	const url = ENDPOINTS.accounts;
 
 	return api.PostAll(url, body, {
-		params: { page, offset },
+		params: { only_with_secure_token },
 	});
 };
 
-const getPaginatedAccounts = (body, page = 1, offset = 50) => {
+export const getPaginatedAccounts = (
+	body,
+	only_with_secure_token,
+	page = 1,
+	offset = 50,
+) => {
 	const api = new Api();
 
 	const url = ENDPOINTS.accounts;
 
 	return api.Post(url, body, {
-		params: { page, offset },
+		params: { page, offset, only_with_secure_token },
 	});
 };
 
-export const usePaginatedAccounts = ({ body, page, offset }) =>
+export const usePaginatedAccounts = ({
+	body,
+	only_with_secure_token,
+	page,
+	offset,
+}) =>
 	useQuery({
-		queryFn: async () => await getPaginatedAccounts(body, page, offset),
+		queryFn: async () =>
+			await getPaginatedAccounts(
+				body,
+				only_with_secure_token,
+				page,
+				offset,
+			),
 		queryKey: ['accounts', body, page, offset],
 		staleTime: 5 * 1000 * 60,
 		retry: false,
 	});
 
-const useAccounts = (body) =>
+const useAccounts = ({ body, only_with_secure_token } = {}) =>
 	useQuery({
-		queryFn: async () => await getAccounts(body),
+		queryFn: async () => await getAccounts(body, only_with_secure_token),
 		queryKey: ['accounts', body],
 		staleTime: 5 * 1000 * 60,
 		retry: false,

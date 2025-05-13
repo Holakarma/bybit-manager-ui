@@ -18,7 +18,7 @@ const PendingTaskAccountItem = ({ database_id, logs }) => {
 		data: account,
 		isLoading,
 		isError,
-	} = useAccounts({ database_ids: [database_id] });
+	} = useAccounts({ body: { database_ids: [database_id] } });
 
 	const firstLog = useMemo(() => {
 		if (logs) {

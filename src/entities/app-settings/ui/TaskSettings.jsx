@@ -48,35 +48,35 @@ const TaskSettings = ({ control, name, watch, errors, trigger }) => {
 					<ListItemIcon>
 						<SafetyDividerRoundedIcon fontSize="large" />
 					</ListItemIcon>
-				</ListItemButton>
 
-				<Controller
-					name={`${name}.threads`}
-					control={control}
-					render={({ field }) => (
-						<FormGroup sx={{ width: '100%' }}>
-							<FormControlLabel
-								labelPlacement="start"
-								sx={{
-									justifyContent: 'space-between',
-									flexGrow: 1,
-								}}
-								control={
-									<NumberField
-										value={field.value}
-										onChange={(e) =>
-											field.onChange(
-												Number(e.target.value),
-											)
-										}
-										error={!!errors?.threads}
-									/>
-								}
-								label="Threads"
-							/>
-						</FormGroup>
-					)}
-				/>
+					<Controller
+						name={`${name}.threads`}
+						control={control}
+						render={({ field }) => (
+							<FormGroup sx={{ width: '100%' }}>
+								<FormControlLabel
+									labelPlacement="start"
+									sx={{
+										justifyContent: 'space-between',
+										flexGrow: 1,
+									}}
+									control={
+										<NumberField
+											value={field.value}
+											onChange={(e) =>
+												field.onChange(
+													Number(e.target.value),
+												)
+											}
+											error={!!errors?.threads}
+										/>
+									}
+									label="Threads"
+								/>
+							</FormGroup>
+						)}
+					/>
+				</ListItemButton>
 			</ListItem>
 
 			<ListItem disablePadding>

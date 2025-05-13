@@ -7,6 +7,8 @@ const useAccountBalances = ({ databaseIds, from, to }) => {
 		finance_account_type_to: to,
 	});
 
+	console.log(transferCoins);
+
 	const balances = {};
 
 	if (!transferCoins) return;

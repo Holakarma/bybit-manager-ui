@@ -1,4 +1,3 @@
-import { Button } from '@mui/material';
 import { useDefaultAccount } from 'entities/account';
 import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
@@ -12,7 +11,7 @@ import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useRegisterTask from '../api/registerAccount';
 import TestEmailSetting from './TestEmailSetting';
 
-const Register = ({ ...props }) => {
+const Register = ({ children, onClose }) => {
 	const [settings, setSettings] = useState({
 		...getTaskSettingsConfig(taskSettingsDefaultConfig),
 		test_email: true,
@@ -28,6 +27,7 @@ const Register = ({ ...props }) => {
 	return (
 		<CreateTask
 			disabledTooltip={disabledTooltip}
+			onClose={onClose}
 			handleStart={mutation.mutate}
 			task="register"
 			errorText={!defaultAccount ? 'Default account is required' : ''}
@@ -58,13 +58,7 @@ const Register = ({ ...props }) => {
 				},
 			]}
 		>
-			<Button
-				{...props}
-				variant="contained"
-				fullWidth
-			>
-				Register
-			</Button>
+			{children}
 		</CreateTask>
 	);
 };

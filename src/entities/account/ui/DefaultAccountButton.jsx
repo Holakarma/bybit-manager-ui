@@ -12,7 +12,7 @@ const DefaultAccountButton = ({ defaultAccountId, onClick }) => {
 		isLoading,
 		isError,
 	} = useAccounts({
-		database_ids: [defaultAccountId],
+		body: { database_ids: [defaultAccountId] },
 	});
 
 	const [warning, setWarning] = useState('');

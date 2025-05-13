@@ -4,7 +4,7 @@ import useSelectedAccountsId from '../model/selectedAccountsIdStore';
 const useSelectedAccounts = () => {
 	const selectedAccountsId = useSelectedAccountsId.use.selectedAccountsId();
 	const { data: selectedAccounts, ...rest } = useAccounts({
-		database_ids: selectedAccountsId,
+		body: { database_ids: selectedAccountsId },
 	});
 
 	return { data: selectedAccounts, ...rest };

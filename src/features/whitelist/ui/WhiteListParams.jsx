@@ -4,7 +4,6 @@ import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 import {
 	Avatar,
 	Box,
-	Button,
 	Checkbox,
 	CircularProgress,
 	FormControlLabel,
@@ -18,15 +17,13 @@ import {
 	Typography,
 } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import {
-	useDefaultAccount,
-	useDefaultAccountWithCookie,
-} from 'entities/account';
+import { useDefaultAccount } from 'entities/account';
 import { useCoinsChains } from 'entities/coins-chains';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ChainPicker from './ChainPicker';
 import CoinsPicker from './CoinsPicker';
+import SetDefaultAccountButton from './SetDefaultAccountButton';
 import videoUrl from '/public/assets/video/batman-placeholder.mp4';
 
 function CustomTabPanel(props) {
@@ -60,12 +57,6 @@ function a11yProps(index) {
 
 const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 	const defaultAccount = useDefaultAccount.use.defaultAccountId();
-
-	const defaultAccountWithCookieMutation = useDefaultAccountWithCookie();
-
-	const setDefaultAccountWithCookie = () => {
-		defaultAccountWithCookieMutation.mutate();
-	};
 
 	const queryClient = useQueryClient();
 	const {
@@ -276,18 +267,10 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 				<Typography variant="h6">
 					Error while fetching chains.
 				</Typography>
-
 				<Typography variant="h6">
 					Try to update session on your default account.
 				</Typography>
-
-				<Button
-					sx={{ marginTop: 2 }}
-					onClick={setDefaultAccountWithCookie}
-					// disabled
-				>
-					Choose the first account with session (Soon)
-				</Button>
+				<SetDefaultAccountButton sx={{ marginTop: 2 }} />
 			</Stack>
 		);
 	}
@@ -324,13 +307,7 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 				<Typography variant="h6">
 					Default account with session is required
 				</Typography>
-				<Button
-					sx={{ marginTop: 2 }}
-					onClick={setDefaultAccountWithCookie}
-					// disabled
-				>
-					Choose the first account with session (Soon)
-				</Button>
+				<SetDefaultAccountButton sx={{ marginTop: 2 }} />
 			</Stack>
 		);
 	}
@@ -346,8 +323,10 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 				right={0}
 				bottom={0}
 				left={0}
-				overflowY="auto"
-				overflowX="hidden"
+				sx={{
+					overflowY: 'auto',
+					overflowX: 'hidden',
+				}}
 				paddingRight={1}
 			>
 				<Tabs

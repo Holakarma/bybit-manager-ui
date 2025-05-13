@@ -1,4 +1,3 @@
-import { Button } from '@mui/material';
 import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
@@ -11,7 +10,7 @@ import { useState } from 'react';
 import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useRefreshTask from '../api/refreshBalances';
 
-const Refresh = ({ ...props }) => {
+const Refresh = ({ children, onClose }) => {
 	const mutation = useRefreshTask();
 
 	const [settings, setSettings] = useState(
@@ -23,6 +22,7 @@ const Refresh = ({ ...props }) => {
 			handleStart={mutation.mutate}
 			task="refresh balances"
 			settings={settings}
+			onClose={onClose}
 			pages={[
 				{
 					title: 'Settings',
@@ -49,13 +49,7 @@ const Refresh = ({ ...props }) => {
 				},
 			]}
 		>
-			<Button
-				{...props}
-				fullWidth
-				variant="contained"
-			>
-				Refresh
-			</Button>
+			{children}
 		</CreateTask>
 	);
 };

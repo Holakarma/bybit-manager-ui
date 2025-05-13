@@ -1,5 +1,3 @@
-import SyncAltRoundedIcon from '@mui/icons-material/SyncAltRounded';
-import { IconButton, Stack, Tooltip } from '@mui/material';
 import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import { FINANCE_ACCOUNT_TYPE } from 'entities/finance-account';
 import {
@@ -14,7 +12,7 @@ import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useTransferTask from '../api/transfer';
 import TransferSettings from './TransferSettings';
 
-const Transfer = () => {
+const Transfer = ({ children, onClose }) => {
 	const [settings, setSettings] = useState({
 		...getTaskSettingsConfig(taskSettingsDefaultConfig),
 		from: FINANCE_ACCOUNT_TYPE.ACCOUNT_TYPE_FUND,
@@ -23,8 +21,6 @@ const Transfer = () => {
 	});
 
 	const mutation = useTransferTask();
-
-	const [tooltipOpen, setTooltipOpen] = useState(false);
 
 	const [databaseIds, setDatabaseIds] = useState([]);
 
@@ -40,68 +36,49 @@ const Transfer = () => {
 	};
 
 	return (
-		<Tooltip
-			title="Transfer"
-			open={tooltipOpen}
+		<CreateTask
+			onClose={onClose}
+			handleStart={mutate}
+			disabledTooltip={disabledTooltip}
+			errorText={!settings.coinSymbols.length ? 'No coins chosen' : ''}
+			task="transfer"
+			onCheckedIdsChange={(checkedIds) => setDatabaseIds(checkedIds)}
+			settings={settings}
+			pages={[
+				{
+					title: 'Settings',
+					component: (
+						<TaskSettingsPage key="settings">
+							<TaskSettingsBase
+								settings={settings}
+								onSettingsChange={(newSettings) =>
+									setSettings(newSettings)
+								}
+							/>
+						</TaskSettingsPage>
+					),
+				},
+				{
+					title: 'Accounts',
+					component: <TaskAccountsPage key="accounts" />,
+				},
+				{
+					title: 'Transfer',
+					component: (
+						<TransferSettings
+							key="transfer"
+							settings={settings}
+							databaseIds={databaseIds}
+							onSettingsChange={(newSettings) =>
+								setSettings(newSettings)
+							}
+						/>
+					),
+				},
+			]}
 		>
-			<Stack
-				sx={{ height: '100%' }}
-				justifyContent="center"
-				alignItems="center"
-			>
-				<CreateTask
-					handleStart={mutate}
-					disabledTooltip={disabledTooltip}
-					errorText={
-						!settings.coinSymbols.length ? 'No coins chosen' : ''
-					}
-					task="transfer"
-					onCheckedIdsChange={(checkedIds) =>
-						setDatabaseIds(checkedIds)
-					}
-					settings={settings}
-					pages={[
-						{
-							title: 'Settings',
-							component: (
-								<TaskSettingsPage key="settings">
-									<TaskSettingsBase
-										settings={settings}
-										onSettingsChange={(newSettings) =>
-											setSettings(newSettings)
-										}
-									/>
-								</TaskSettingsPage>
-							),
-						},
-						{
-							title: 'Accounts',
-							component: <TaskAccountsPage key="accounts" />,
-						},
-						{
-							title: 'Transfer',
-							component: (
-								<TransferSettings
-									key="transfer"
-									settings={settings}
-									databaseIds={databaseIds}
-									onSettingsChange={(newSettings) =>
-										setSettings(newSettings)
-									}
-								/>
-							),
-						},
-					]}
-				>
-					<IconButton
-						onMouseEnter={() => setTooltipOpen(true)}
-						onMouseLeave={() => setTooltipOpen(false)}
-					>
-						<SyncAltRoundedIcon />
-					</IconButton>
-				</CreateTask>
-			</Stack>
-		</Tooltip>
+			{children}
+		</CreateTask>
 	);
 };
 

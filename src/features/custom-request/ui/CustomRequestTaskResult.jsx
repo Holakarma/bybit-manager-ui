@@ -21,7 +21,7 @@ const CustomRequestTaskResult = ({ task, ...props }) => {
 		data: accounts,
 		isLoading,
 		isError,
-	} = useAccounts({ database_ids: Object.keys(grouped) });
+	} = useAccounts({ body: { database_ids: Object.keys(grouped) } });
 
 	const firstLog = useMemo(() => {
 		return task.logs[0];

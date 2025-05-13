@@ -19,7 +19,7 @@ const AccountLogsItem = ({ logs, database_id }) => {
 		data: accounts,
 		isLoading,
 		isError,
-	} = useAccounts({ database_ids: [database_id] });
+	} = useAccounts({ body: { database_ids: [database_id] } });
 
 	const account = useMemo(() => {
 		if (!accounts) return null;
