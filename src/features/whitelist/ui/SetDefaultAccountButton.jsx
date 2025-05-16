@@ -1,12 +1,18 @@
 import { Button } from '@mui/material';
 import { useSetAliveDefaultAccount } from 'entities/account';
 import { useState } from 'react';
+import { useThrottle } from 'shared/lib/throttle';
 
 const SetDefaultAccountButton = (props) => {
 	const setDefaultAccount = useSetAliveDefaultAccount();
 	const [total, setTotal] = useState(-1);
+
+	const throttledSetTotal = useThrottle((newTotal) => {
+		setTotal(newTotal);
+	}, 300);
+
 	const onTotalGet = (total) => {
-		setTotal(total);
+		throttledSetTotal(total);
 	};
 
 	const setDefaultAccountWithCookie = () => {
