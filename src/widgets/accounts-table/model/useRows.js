@@ -6,14 +6,23 @@ import {
 	usePaginatedAccounts,
 } from 'entities/account';
 import { useGetFinanceAccountsDB } from 'entities/finance-account';
-import { useFilter } from 'features/filter-accounts';
+import { FilterDTO, useFilter } from 'features/filter-accounts';
 import { useMemo } from 'react';
 
 const useRows = ({ paginationModel, layer }) => {
 	const groups = useFilter.use.groups();
 	const search = useFilter.use.search();
+	const filter = useFilter.use.filter();
 
-	const queryBody = {};
+	const { filterBody, only_with_secure_token } = useMemo(() => {
+		const { only_with_secure_token, ...body } = new FilterDTO(filter);
+
+		return { filterBody: body, only_with_secure_token };
+	}, [filter]);
+
+	const queryBody = {
+		...filterBody,
+	};
 	if (groups.length) {
 		queryBody.groups = groups;
 	}
@@ -28,6 +37,7 @@ const useRows = ({ paginationModel, layer }) => {
 		isError,
 	} = usePaginatedAccounts({
 		body: queryBody,
+		only_with_secure_token,
 		page: paginationModel.page + 1,
 		offset: paginationModel.pageSize,
 	});

@@ -35,6 +35,8 @@ const ENDPOINTS = {
 	funding_coins: '/private/funding-coins',
 	trading_coins: '/private/trading-coins',
 	transfer: '/private/transfer',
+	kyc_countries: '/filter/kyc-countries',
+	last_login_country: '/filter/last-login-countries',
 };
 
 export default ENDPOINTS;

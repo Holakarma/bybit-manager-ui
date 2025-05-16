@@ -1,6 +1,7 @@
 import { createSelectors } from 'shared/zustand';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { defaultValues } from './schema';
 
 const FILERSTORE_KEY = 'filters';
 
@@ -9,6 +10,8 @@ const useFilterBase = create(
 		(set) => ({
 			search: '',
 			groups: [],
+			filter: defaultValues,
+			setFilter: (filter) => set({ filter }),
 			setSearch: (newSearch) => set({ search: newSearch || '' }),
 			setGroups: (newGroups) => set({ groups: newGroups || [] }),
 			addGroup: (newGroup) =>

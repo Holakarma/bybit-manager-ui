@@ -36,7 +36,7 @@ const AccountsTable = ({
 
 	const rowCountRef = useRef(rowCount);
 	const savedRowCount = useMemo(() => {
-		if (rowCount) {
+		if (rowCount !== undefined) {
 			rowCountRef.current = rowCount;
 		}
 		return rowCountRef.current;

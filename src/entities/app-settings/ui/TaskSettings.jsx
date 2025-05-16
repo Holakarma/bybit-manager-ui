@@ -6,7 +6,6 @@ import {
 	Collapse,
 	FormControlLabel,
 	FormGroup,
-	InputAdornment,
 	List,
 	ListItem,
 	ListItemButton,
@@ -14,27 +13,10 @@ import {
 	ListItemText,
 	ListSubheader,
 	Switch,
-	TextField,
 } from '@mui/material';
 import { Controller } from 'react-hook-form';
 import { TASK_SETTINGS_CONFIG_NAME } from 'shared/model/app-config/consts';
-
-const NumberField = ({ unit, sx, ...props }) => (
-	<TextField
-		{...props}
-		slotProps={{
-			input: {
-				endAdornment: (
-					<InputAdornment position="end">{unit}</InputAdornment>
-				),
-			},
-		}}
-		sx={{ maxWidth: '120px', marginInline: 1, ...sx }}
-		type="number"
-		variant="standard"
-		size="small"
-	/>
-);
+import { NumberField } from 'shared/ui/number-field';
 
 const TaskSettings = ({ control, name, watch, errors, trigger }) => {
 	const delay = watch(`${TASK_SETTINGS_CONFIG_NAME}.delay`);

@@ -40,7 +40,7 @@ export const usePaginatedAccounts = ({
 				page,
 				offset,
 			),
-		queryKey: ['accounts', body, page, offset],
+		queryKey: ['accounts', body, page, offset, only_with_secure_token],
 		staleTime: 5 * 1000 * 60,
 		retry: false,
 	});
@@ -48,7 +48,7 @@ export const usePaginatedAccounts = ({
 const useAccounts = ({ body, only_with_secure_token } = {}) =>
 	useQuery({
 		queryFn: async () => await getAccounts(body, only_with_secure_token),
-		queryKey: ['accounts', body],
+		queryKey: ['accounts', body, only_with_secure_token],
 		staleTime: 5 * 1000 * 60,
 		retry: false,
 	});
