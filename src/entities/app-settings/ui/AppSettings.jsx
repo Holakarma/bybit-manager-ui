@@ -1,10 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-	Box,
 	Button,
 	Divider,
 	List,
 	ListItem,
+	ListItemText,
 	ListSubheader,
 	Modal,
 	Stack,
@@ -46,16 +46,14 @@ const AppSettings = ({ children, tooltipTitle, ...props }) => {
 		mode: 'onChange',
 	});
 
-	const saveHandle = (data) => {
+	const saveHandle = async (data) => {
 		setAppConfig(data);
 		reset(data);
-		location.reload();
 	};
 
 	const resetHandle = () => {
 		setAppConfig(defaultConfig);
 		reset(defaultConfig);
-		location.reload();
 	};
 
 	return (
@@ -79,7 +77,7 @@ const AppSettings = ({ children, tooltipTitle, ...props }) => {
 				onClose={handleClose}
 			>
 				<ModalBody>
-					<ModalBodyBackground>
+					<ModalBodyBackground sx={{ overflow: 'hidden' }}>
 						<Typography
 							variant="H5"
 							marginBottom={4}
@@ -87,83 +85,114 @@ const AppSettings = ({ children, tooltipTitle, ...props }) => {
 							App Settings
 						</Typography>
 
-						<Stack
-							component="form"
-							onSubmit={handleSubmit(saveHandle)}
-							gap={4}
-							flexGrow={1}
-						>
+						<form onSubmit={handleSubmit(saveHandle)}>
 							<Stack
+								gap={4}
 								flexGrow={1}
-								gap={3}
+								overflow="auto"
 							>
-								<LicenseInfo />
-								<Divider />
-
-								<TaskSettings
-									control={control}
-									watch={watch}
-									name={TASK_SETTINGS_CONFIG_NAME}
-									errors={errors[TASK_SETTINGS_CONFIG_NAME]}
-									trigger={trigger}
-								/>
-
-								<List
-									subheader={
-										<ListSubheader>
-											API settings
-										</ListSubheader>
-									}
+								<Stack
+									flexGrow={1}
+									gap={3}
 								>
-									<ListItem>
-										<CaptchaSelect
-											control={control}
-											name="captchaType"
-											error={!!errors.captchaType}
-										/>
-									</ListItem>
-									<ListItem>
-										<VerifyingSettings
-											control={control}
-											name={VERIFY_ATTEMPTS_CONFIG_NAME}
-											emailError={
-												!!errors.verifyAttempts?.email
-											}
-											totpError={
-												!!errors.verifyAttempts?.totp
-											}
-											emailHelperText={
-												errors.verifyAttempts?.email
-													?.message
-											}
-											totpHelperText={
-												errors.verifyAttempts?.totp
-													?.message
-											}
-										/>
-									</ListItem>
-									<ListItem>
-										<ApiSettings
-											control={control}
-											errors={errors[API_CONFIG_NAME]}
-										/>
-									</ListItem>
-								</List>
+									<LicenseInfo />
+									<Divider />
+
+									<TaskSettings
+										control={control}
+										watch={watch}
+										name={TASK_SETTINGS_CONFIG_NAME}
+										errors={
+											errors[TASK_SETTINGS_CONFIG_NAME]
+										}
+										trigger={trigger}
+									/>
+
+									<List
+										subheader={
+											<ListSubheader>
+												API settings
+											</ListSubheader>
+										}
+									>
+										<ListItem>
+											<CaptchaSelect
+												control={control}
+												name="captchaType"
+												error={!!errors.captchaType}
+											/>
+										</ListItem>
+										<ListItem>
+											<VerifyingSettings
+												control={control}
+												name={
+													VERIFY_ATTEMPTS_CONFIG_NAME
+												}
+												emailError={
+													!!errors.verifyAttempts
+														?.email
+												}
+												totpError={
+													!!errors.verifyAttempts
+														?.totp
+												}
+												emailHelperText={
+													errors.verifyAttempts?.email
+														?.message
+												}
+												totpHelperText={
+													errors.verifyAttempts?.totp
+														?.message
+												}
+											/>
+										</ListItem>
+										<ListItem
+											sx={{
+												flexDirection: 'column',
+												alignItems: 'end',
+												// gap: 1,
+											}}
+										>
+											<ApiSettings
+												control={control}
+												errors={errors[API_CONFIG_NAME]}
+											/>
+											<ListItemText secondary="*need reload to confirm" />
+										</ListItem>
+									</List>
+								</Stack>
 							</Stack>
-
-							<Box textAlign="end">
+							<Stack
+								direction="row"
+								justifyContent="space-between"
+							>
 								<Button onClick={resetHandle}>Reset</Button>
-								<Button
-									type="submit"
-									disabled={
-										!isDirty ||
-										Boolean(Object.keys(errors).length)
-									}
-								>
-									Save & Reload
-								</Button>
-							</Box>
-						</Stack>
+
+								{isDirty ? (
+									<Button
+										type="submit"
+										disabled={
+											!isDirty ||
+											Boolean(Object.keys(errors).length)
+										}
+										sx={{ minWidth: 125 }}
+										variant="outlined"
+									>
+										Save
+									</Button>
+								) : (
+									<Button
+										variant="outlined"
+										disabled={Boolean(
+											Object.keys(errors).length,
+										)}
+										onClick={() => location.reload()}
+									>
+										Reload page
+									</Button>
+								)}
+							</Stack>
+						</form>
 					</ModalBodyBackground>
 				</ModalBody>
 			</Modal>

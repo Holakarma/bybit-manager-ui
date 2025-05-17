@@ -3,10 +3,6 @@ import { useAddCustomRequest } from 'entities/custom-request';
 
 const SaveNewCustomRequest = ({ newCustomRequest }) => {
 	const mutation = useAddCustomRequest();
-
-	// @TODO: ошибка при сохранении в дб
-	console.log(mutation.data, mutation.error);
-
 	return (
 		<Button
 			variant="contained"

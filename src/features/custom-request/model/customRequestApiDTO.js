@@ -15,6 +15,8 @@ export class CustomRequestApiDTO {
 					.filter(([_, param]) => param.active)
 					.map(([header, { value }]) => [header, value]),
 			),
+
+			// @TODO: Переделать в отдельный параметр
 			'Set-Cookie': Object.entries(customRequest.cookies)
 				.filter(([_, cookie]) => cookie.active)
 				.map(([key, cookie]) => `${key}=${cookie.value}`)
