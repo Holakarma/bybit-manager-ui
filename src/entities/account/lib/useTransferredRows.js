@@ -11,20 +11,20 @@ import { useDepositCoinChain } from 'entities/coins-chains';
 import { useGetFinanceAccountsDB } from 'entities/finance-account';
 
 const useTransferredRows = ({ layer, accounts, enabled = true }) => {
-	const { data: financeAccounts, isFinanceLoading } = useGetFinanceAccountsDB(
-		{
-			uids: accounts?.map((a) => a.uid).filter(Boolean),
+	const { data: financeAccounts, isLoading: isFinanceLoading } =
+		useGetFinanceAccountsDB({
+			uids: accounts?.map((a) => a.uid),
 			enabled: layer === 'balances',
-		},
-	);
+		});
 
 	const coin = useDepositCoinChain.use.coin();
 	const chain = useDepositCoinChain.use.chain();
-	const { data: depositAddresses, isDepositLoading } = useDepositAddresses({
-		uids: accounts?.map((a) => a.uid).filter(Boolean),
-		coin_symbol: coin?.symbol,
-		chain: chain?.name,
-	});
+	const { data: depositAddresses, isLoading: isDepositLoading } =
+		useDepositAddresses({
+			uids: accounts?.map((a) => a.uid),
+			coin_symbol: coin?.symbol,
+			chain: chain?.name,
+		});
 
 	const transferDepositMutation = useTransferDeposit(accounts);
 	const transferBalancesMutation = useTransferFinanceAccounts(accounts);
@@ -52,15 +52,15 @@ const useTransferredRows = ({ layer, accounts, enabled = true }) => {
 
 	const isEnabled = () => {
 		if (!enabled) return false;
-		if (layer === 'balances' && !financeAccounts) return false;
-		if (layer === 'deposit' && !depositAddresses) return false;
+		// if (layer === 'balances' && !financeAccounts) return false;
+		// if (layer === 'deposit' && !depositAddresses) return false;
 
 		return true;
 	};
 
 	const query = useQuery({
 		queryFn,
-		queryKey: ['transfered rows', accounts, layer],
+		queryKey: ['transfered rows', accounts, layer, chain],
 		enabled: isEnabled,
 	});
 

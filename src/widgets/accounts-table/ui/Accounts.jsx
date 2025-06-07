@@ -6,13 +6,6 @@ import { usePersistState } from 'shared/lib/react';
 import useLayer from '../model/layerStore';
 import AccountsTable from './AccountsTable';
 
-const HEIGHTS = {
-	5: '380px',
-	10: '640px',
-	50: '2720px',
-	100: '5310px',
-};
-
 const Accounts = () => {
 	const { enqueueSnackbar } = useSnackbar();
 	const [paginationModel, setPaginationModel] = useState({
@@ -29,8 +22,7 @@ const Accounts = () => {
 		return (
 			<Stack
 				sx={{
-					height: HEIGHTS[paginationModel.pageSize],
-					minHeight: '100%',
+					height: '100%',
 					width: '100%',
 					justifyContent: 'center',
 					alignItems: 'center',
@@ -44,8 +36,7 @@ const Accounts = () => {
 	return (
 		<div
 			style={{
-				height: HEIGHTS[paginationModel.pageSize],
-				minHeight: '100%',
+				height: '100%',
 				width: '100%',
 				position: 'relative',
 			}}

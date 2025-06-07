@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 const useTransferFinanceAccounts = (accounts) => {
 	const mutationFn = (financeAccounts) => {
 		return accounts.map((account) =>
-			transferFinanceAccount(account, financeAccounts[account.uid]),
+			transferFinanceAccount(account, financeAccounts?.[account.uid]),
 		);
 	};
 

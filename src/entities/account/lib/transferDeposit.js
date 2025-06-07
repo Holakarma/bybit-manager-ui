@@ -3,17 +3,17 @@ import { useMutation } from '@tanstack/react-query';
 const useTransferDeposit = (accounts) => {
 	const mutationFn = async (depositAddresses) => {
 		return accounts.map((a) =>
-			transferDepositAccount(a, depositAddresses[a.uid]),
+			transferDepositAccount(a, depositAddresses?.[a.uid]),
 		);
 	};
 
 	return useMutation({
 		mutationFn,
-		mutationKey: ['transfer deposit'],
+		mutationKey: ['transfer deposit', accounts],
 	});
 };
 
-const transferDepositAccount = (account, addresses) => {
+const transferDepositAccount = (account, addresses = {}) => {
 	return {
 		id: account.database_id,
 		name: account.name,

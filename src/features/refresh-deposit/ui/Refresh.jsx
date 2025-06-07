@@ -1,4 +1,5 @@
 import { taskSettingsDefaultConfig } from 'entities/app-settings';
+import { useDepositCoinChain } from 'entities/coins-chains';
 import {
 	CreateTask,
 	TaskAccountsPage,
@@ -14,10 +15,13 @@ import RefreshDepositSettings from './RefreshDepositSettings';
 const Refresh = ({ children, onClose }) => {
 	const mutation = useRefreshTask();
 
+	const coin = useDepositCoinChain.use.coin();
+	const chain = useDepositCoinChain.use.chain();
+
 	const [settings, setSettings] = useState({
 		...getTaskSettingsConfig(taskSettingsDefaultConfig),
-		coin: undefined,
-		chain: undefined,
+		coin: coin,
+		chain: chain,
 	});
 
 	return (

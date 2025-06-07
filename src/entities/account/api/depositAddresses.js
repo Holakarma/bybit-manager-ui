@@ -23,6 +23,7 @@ const useDepositAddresses = ({ uids, coin_symbol, chain, enabled = true }) => {
 		queryKey: [ENDPOINTS.db_deposit_addresess, uids, coin_symbol, chain],
 		enabled:
 			enabled && Boolean(uids) && Boolean(coin_symbol) && Boolean(chain),
+		retry: false,
 	});
 };
 

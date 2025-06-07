@@ -25,6 +25,7 @@ const useSessionChecker = (database_id) => {
 		queryKey: ['session-check', database_id],
 		enabled: Boolean(database_id),
 		staleTime: 5 * 1000 * 60,
+		retry: false,
 	});
 };
 

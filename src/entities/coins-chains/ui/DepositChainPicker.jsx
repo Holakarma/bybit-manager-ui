@@ -1,5 +1,5 @@
 import { Avatar } from '@mui/material';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { VariableSizeListbox } from 'shared/ui/virtualized-listbox';
 import useCoinsChains from '../api/depositCoinsChains';
 import ChainRow from './ChainRow';
@@ -23,9 +23,16 @@ const DepositChainPicker = ({
 		}
 	}, [coinChains]);
 
+	useEffect(() => {
+		if (chains && !chain) {
+			onChange(null, chains[0]);
+		}
+	}, [chains, chain, onChange]);
+
 	return (
 		<CoinsPicker
 			options={chains || []}
+			disabled={chains?.length === 1}
 			loading={isLoading}
 			getOptionLabel={(option) => option.full_name || ''}
 			isOptionEqualToValue={(option, value) =>

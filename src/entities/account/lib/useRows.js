@@ -46,7 +46,11 @@ const useRows = ({ paginationModel, layer }) => {
 		return { accounts: undefined, rowCount: undefined };
 	}, [paginatedAccounts]);
 
-	const { data: rows, isLoading: isRowsLoading } = useTransferredRows({
+	const {
+		data: rows,
+		isLoading: isRowsLoading,
+		isError: isTransferredError,
+	} = useTransferredRows({
 		layer,
 		accounts,
 		enabled: Boolean(accounts),
@@ -71,7 +75,7 @@ const useRows = ({ paginationModel, layer }) => {
 		rowCount,
 		error,
 		isLoading: isLoading || isRowsLoading,
-		isError,
+		isError: isError || isTransferredError,
 	};
 };
 

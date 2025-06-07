@@ -1,5 +1,4 @@
 import {
-	Box,
 	FormControl,
 	InputLabel,
 	Select,
@@ -27,7 +26,7 @@ const DepositCoinsChainsPicker = ({
 		return (
 			<Skeleton
 				variant="rounded"
-				width={367}
+				width={416}
 				height="100%"
 			/>
 		);
@@ -52,20 +51,19 @@ const DepositCoinsChainsPicker = ({
 						}}
 						title="Click to choose one."
 					>
-						<Box>
-							<SetDefaultAccountButton
-								description={
-									'Default account with session is required.'
-								}
-								color="error"
-								variant="outlined"
-							/>
-						</Box>
+						<SetDefaultAccountButton
+							description={
+								'Default account with session is required.'
+							}
+							color="error"
+							variant="outlined"
+						/>
 					</Tooltip>
 				</Stack>
 			)
 		);
 	}
+
 	return (
 		<Stack
 			direction="row"
