@@ -1,7 +1,7 @@
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { useState } from 'react';
-import useFilter from '../model/filterStore';
+import useFilter from '../../model/filterStore';
 import FilterMenu from './FilterMenu';
 
 const Search = () => {

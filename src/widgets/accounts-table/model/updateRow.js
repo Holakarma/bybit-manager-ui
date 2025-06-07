@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useUpdateAccountMutation } from 'entities/account';
-import { useFilter } from 'features/filter-accounts';
+import { useFilter, useUpdateAccountMutation } from 'entities/account';
 
 const computeMutation = (newRow, oldRow) => {
 	if (newRow.name !== oldRow.name) {

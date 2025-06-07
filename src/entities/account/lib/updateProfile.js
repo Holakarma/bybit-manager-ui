@@ -12,7 +12,7 @@ const updateProfile = (database_id, signal) => {
 const useUpdateProfile = (props) => {
 	const mutationFunction = ({ database_id, signal }) => {
 		return deduplicateRequests({
-			requestKey: ['update', database_id],
+			requestKey: [ENDPOINTS.update_profile, database_id],
 			requestFn: async () => {
 				const result = await updateProfile(database_id, signal);
 				return { result, database_id };
@@ -22,7 +22,7 @@ const useUpdateProfile = (props) => {
 
 	return useMutation({
 		mutationFn: mutationFunction,
-		mutationKey: ['update'],
+		mutationKey: [ENDPOINTS.update_profile],
 		...props,
 	});
 };

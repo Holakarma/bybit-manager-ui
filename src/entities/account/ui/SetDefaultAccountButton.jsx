@@ -21,17 +21,18 @@ const SetDefaultAccountButton = (props) => {
 
 	return (
 		<Button
-			{...props}
 			onClick={setDefaultAccountWithCookie}
 			disabled={setDefaultAccount.isError}
 			loading={setDefaultAccount.isPending}
 			loadingPosition="start"
+			{...props}
 		>
 			{setDefaultAccount.isPending
 				? `Finding alive account${total === -1 ? '' : ` from ${total}`}`
 				: setDefaultAccount.isError
 					? 'No alive account found'
-					: 'Choose the first account with session'}
+					: props.description ||
+						'Choose the first account with session'}
 		</Button>
 	);
 };

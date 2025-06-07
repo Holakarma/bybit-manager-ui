@@ -7,8 +7,6 @@ const useAccountBalances = ({ databaseIds, from, to }) => {
 		finance_account_type_to: to,
 	});
 
-	console.log(transferCoins);
-
 	const balances = {};
 
 	if (!transferCoins) return;
@@ -26,7 +24,7 @@ const useAccountBalances = ({ databaseIds, from, to }) => {
 						balance: parseFloat(coin.transfer_balance),
 						balance_usd: parseFloat(coin.transfer_balance_usd),
 						ids: [coinsQuery.data.database_id],
-						icon: coin.coin_icon_night || coin.coin_icon,
+						icon: coin.icon_night || coin.coin_icon,
 						precision: coin.precision,
 					};
 				} else {
@@ -41,7 +39,7 @@ const useAccountBalances = ({ databaseIds, from, to }) => {
 							...balances[coin.symbol].ids,
 							coinsQuery.data.database_id,
 						],
-						icon: coin.coin_icon_night || coin.coin_icon,
+						icon: coin.icon_night || coin.coin_icon,
 						precision: coin.precision,
 					};
 				}

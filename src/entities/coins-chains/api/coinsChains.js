@@ -39,7 +39,7 @@ const useCoinsChains = (database_id, onError) => {
 
 	return useQuery({
 		queryFn,
-		queryKey: ['coins-chains'],
+		queryKey: ['coins-chains', database_id],
 		enabled: Boolean(database_id),
 		staleTime: 50 * 1000 * 60,
 		retry: false,

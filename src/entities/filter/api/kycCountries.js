@@ -11,6 +11,7 @@ const useKycCountries = () =>
 	useQuery({
 		queryFn: getKycCountries,
 		queryKey: ['kyc-countries'],
+		staleTime: 5 * 1000 * 60,
 	});
 
 export default useKycCountries;

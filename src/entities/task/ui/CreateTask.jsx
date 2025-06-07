@@ -109,7 +109,9 @@ const CreateTask = ({
 					disabled: checkedIds.length === 0 || Boolean(errorText),
 				}}
 				startTitle={startTitle}
-				errorText={errorText}
+				errorText={
+					checkedIds.length === 0 ? 'No accounts selected' : errorText
+				}
 				loading={loading}
 				pages={pages.map((page) => ({
 					...page,

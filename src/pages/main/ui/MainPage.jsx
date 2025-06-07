@@ -27,18 +27,21 @@ import {
 } from '@mui/material';
 import { DefaultAccount, SelectedAccounts } from 'entities/account';
 import { CustomRequest } from 'features/custom-request';
+import { DepositCoinsChains } from 'features/depositCoinsChains';
 import { Disable2fa } from 'features/disable-2fa';
 import { Enable2fa } from 'features/enable-2fa';
 import { ExportAccounts } from 'features/export-accounts';
 import { Login } from 'features/login';
 import { Logout } from 'features/logout';
 import { Refresh } from 'features/refresh-balances';
+import { RefreshDepositAddress } from 'features/refresh-deposit';
 import { Register } from 'features/register';
 import { SetPreferences } from 'features/set-preference';
 import { Transfer } from 'features/transfer';
 import { UpdateProfile } from 'features/update-profile';
 import { Whitelist } from 'features/whitelist';
 import { cloneElement, useState } from 'react';
+import { DepositIcon } from 'shared/assets/icons/deposit';
 import { DollarIcon } from 'shared/assets/icons/dollar';
 import { RegisterIcon } from 'shared/assets/icons/register';
 import { ShieldLockIcon } from 'shared/assets/icons/shield-lock';
@@ -126,6 +129,14 @@ const getActions = (layer) => {
 					icon: <HowToRegRoundedIcon />,
 				},
 			];
+		case 'deposit':
+			return [
+				{
+					component: <RefreshDepositAddress />,
+					title: 'Refresh',
+					icon: <RefreshRoundedIcon />,
+				},
+			];
 		default:
 			return [];
 	}
@@ -164,7 +175,17 @@ const layers = [
 	{ value: 'balances', icon: <DollarIcon /> },
 	{ value: 'register', icon: <RegisterIcon /> },
 	{ value: '2fa', icon: <ShieldLockIcon /> },
+	{ value: 'deposit', icon: <DepositIcon /> },
 ];
+
+const getAdditionalActions = (layer) => {
+	switch (layer) {
+		case 'deposit':
+			return [<DepositCoinsChains key="depositCoinPicker" />];
+		default:
+			return [];
+	}
+};
 
 const MainPage = () => {
 	const theme = useTheme();
@@ -238,7 +259,6 @@ const MainPage = () => {
 							</ToggleButton>
 						))}
 					</ToggleButtonGroup>
-
 					{/* Actions */}
 					<Button
 						id="basic-button"
@@ -265,6 +285,9 @@ const MainPage = () => {
 							onClose: handleClose,
 						})}
 					</Menu>
+
+					{/* Additional */}
+					{getAdditionalActions(layer)}
 				</Stack>
 			</Stack>
 

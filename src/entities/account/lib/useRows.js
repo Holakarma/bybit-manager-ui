@@ -1,13 +1,6 @@
-import {
-	transferAccountGeneral,
-	transferAccounts2fa,
-	transferAccountsRegister,
-	transferFinanceAccounts,
-	usePaginatedAccounts,
-} from 'entities/account';
-import { useGetFinanceAccountsDB } from 'entities/finance-account';
-import { FilterDTO, useFilter } from 'features/filter-accounts';
+import { FilterDTO, useFilter, usePaginatedAccounts } from 'entities/account';
 import { useMemo } from 'react';
+import useTransferredRows from './useTransferredRows';
 
 const useRows = ({ paginationModel, layer }) => {
 	const groups = useFilter.use.groups();
@@ -53,31 +46,11 @@ const useRows = ({ paginationModel, layer }) => {
 		return { accounts: undefined, rowCount: undefined };
 	}, [paginatedAccounts]);
 
-	const { data: financeAccounts, isLoading: isFinanceAccountsLoading } =
-		useGetFinanceAccountsDB(accounts?.map((account) => account.uid));
-
-	const rows = useMemo(() => {
-		if (accounts && financeAccounts) {
-			switch (layer) {
-				case 'general':
-					return accounts.map(transferAccountGeneral);
-				case 'balances':
-					return accounts.map((account) =>
-						transferFinanceAccounts(
-							account,
-							financeAccounts[account.uid],
-						),
-					);
-				case 'register':
-					return accounts.map(transferAccountsRegister);
-				case '2fa':
-					return accounts.map(transferAccounts2fa);
-				default:
-					return accounts.map(transferAccountGeneral);
-			}
-		}
-		return null;
-	}, [accounts, layer, financeAccounts]);
+	const { data: rows, isLoading: isRowsLoading } = useTransferredRows({
+		layer,
+		accounts,
+		enabled: Boolean(accounts),
+	});
 
 	const filtered = useMemo(() => {
 		if (rows && search) {
@@ -97,9 +70,8 @@ const useRows = ({ paginationModel, layer }) => {
 		rows: filtered,
 		rowCount,
 		error,
-		isLoading,
+		isLoading: isLoading || isRowsLoading,
 		isError,
-		isFinanceAccountsLoading,
 	};
 };
 

@@ -19,8 +19,8 @@ import { useKycCountries, useLastLoginCountry } from 'entities/filter';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { NumberField } from 'shared/ui/number-field';
-import useFilter from '../model/filterStore';
-import { defaultValues, schema } from '../model/schema';
+import useFilter from '../../model/filterStore';
+import { defaultValues, schema } from '../../model/schema';
 
 const MenuProps = {
 	PaperProps: {

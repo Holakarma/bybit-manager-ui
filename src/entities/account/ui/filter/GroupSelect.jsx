@@ -8,7 +8,7 @@ import {
 import { useGetGroupsQuery } from 'entities/group';
 import { useMemo } from 'react';
 import { usd } from 'shared/lib/balance-visualize';
-import useFilter from '../model/filterStore';
+import useFilter from '../../model/filterStore';
 
 const GroupSelect = ({ ...props }) => {
 	const { data: availableGroups, isLoading, isError } = useGetGroupsQuery();

@@ -1,4 +1,3 @@
-import NoAccountsRoundedIcon from '@mui/icons-material/NoAccountsRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 import {
@@ -14,16 +13,20 @@ import {
 	Tab,
 	Tabs,
 	TextField,
-	Typography,
 } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDefaultAccount } from 'entities/account';
-import { useCoinsChains } from 'entities/coins-chains';
+import {
+	NoDefaultAccountWarning,
+	SetDefaultAccountButton,
+	useDefaultAccount,
+} from 'entities/account';
+import { CoinsPicker, useCoinsChains } from 'entities/coins-chains';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ErrorWithIcon } from 'shared/ui/error';
+import { VariableSizeListbox } from 'shared/ui/virtualized-listbox';
 import ChainPicker from './ChainPicker';
-import CoinsPicker from './CoinsPicker';
-import SetDefaultAccountButton from './SetDefaultAccountButton';
+import CoinRow from './CoinRow';
 import videoUrl from '/public/assets/video/batman-placeholder.mp4';
 
 function CustomTabPanel(props) {
@@ -98,11 +101,10 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 			const allChains = {};
 
 			for (var [coin, chains] of Object.entries(coinsChains)) {
-				const icon_night_url =
-					Object.values(chains)[0].icon_night_url || '';
+				const icon_night = Object.values(chains)[0].icon_night || '';
 
 				Object.assign(allChains, chains);
-				coins.push({ coin, icon_night_url });
+				coins.push({ coin, icon_night });
 			}
 
 			return [coins, allChains];
@@ -251,27 +253,25 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 
 	if (isError) {
 		return (
-			<Stack
-				height="100%"
-				justifyContent="center"
-				alignItems="center"
-				color="textSecondary.default"
-			>
-				<WarningRoundedIcon
-					sx={{
-						width: '200px',
-						height: '200px',
-						fill: 'currentColor',
-					}}
-				/>
-				<Typography variant="h6">
-					Error while fetching chains.
-				</Typography>
-				<Typography variant="h6">
-					Try to update session on your default account.
-				</Typography>
-				<SetDefaultAccountButton sx={{ marginTop: 2 }} />
-			</Stack>
+			<ErrorWithIcon
+				description={
+					<>
+						Error while fetching chains
+						<br />
+						Try to update session on your default account.
+					</>
+				}
+				icon={
+					<WarningRoundedIcon
+						sx={{
+							width: '200px',
+							height: '200px',
+							fill: 'currentColor',
+						}}
+					/>
+				}
+				action={<SetDefaultAccountButton sx={{ marginTop: 2 }} />}
+			/>
 		);
 	}
 
@@ -289,27 +289,7 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 	}
 
 	if (!defaultAccount) {
-		return (
-			<Stack
-				width="100%"
-				height="100%"
-				justifyContent="center"
-				alignItems="center"
-				color="textSecondary.default"
-			>
-				<NoAccountsRoundedIcon
-					sx={{
-						width: '150px',
-						height: '150px',
-						fill: 'currentColor',
-					}}
-				/>
-				<Typography variant="h6">
-					Default account with session is required
-				</Typography>
-				<SetDefaultAccountButton sx={{ marginTop: 2 }} />
-			</Stack>
-		);
+		return <NoDefaultAccountWarning />;
 	}
 
 	return (
@@ -375,9 +355,9 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 										loading={isFetching}
 										onChange={handleCoinChange}
 										startAdornment={
-											coin.icon_night_url ? (
+											coin.icon_night ? (
 												<Avatar
-													src={coin.icon_night_url}
+													src={coin.icon_night}
 													sx={{
 														width: 24,
 														height: 24,
@@ -386,6 +366,12 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 											) : null
 										}
 										value={coin}
+										renderRow={CoinRow}
+										listboxComponent={VariableSizeListbox}
+										isOptionEqualToValue={(option, value) =>
+											option.coin === value.coin
+										}
+										getOptionLabel={(option) => option.coin}
 									/>
 
 									<IconButton

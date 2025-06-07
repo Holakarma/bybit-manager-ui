@@ -11,6 +11,7 @@ const useLastLoginCountry = () =>
 	useQuery({
 		queryFn: lastLoginCountry,
 		queryKey: ['last-login-country'],
+		staleTime: 5 * 1000 * 60,
 	});
 
 export default useLastLoginCountry;

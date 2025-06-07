@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Api, ENDPOINTS } from 'shared/api';
 
-const useGetFinanceAccountsDB = (uids) => {
+const useGetFinanceAccountsDB = ({ uids, enabled = true }) => {
 	return useQuery({
 		queryFn: () => {
 			const validUids = uids.filter((uid) => Boolean(uid));
@@ -14,7 +14,7 @@ const useGetFinanceAccountsDB = (uids) => {
 		queryKey: ['finance accounts', { uids }],
 		staleTime: 5 * 1000 * 60,
 		retry: false,
-		enabled: uids !== undefined,
+		enabled: uids !== undefined && enabled,
 	});
 };
 

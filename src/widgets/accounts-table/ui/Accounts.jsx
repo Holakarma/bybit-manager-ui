@@ -1,6 +1,9 @@
+import { Stack, Typography } from '@mui/material';
+import { useDepositCoinChain } from 'entities/coins-chains';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { usePersistState } from 'shared/lib/react';
+import useLayer from '../model/layerStore';
 import AccountsTable from './AccountsTable';
 
 const HEIGHTS = {
@@ -19,12 +22,32 @@ const Accounts = () => {
 	const [columnWidthModel, setColumnWidthModel] =
 		usePersistState('columnWidths');
 
+	const layer = useLayer.use.layer();
+	const chain = useDepositCoinChain.use.chain();
+
+	if (layer === 'deposit' && !chain) {
+		return (
+			<Stack
+				sx={{
+					height: HEIGHTS[paginationModel.pageSize],
+					minHeight: '100%',
+					width: '100%',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}
+			>
+				<Typography variant="H4">Choose a chain first</Typography>
+			</Stack>
+		);
+	}
+
 	return (
 		<div
 			style={{
 				height: HEIGHTS[paginationModel.pageSize],
 				minHeight: '100%',
 				width: '100%',
+				position: 'relative',
 			}}
 		>
 			<AccountsTable

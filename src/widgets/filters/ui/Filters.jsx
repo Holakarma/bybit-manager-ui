@@ -1,5 +1,5 @@
 import { Grid2 } from '@mui/material';
-import { GroupSelect, Search } from 'features/filter-accounts';
+import { GroupSelect, Search } from 'entities/account';
 
 const Filters = () => {
 	return (

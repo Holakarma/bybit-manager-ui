@@ -65,5 +65,15 @@ export const useAccount = () => {
 		mutationKey: ['account'],
 	});
 };
+export const useAccountsMutation = () => {
+	return useMutation({
+		mutationFn: async (body) => {
+			const result = await getAccounts(body);
+
+			return result;
+		},
+		mutationKey: ['account'],
+	});
+};
 
 export default useAccounts;

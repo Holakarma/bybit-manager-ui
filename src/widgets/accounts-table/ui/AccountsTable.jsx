@@ -5,9 +5,12 @@ import {
 	ToggleNameContext,
 	useAccount,
 	useDefaultAccount,
+	useRows,
 	useSelectedAccountsId,
 } from 'entities/account';
+import { depositColumnsConfig } from 'entities/coins-chains';
 import { createFinanceAccountsConfig } from 'entities/finance-account';
+import { CopyAddressesFab } from 'features/copy-addresses-fab';
 import { useMemo, useRef, useState } from 'react';
 import { usePersistState } from 'shared/lib/react';
 import {
@@ -16,8 +19,7 @@ import {
 } from '../lib/visibilityModel';
 import useLayer from '../model/layerStore';
 import useUpdateRow from '../model/updateRow';
-import useRows from '../model/useRows';
-import columns from './ColumnsConfig';
+import useColumns, { getColumnsModel } from './ColumnsConfig';
 import tableSx from './tableStyles';
 
 const AccountsTable = ({
@@ -50,16 +52,14 @@ const AccountsTable = ({
 		return rowsRef.current;
 	}, [rows]);
 
-	const balance = useMemo(() => {
-		if (rows) {
-			return rows.reduce((acc, account) => acc + account.balance || 0, 0);
-		}
-
-		return 0;
-	}, [rows]);
 	const additionalColumns = useMemo(() => {
-		if (layer === 'balances' && rows) {
-			return createFinanceAccountsConfig(rows, columnWidthModel);
+		if (rows) {
+			switch (layer) {
+				case 'balances':
+					return createFinanceAccountsConfig(rows, columnWidthModel);
+				case 'deposit':
+					return depositColumnsConfig(rows, columnWidthModel);
+			}
 		}
 		return [];
 	}, [layer, rows, columnWidthModel]);
@@ -69,7 +69,10 @@ const AccountsTable = ({
 	const selectedAccountsId = useSelectedAccountsId.use.selectedAccountsId();
 
 	const [visible, setVisible] = useState(
-		columns().reduce((acc, col) => ({ ...acc, [col.field]: true }), {}),
+		getColumnsModel().reduce(
+			(acc, col) => ({ ...acc, [col.field]: true }),
+			{},
+		),
 	);
 
 	const [toggleName, setToggleName] = usePersistState('toggleName', false);
@@ -99,17 +102,12 @@ const AccountsTable = ({
 		}
 	};
 
-	const memoColumns = useMemo(
-		() =>
-			columns({
-				toggleName,
-				layer,
-				additionalColumns,
-				balance,
-				widths: columnWidthModel,
-			}),
-		[toggleName, layer, additionalColumns, balance, columnWidthModel],
-	);
+	const columns = useColumns({
+		toggleName,
+		layer,
+		additionalColumns,
+		widths: columnWidthModel,
+	});
 
 	return (
 		<ColumnVisibilityContext.Provider value={[visible, setVisible]}>
@@ -126,7 +124,7 @@ const AccountsTable = ({
 				) : (
 					<DataGrid
 						rows={savedRows}
-						columns={memoColumns}
+						columns={columns}
 						initialState={{
 							pagination: { paginationModel },
 							columns: {
@@ -160,6 +158,7 @@ const AccountsTable = ({
 						onColumnWidthChange={onColumnWidthChange}
 					/>
 				)}
+				{layer === 'deposit' && <CopyAddressesFab />}
 			</ToggleNameContext.Provider>
 		</ColumnVisibilityContext.Provider>
 	);
