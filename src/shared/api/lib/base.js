@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { getApiConfig } from 'shared/model/app-config';
+import BYBIT_CODE from '../model/bybit_codes';
+import deleteSecureToken from './deleteSecureToken';
 
 export const defaultConfig = {
 	host: 'http://localhost',
@@ -14,7 +16,7 @@ const config = () => {
 	}
 };
 
-const instance = axios.create({
+export const instance = axios.create({
 	baseURL: `${config().host || 'http://localhost'}:${config().port || '8000'}/`,
 });
 
@@ -42,6 +44,26 @@ instance.interceptors.request.use((config) => {
 		url: currentUrl.pathname,
 	};
 });
+
+instance.interceptors.response.use(
+	(response) => response,
+	async (error) => {
+		// clear cookie if secure token is dead
+		if (
+			error.response?.data?.bybit_response?.ret_code ===
+			BYBIT_CODE.DEAD_COOKIES
+		) {
+			const params = error.config.params;
+			const database_id = params?.database_id;
+
+			if (database_id) {
+				deleteSecureToken(database_id);
+			}
+		}
+
+		return Promise.reject(error);
+	},
+);
 
 class Api {
 	Get = (url, config = {}) =>

@@ -1,8 +1,10 @@
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 import {
 	Avatar,
 	Box,
 	Checkbox,
+	CircularProgress,
 	FormControlLabel,
 	FormGroup,
 	IconButton,
@@ -11,15 +13,20 @@ import {
 	Tab,
 	Tabs,
 	TextField,
-	Typography,
 } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDefaultAccount } from 'entities/account';
-import { useCoinsChains } from 'entities/coins-chains';
+import {
+	NoDefaultAccountWarning,
+	SetDefaultAccountButton,
+	useDefaultAccount,
+} from 'entities/account';
+import { CoinsPicker, useCoinsChains } from 'entities/coins-chains';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ErrorWithIcon } from 'shared/ui/error';
+import { VariableSizeListbox } from 'shared/ui/virtualized-listbox';
 import ChainPicker from './ChainPicker';
-import CoinsPicker from './CoinsPicker';
+import CoinRow from './CoinRow';
 import videoUrl from '/public/assets/video/batman-placeholder.mp4';
 
 function CustomTabPanel(props) {
@@ -53,12 +60,14 @@ function a11yProps(index) {
 
 const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 	const defaultAccount = useDefaultAccount.use.defaultAccountId();
+
 	const queryClient = useQueryClient();
 	const {
 		data: coinsChains,
 		isFetching,
 		isError,
-	} = useCoinsChains(defaultAccount);
+		isLoading,
+	} = useCoinsChains(defaultAccount, onError);
 
 	const chain = useMemo(() => settings.chain, [settings.chain]);
 	const handleChainChange = useCallback(
@@ -92,11 +101,10 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 			const allChains = {};
 
 			for (var [coin, chains] of Object.entries(coinsChains)) {
-				const icon_night_url =
-					Object.values(chains)[0].icon_night_url || '';
+				const icon_night = Object.values(chains)[0].icon_night || '';
 
 				Object.assign(allChains, chains);
-				coins.push({ coin, icon_night_url });
+				coins.push({ coin, icon_night });
 			}
 
 			return [coins, allChains];
@@ -244,19 +252,44 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 	};
 
 	if (isError) {
-		if (onError) {
-			onError();
-		}
 		return (
-			<Typography>
-				Error while getting coins-chains. Check session on your default
-				account.
-			</Typography>
+			<ErrorWithIcon
+				description={
+					<>
+						Error while fetching chains
+						<br />
+						Try to update session on your default account.
+					</>
+				}
+				icon={
+					<WarningRoundedIcon
+						sx={{
+							width: '200px',
+							height: '200px',
+							fill: 'currentColor',
+						}}
+					/>
+				}
+				action={<SetDefaultAccountButton sx={{ marginTop: 2 }} />}
+			/>
+		);
+	}
+
+	if (isLoading) {
+		return (
+			<Stack
+				height="100%"
+				justifyContent="center"
+				alignItems="center"
+				color="textSecondary.default"
+			>
+				<CircularProgress />
+			</Stack>
 		);
 	}
 
 	if (!defaultAccount) {
-		return <Typography>You should set default account first</Typography>;
+		return <NoDefaultAccountWarning />;
 	}
 
 	return (
@@ -270,7 +303,10 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 				right={0}
 				bottom={0}
 				left={0}
-				overflow="auto"
+				sx={{
+					overflowY: 'auto',
+					overflowX: 'hidden',
+				}}
 				paddingRight={1}
 			>
 				<Tabs
@@ -319,9 +355,9 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 										loading={isFetching}
 										onChange={handleCoinChange}
 										startAdornment={
-											coin.icon_night_url ? (
+											coin.icon_night ? (
 												<Avatar
-													src={coin.icon_night_url}
+													src={coin.icon_night}
 													sx={{
 														width: 24,
 														height: 24,
@@ -330,6 +366,12 @@ const WhiteListParams = ({ settings, onSettingsChange, onError, ids }) => {
 											) : null
 										}
 										value={coin}
+										renderRow={CoinRow}
+										listboxComponent={VariableSizeListbox}
+										isOptionEqualToValue={(option, value) =>
+											option.coin === value.coin
+										}
+										getOptionLabel={(option) => option.coin}
 									/>
 
 									<IconButton

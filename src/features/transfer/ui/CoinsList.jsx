@@ -19,13 +19,13 @@ const CoinsList = ({
 	setCoinSymbols,
 	...props
 }) => {
-	const accounBalances = useAccountBalances({
+	const accountBalances = useAccountBalances({
 		databaseIds,
 		from: settings.from,
 		to: settings.to,
 	});
 
-	if (!accounBalances) {
+	if (!accountBalances) {
 		return (
 			<List {...props}>
 				<ListItem disablePadding>
@@ -50,7 +50,7 @@ const CoinsList = ({
 		);
 	}
 
-	if (Object.entries(accounBalances).length === 0) {
+	if (Object.entries(accountBalances).length === 0) {
 		return (
 			<List>
 				<ListItem>
@@ -77,7 +77,7 @@ const CoinsList = ({
 
 	return (
 		<List {...props}>
-			{Object.entries(accounBalances).map(
+			{Object.entries(accountBalances).map(
 				([symbol, { balance, balance_usd, icon, precision, ids }]) => {
 					return (
 						<ListItem

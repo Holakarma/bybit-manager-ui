@@ -35,6 +35,13 @@ const ChainPicker = ({ loading, ...props }) => {
 					}}
 				/>
 			)}
+			slotProps={{
+				listbox: {
+					sx: {
+						maxHeight: '250px',
+					},
+				},
+			}}
 		/>
 	);
 };

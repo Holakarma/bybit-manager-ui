@@ -82,6 +82,7 @@ const TaskModal = ({
 										onClick={() => setPage(page + 1)}
 										sx={{ marginLeft: 'auto' }}
 										endIcon={<ArrowForwardRoundedIcon />}
+										disabled={pages?.[page + 1].disabled}
 									>
 										{pages?.[page + 1].title}
 									</Button>

@@ -13,14 +13,13 @@ import {
 import { useAccounts } from 'entities/account';
 import { useMemo } from 'react';
 import { Pulsing } from 'shared/ui/pulsing';
-import color from '../model/taskColors';
 
 const AccountLogsItem = ({ logs, database_id }) => {
 	const {
 		data: accounts,
 		isLoading,
 		isError,
-	} = useAccounts({ database_ids: [database_id] });
+	} = useAccounts({ body: { database_ids: [database_id] } });
 
 	const account = useMemo(() => {
 		if (!accounts) return null;
@@ -109,7 +108,7 @@ const AccountLogsItem = ({ logs, database_id }) => {
 						<Typography
 							variant="Caption"
 							key={log.message}
-							color={`${color[log.type]}.main`}
+							color={log.type}
 						>
 							{log.message}
 						</Typography>

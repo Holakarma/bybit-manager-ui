@@ -31,7 +31,7 @@ const TaskItem = ({ onClick, task }) => {
 		data: accounts,
 		isLoading,
 		isError,
-	} = useAccounts({ database_ids: Object.keys(grouped) });
+	} = useAccounts({ body: { database_ids: Object.keys(grouped) } });
 
 	const groups = useMemo(() => {
 		if (accounts) {

@@ -1,14 +1,15 @@
-import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
+import AlternateEmailRoundedIcon from '@mui/icons-material/AlternateEmailRounded';
 import {
-	FormControlLabel,
-	FormGroup,
-	Stack,
-	Switch,
-	Tooltip,
+	ListItem,
+	ListItemButton,
+	ListItemIcon,
+	ListItemText,
+	Switch
 } from '@mui/material';
+
 import { useMemo } from 'react';
 
-const TestEmailSetting = ({ settings, onSettingsChange, ...props }) => {
+const TestEmailSetting = ({ settings, onSettingsChange }) => {
 	const testEmail = useMemo(() => settings.test_email, [settings.test_email]);
 
 	const handleTestEmailChange = (_event) => {
@@ -16,28 +17,26 @@ const TestEmailSetting = ({ settings, onSettingsChange, ...props }) => {
 	};
 
 	return (
-		<Stack
-			direction="row"
-			gap={1}
-			alignItems="center"
-			{...props}
-		>
-			<FormGroup>
-				<FormControlLabel
-					control={
-						<Switch
-							checked={testEmail}
-							onChange={handleTestEmailChange}
-							value="test_email"
-						/>
-					}
-					label="Test email"
+		<ListItem disablePadding>
+			<ListItemButton
+				onClick={handleTestEmailChange}
+				disableRipple
+			>
+				<ListItemIcon>
+					<AlternateEmailRoundedIcon fontSize="large" />
+				</ListItemIcon>
+
+				<ListItemText
+				 	primary="Check email"
+					secondary="Check if the email is already registered before signing up"
 				/>
-			</FormGroup>
-			<Tooltip title="Check if the email is already registered before signing up">
-				<HelpOutlineRoundedIcon color="textSecondary" />
-			</Tooltip>
-		</Stack>
+
+				<Switch
+					checked={testEmail}
+					value="test_email"
+				/>
+			</ListItemButton>
+		</ListItem>
 	);
 };
 

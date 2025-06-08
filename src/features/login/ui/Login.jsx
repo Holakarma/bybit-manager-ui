@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
@@ -6,22 +6,22 @@ import {
 	TaskSettingsPage,
 } from 'entities/task';
 import { useState } from 'react';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useLoginTask from '../api/loginAccount';
 
-const Login = ({ ...props }) => {
+const Login = ({ children, onClose }) => {
 	const mutation = useLoginTask();
-
-	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { min: 60, max: 90, enabled: true },
-		shuffle: false,
-	});
+	const [settings, setSettings] = useState(
+		getTaskSettingsConfig(taskSettingsDefaultConfig),
+	);
 
 	return (
 		<CreateTask
 			handleStart={mutation.mutate}
 			task="login"
 			settings={settings}
+			preloginNeeded={false}
+			onClose={onClose}
 			pages={[
 				{
 					title: 'Settings',
@@ -42,13 +42,7 @@ const Login = ({ ...props }) => {
 				},
 			]}
 		>
-			<Button
-				{...props}
-				variant="contained"
-				fullWidth
-			>
-				Login
-			</Button>
+			{children}
 		</CreateTask>
 	);
 };

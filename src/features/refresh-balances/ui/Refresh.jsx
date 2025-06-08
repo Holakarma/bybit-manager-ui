@@ -1,33 +1,39 @@
-import { Button } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
+	TaskSettingsBase,
 	TaskSettingsPage,
 	TaskSettingsPrelogin,
 } from 'entities/task';
 import { useState } from 'react';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useRefreshTask from '../api/refreshBalances';
 
-const Refresh = ({ ...props }) => {
+const Refresh = ({ children, onClose }) => {
 	const mutation = useRefreshTask();
 
-	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { enabled: true, min: 60, max: 90 },
-		prelogin: true,
-		shuffle: false,
-	});
+	const [settings, setSettings] = useState(
+		getTaskSettingsConfig(taskSettingsDefaultConfig),
+	);
 
 	return (
 		<CreateTask
 			handleStart={mutation.mutate}
 			task="refresh balances"
 			settings={settings}
+			onClose={onClose}
 			pages={[
 				{
 					title: 'Settings',
 					component: (
 						<TaskSettingsPage key="settings">
+							<TaskSettingsBase
+								settings={settings}
+								onSettingsChange={(newSettings) =>
+									setSettings(newSettings)
+								}
+							/>
 							<TaskSettingsPrelogin
 								settings={settings}
 								onSettingsChange={(newSettings) =>
@@ -43,13 +49,7 @@ const Refresh = ({ ...props }) => {
 				},
 			]}
 		>
-			<Button
-				{...props}
-				fullWidth
-				variant="contained"
-			>
-				Refresh
-			</Button>
+			{children}
 		</CreateTask>
 	);
 };

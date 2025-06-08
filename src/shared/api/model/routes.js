@@ -28,6 +28,7 @@ const ENDPOINTS = {
 	withdraw_addresses: '/private/withdraw/addresses',
 	set_preferences: '/private/set-preferences',
 	coins_chains: '/private/withdraw/coins-chains',
+	deposit_coins_chains: '/private/deposit/coins-chains',
 	enable_whitelist: '/private/withdraw/enable-whitelist',
 	add_withdraw_address: '/private/withdraw/add-address',
 	is_email_exist: '/private/is-email-exist',
@@ -35,6 +36,10 @@ const ENDPOINTS = {
 	funding_coins: '/private/funding-coins',
 	trading_coins: '/private/trading-coins',
 	transfer: '/private/transfer',
+	kyc_countries: '/filter/kyc-countries',
+	last_login_country: '/filter/last-login-countries',
+	deposit_address: '/private/deposit-addresses',
+	db_deposit_addresess: '/deposit-addresses',
 };
 
 export default ENDPOINTS;

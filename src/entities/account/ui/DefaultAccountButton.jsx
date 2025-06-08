@@ -1,7 +1,9 @@
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
 import NoAccountsRoundedIcon from '@mui/icons-material/NoAccountsRounded';
-import { Button } from '@mui/material';
-import { useMemo } from 'react';
+import { Button, Tooltip } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { isCookieAlive } from 'shared/lib/session-cookies';
 import useAccounts from '../api/getAccounts';
 
 const DefaultAccountButton = ({ defaultAccountId, onClick }) => {
@@ -10,14 +12,21 @@ const DefaultAccountButton = ({ defaultAccountId, onClick }) => {
 		isLoading,
 		isError,
 	} = useAccounts({
-		database_ids: [defaultAccountId],
+		body: { database_ids: [defaultAccountId] },
 	});
+
+	const [warning, setWarning] = useState('');
 
 	const defaultAccount = useMemo(() => {
 		if (!defaultAccountId) {
 			return undefined;
 		}
 		if (defaultAccountData) {
+			if (!isCookieAlive(defaultAccountData[0].cookies)) {
+				setWarning('Account is not alive');
+			} else {
+				setWarning('');
+			}
 			return defaultAccountData[0];
 		}
 	}, [defaultAccountData, defaultAccountId]);
@@ -52,18 +61,22 @@ const DefaultAccountButton = ({ defaultAccountId, onClick }) => {
 	}
 
 	return (
-		<Button
-			variant="contained"
-			color="secondary"
-			onClick={onClick}
-			sx={{
-				fill: (theme) => theme.palette.textPrimary.default,
-				color: (theme) => theme.palette.textPrimary.default,
-			}}
-			startIcon={<AccountCircleRoundedIcon fill="inherit" />}
-		>
-			{defaultAccount.email.address}
-		</Button>
+		<Tooltip title={warning}>
+			<Button
+				variant={warning ? 'outlined' : 'contained'}
+				color={warning ? 'warning' : 'secondary'}
+				onClick={onClick}
+				startIcon={
+					warning ? (
+						<ErrorRoundedIcon />
+					) : (
+						<AccountCircleRoundedIcon />
+					)
+				}
+			>
+				{defaultAccount.email.address}
+			</Button>
+		</Tooltip>
 	);
 };
 

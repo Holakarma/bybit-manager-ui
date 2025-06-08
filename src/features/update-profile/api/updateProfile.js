@@ -1,39 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useUpdateProfile } from 'entities/account';
 import { useLogs } from 'entities/log';
 import { usePendingTasks, useTask } from 'entities/task';
 // eslint-disable-next-line no-restricted-imports
 import { usePreloginAttempt } from 'features/login/@X/pre-login';
 import { useSnackbar } from 'notistack';
-import { Api, deduplicateRequests, ENDPOINTS } from 'shared/api';
-
-const updateProfile = (database_id, signal) => {
-	const api = new Api();
-	return api.Get(ENDPOINTS.update_profile, {
-		signal,
-		params: { database_id },
-	});
-};
-
-const useUpdateProfileMutationApi = (props) => {
-	const mutationFunction = ({ database_id, signal }) => {
-		return deduplicateRequests({
-			requestKey: ['update', database_id],
-			requestFn: async () => {
-				const result = await updateProfile(database_id, signal);
-				return { result, database_id };
-			},
-		});
-	};
-
-	return useMutation({
-		mutationFn: mutationFunction,
-		mutationKey: ['update'],
-		...props,
-	});
-};
 
 export const useUpdateProfileMutation = () => {
-	const updateProfileApi = useUpdateProfileMutationApi();
+	const updateProfileApi = useUpdateProfile();
 	const addInfoLog = useLogs.use.addInfoLog();
 	const addErrorLog = useLogs.use.addErrorLog();
 	const addSuccessLog = useLogs.use.addSuccessLog();

@@ -16,3 +16,5 @@ export { default as TaskResult } from './ui/TaskResult';
 export { default as TaskSettingsBase } from './ui/TaskSettingsBase';
 export { default as TaskSettingsPage } from './ui/TaskSettingsPage';
 export { default as TaskSettingsPrelogin } from './ui/TaskSettingsPrelogin';
+export { default as TOTPSetting } from './ui/TOTPSetting';
+export { default as WhitelistSetting } from './ui/WhitelistSetting';

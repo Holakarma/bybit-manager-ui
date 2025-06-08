@@ -8,6 +8,7 @@ const ApiSettings = ({ control, errors }) => {
 			container
 			spacing={2}
 			columns={10}
+			width="100%"
 		>
 			<Grid2 size={5}>
 				<Controller
@@ -26,7 +27,7 @@ const ApiSettings = ({ control, errors }) => {
 					)}
 				/>
 			</Grid2>
-			<Grid2 size={5}>
+			<Grid2 size="grow">
 				<Controller
 					name={`${API_CONFIG_NAME}.port`}
 					control={control}

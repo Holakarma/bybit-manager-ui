@@ -1,4 +1,19 @@
-const transferFinanceAccounts = (account, finance_accounts) => {
+import { useMutation } from '@tanstack/react-query';
+
+const useTransferFinanceAccounts = (accounts) => {
+	const mutationFn = (financeAccounts) => {
+		return accounts.map((account) =>
+			transferFinanceAccount(account, financeAccounts?.[account.uid]),
+		);
+	};
+
+	return useMutation({
+		mutationFn,
+		mutationKey: ['transfer finance accounts'],
+	});
+};
+
+const transferFinanceAccount = (account, finance_accounts) => {
 	if (finance_accounts) {
 		for (let [k, v] of Object.entries(finance_accounts)) {
 			finance_accounts[k] = v || 0;
@@ -15,4 +30,4 @@ const transferFinanceAccounts = (account, finance_accounts) => {
 	};
 };
 
-export default transferFinanceAccounts;
+export default useTransferFinanceAccounts;

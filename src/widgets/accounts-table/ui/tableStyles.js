@@ -17,6 +17,9 @@ const tableSx = {
 	'& .MuiDataGrid-virtualScroller': {
 		overflowY: 'hidden',
 	},
+	'& .MuiToolbar-root': {
+		paddingRight: '50px',
+	},
 };
 
 export default tableSx;

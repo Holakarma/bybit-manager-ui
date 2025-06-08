@@ -1,69 +1,56 @@
-import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
-import { IconButton, Stack, Tooltip } from '@mui/material';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
+	TaskSettingsBase,
 	TaskSettingsPage,
 	TaskSettingsPrelogin,
 } from 'entities/task';
 import { useState } from 'react';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useUpdateProfileTask from '../api/updateProfile';
 
-const UpdateProfile = () => {
-	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { enabled: true, min: 60, max: 90 },
-		prelogin: true,
-		shuffle: false,
-	});
-
-	const [tooltipOpen, setTooltipOpen] = useState(false);
+const UpdateProfile = ({ children, onClose }) => {
+	const [settings, setSettings] = useState(
+		getTaskSettingsConfig(taskSettingsDefaultConfig),
+	);
 
 	const mutation = useUpdateProfileTask();
 
 	return (
-		<Tooltip
-			title="Update profile"
-			open={tooltipOpen}
+		<CreateTask
+			handleStart={mutation.mutate}
+			task="update profiles"
+			settings={settings}
+			onClose={onClose}
+			pages={[
+				{
+					title: 'Settings',
+					component: (
+						<TaskSettingsPage key="settings">
+							<TaskSettingsBase
+								settings={settings}
+								onSettingsChange={(newSettings) =>
+									setSettings(newSettings)
+								}
+							/>
+							<TaskSettingsPrelogin
+								settings={settings}
+								onSettingsChange={(newSettings) =>
+									setSettings(newSettings)
+								}
+							/>
+						</TaskSettingsPage>
+					),
+				},
+				{
+					title: 'Accounts',
+					component: <TaskAccountsPage key="accounts" />,
+				},
+			]}
 		>
-			<Stack
-				sx={{ height: '100%' }}
-				justifyContent="center"
-				alignItems="center"
-			>
-				<CreateTask
-					handleStart={mutation.mutate}
-					task="update profiles"
-					settings={settings}
-					pages={[
-						{
-							title: 'Settings',
-							component: (
-								<TaskSettingsPage key="settings">
-									<TaskSettingsPrelogin
-										settings={settings}
-										onSettingsChange={(newSettings) =>
-											setSettings(newSettings)
-										}
-									/>
-								</TaskSettingsPage>
-							),
-						},
-						{
-							title: 'Accounts',
-							component: <TaskAccountsPage key="accounts" />,
-						},
-					]}
-				>
-					<IconButton
-						onMouseEnter={() => setTooltipOpen(true)}
-						onMouseLeave={() => setTooltipOpen(false)}
-					>
-						<SyncRoundedIcon />
-					</IconButton>
-				</CreateTask>
-			</Stack>
-		</Tooltip>
+			{children}
+		</CreateTask>
 	);
 };
 

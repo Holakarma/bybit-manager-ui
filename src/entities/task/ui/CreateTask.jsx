@@ -10,16 +10,21 @@ const CreateTask = ({
 	settings,
 	disabledTooltip,
 	errorText,
+	preloginNeeded = true,
 	startTitle,
 	children,
 	loading,
 	onCheckedIdsChange,
 	settingsAdapter = (settings) => settings,
+	onClose,
 	...props
 }) => {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
+	const handleClose = () => {
+		setOpen(false);
+		if (onClose) onClose();
+	};
 
 	const {
 		data: selectedAccounts,
@@ -45,12 +50,12 @@ const CreateTask = ({
 
 	const preloginTooltip = useCallback(
 		(account) =>
-			settings?.prelogin !== undefined && // if no prelogin setting
+			preloginNeeded &&
 			!settings?.prelogin &&
 			!isCookieAlive(account.cookies)
 				? 'No session'
 				: '',
-		[settings?.prelogin],
+		[preloginNeeded, settings?.prelogin],
 	);
 
 	useEffect(() => {
@@ -71,7 +76,7 @@ const CreateTask = ({
 	}, [selectedAccounts, disabledTooltip, task, preloginTooltip]);
 
 	if (isLoading) {
-		return cloneElement(children, { ...props, loading: isLoading });
+		return cloneElement(children, { ...props, disabled: isLoading });
 	}
 
 	if (isError) {
@@ -83,7 +88,16 @@ const CreateTask = ({
 
 	return (
 		<>
-			{cloneElement(children, { ...props, onClick: handleOpen })}
+			{cloneElement(children, {
+				...props,
+				...children.props,
+				onClick: () => {
+					handleOpen();
+					if (children.props?.onClick) {
+						children.props.onClick();
+					}
+				},
+			})}
 
 			<TaskModal
 				open={open}
@@ -95,7 +109,9 @@ const CreateTask = ({
 					disabled: checkedIds.length === 0 || Boolean(errorText),
 				}}
 				startTitle={startTitle}
-				errorText={errorText}
+				errorText={
+					checkedIds.length === 0 ? 'No accounts selected' : errorText
+				}
 				loading={loading}
 				pages={pages.map((page) => ({
 					...page,

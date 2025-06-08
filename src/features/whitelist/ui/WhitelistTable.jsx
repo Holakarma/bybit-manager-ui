@@ -19,7 +19,7 @@ const WhitelistTable = ({ settings, ids }) => {
 		isLoading,
 		isError,
 	} = useAccounts({
-		database_ids: ids,
+		body: { database_ids: ids },
 	});
 
 	if (isLoading) {

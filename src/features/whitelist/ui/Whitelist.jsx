@@ -1,29 +1,27 @@
-import QueueRoundedIcon from '@mui/icons-material/QueueRounded';
-import { IconButton, Stack, Tooltip } from '@mui/material';
 import { useDefaultAccount } from 'entities/account';
+import { taskSettingsDefaultConfig } from 'entities/app-settings';
 import {
 	CreateTask,
 	TaskAccountsPage,
+	TaskSettingsBase,
 	TaskSettingsPage,
 	TaskSettingsPrelogin,
+	TOTPSetting,
+	WhitelistSetting,
 } from 'entities/task';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { isCookieAlive } from 'shared/lib/session-cookies';
+import { getTaskSettingsConfig } from 'shared/model/app-config';
 import useAddWithdrawAddressesTask from '../api/addWhitelist';
 import WhiteListParams from './WhiteListParams';
-import WhiteListSettings from './WhiteListSettings';
 import WhitelistTable from './WhitelistTable';
 
-const Whitelist = () => {
-	const [tooltipOpen, setTooltipOpen] = useState(false);
+const Whitelist = ({ children, onClose }) => {
 	const defaultAccount = useDefaultAccount.use.defaultAccountId();
 	const mutation = useAddWithdrawAddressesTask();
 
 	const [settings, setSettings] = useState({
-		threads: 1,
-		delay: { enabled: true, min: 60, max: 90 },
-		shuffle: false,
-		prelogin: true,
+		...getTaskSettingsConfig(taskSettingsDefaultConfig),
 		enable_totp: true,
 		enable_whitelist: true,
 		universal: true,
@@ -87,86 +85,76 @@ const Whitelist = () => {
 	);
 
 	return (
-		<Tooltip
-			title="Whitelist"
-			open={tooltipOpen}
+		<CreateTask
+			onClose={onClose}
+			handleStart={mutation.mutate}
+			onCheckedIdsChange={(ids) => setIds(ids)}
+			errorText={errorText}
+			loading={
+				!adaptedSettings.coin.coin ||
+				!adaptedSettings.chain.chain_full_name
+			}
+			task="whitelist"
+			settings={adaptedSettings}
+			disabledTooltip={disabledTooltip}
+			pages={[
+				{
+					title: 'Settings',
+					component: (
+						<TaskSettingsPage key="settings">
+							<TaskSettingsBase
+								settings={settings}
+								onSettingsChange={onSettingsChange}
+							/>
+							<TaskSettingsPrelogin
+								settings={settings}
+								onSettingsChange={onSettingsChange}
+							/>
+							<TOTPSetting
+								settings={settings}
+								onSettingsChange={onSettingsChange}
+							/>
+							<WhitelistSetting
+								settings={settings}
+								onSettingsChange={onSettingsChange}
+							/>
+						</TaskSettingsPage>
+					),
+				},
+				{
+					title: 'Accounts',
+					component: <TaskAccountsPage key="accounts" />,
+				},
+				{
+					title: 'Withdraw params',
+					component: (
+						<TaskSettingsPage key="params">
+							<WhiteListParams
+								settings={settings}
+								ids={ids}
+								onSettingsChange={onSettingsChange}
+								onError={() =>
+									setErrorText('Error while getting chains')
+								}
+							/>
+						</TaskSettingsPage>
+					),
+				},
+				{
+					title: 'Withdraw table',
+					component: (
+						<WhitelistTable
+							key="table"
+							ids={ids}
+							settings={adaptedSettings}
+						/>
+					),
+					disabled: !ids.length || !settings.addresses.length,
+				},
+			]}
 		>
-			<Stack
-				sx={{ height: '100%' }}
-				justifyContent="center"
-				alignItems="center"
-			>
-				<CreateTask
-					handleStart={mutation.mutate}
-					onCheckedIdsChange={(ids) => setIds(ids)}
-					errorText={errorText}
-					loading={
-						!adaptedSettings.coin.coin ||
-						!adaptedSettings.chain.chain_full_name
-					}
-					task="whitelist"
-					settings={adaptedSettings}
-					disabledTooltip={disabledTooltip}
-					pages={[
-						{
-							title: 'Settings',
-							component: (
-								<TaskSettingsPage key="settings">
-									<Stack gap={3}>
-										<TaskSettingsPrelogin
-											settings={settings}
-											onSettingsChange={onSettingsChange}
-										/>
-										<WhiteListSettings
-											settings={settings}
-											onSettingsChange={onSettingsChange}
-										/>
-									</Stack>
-								</TaskSettingsPage>
-							),
-						},
-						{
-							title: 'Accounts',
-							component: <TaskAccountsPage key="accounts" />,
-						},
-						{
-							title: 'Withdraw params',
-							component: (
-								<TaskSettingsPage key="params">
-									<WhiteListParams
-										settings={settings}
-										ids={ids}
-										onSettingsChange={onSettingsChange}
-										onError={() =>
-											setErrorText(
-												'Error while getting chains',
-											)
-										}
-									/>
-								</TaskSettingsPage>
-							),
-						},
-						{
-							title: 'Withdraw table',
-							component: (
-								<WhitelistTable
-									key="table"
-									ids={ids}
-									settings={adaptedSettings}
-								/>
-							),
-						},
-					]}
-				>
-					<IconButton
-						onMouseEnter={() => setTooltipOpen(true)}
-						onMouseLeave={() => setTooltipOpen(false)}
-					>
-						<QueueRoundedIcon />
-					</IconButton>
-				</CreateTask>
-			</Stack>
-		</Tooltip>
+			{children}
+		</CreateTask>
 	);
 };
 
